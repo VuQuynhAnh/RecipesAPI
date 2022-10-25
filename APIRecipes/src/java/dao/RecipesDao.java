@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import requestModel.RecipeRequest;
 import viewModel.RecipesViewModel;
 
 /**
@@ -40,7 +41,14 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             while (result.next()) {
                 RecipesViewModel recipeViewModel = new RecipesViewModel();
                 recipeViewModel.setId(result.getInt("Id"));
+                recipeViewModel.setCategoryId(result.getInt("CategoryId"));
+                recipeViewModel.setAuthorId(result.getInt("AuthorId"));
                 recipeViewModel.setName(result.getString("Name"));
+                recipeViewModel.setOrigin(result.getString("Origin"));
+                recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setTotalViews(result.getInt("TotalViews"));
+                recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
                 recipeViewModel.setCreateDate(result.getDate("CreateDate"));
                 recipeViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -48,6 +56,8 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 recipeViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
+                recipeViewModel.setAuthor(result.getString("Author"));
                 listRecipeViewModels.add(recipeViewModel);
             }
         } catch (SQLException ex) {
@@ -56,21 +66,35 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
 
-    public List<RecipesViewModel> getData(String keyword, boolean isGetAll) {
+    public List<RecipesViewModel> getData(RecipeRequest request) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListIngredients(?,?)}");
-            if (keyword.equalsIgnoreCase("_")) {
-                keyword = "";
-            }
-            statement.setString(1, "%" + keyword + "%");
-            statement.setBoolean(2, isGetAll);
+            statement = con.prepareCall("{call FilterListRecipes(?,?,?,?,?,?,?,?,?,?,?)}");
+            statement.setString(1, request.getKeyword());
+            statement.setInt(2, request.getCatId());
+            statement.setInt(3, request.getAuthorId());
+            statement.setString(4, request.getName());
+            statement.setString(5, request.getOrigin());
+            statement.setInt(6, request.getMinServer());
+            statement.setInt(7, request.getMaxServer());
+            statement.setInt(8, request.getMinTotalViews());
+            statement.setInt(9, request.getMaxTotalViews());
+            statement.setString(10, request.getCookTime());
+            statement.setInt(11, request.getStatus());
+
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 RecipesViewModel recipeViewModel = new RecipesViewModel();
                 recipeViewModel.setId(result.getInt("Id"));
+                recipeViewModel.setCategoryId(result.getInt("CategoryId"));
+                recipeViewModel.setAuthorId(result.getInt("AuthorId"));
                 recipeViewModel.setName(result.getString("Name"));
+                recipeViewModel.setOrigin(result.getString("Origin"));
+                recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setTotalViews(result.getInt("TotalViews"));
+                recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
                 recipeViewModel.setCreateDate(result.getDate("CreateDate"));
                 recipeViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -78,6 +102,8 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 recipeViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
+                recipeViewModel.setAuthor(result.getString("Author"));
                 listRecipeViewModels.add(recipeViewModel);
             }
         } catch (SQLException ex) {
@@ -91,12 +117,19 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         RecipesViewModel recipeViewModel = new RecipesViewModel();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetRecipesById(?)}");
+            statement = con.prepareCall("{call GetRecipeById(?)}");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 recipeViewModel.setId(result.getInt("Id"));
+                recipeViewModel.setCategoryId(result.getInt("CategoryId"));
+                recipeViewModel.setAuthorId(result.getInt("AuthorId"));
                 recipeViewModel.setName(result.getString("Name"));
+                recipeViewModel.setOrigin(result.getString("Origin"));
+                recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setTotalViews(result.getInt("TotalViews"));
+                recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
                 recipeViewModel.setCreateDate(result.getDate("CreateDate"));
                 recipeViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -104,6 +137,17 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 recipeViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
+                recipeViewModel.setAuthor(result.getString("Author"));
+
+                // If have Recipe and Recipe is not delete
+                if (result.getInt("Id") > 0 && result.getInt("status") == 0) {
+                    statement = con.prepareCall("update Recipes set TotalViews=? where Id=?");
+                    int totalView = result.getInt("TotalViews") + 1;
+                    statement.setInt(1, totalView);
+                    statement.setInt(2, result.getInt("Id"));
+                    statement.executeUpdate();
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,11 +159,18 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
     public boolean insertData(Recipes t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into Recipes(Name, Status, CreateDate, CreateUser) values (?,?,?,?)");
-            statement.setString(1, t.getName());
-            statement.setInt(2, 0);
-            statement.setDate(3, Date.valueOf(LocalDate.now()));
-            statement.setInt(4, t.getCreateUser());
+            statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?)");
+            statement.setInt(1, t.getCategoryId());
+            statement.setInt(2, t.getAuthorId());
+            statement.setString(3, t.getName());
+            statement.setString(4, t.getOrigin());
+            statement.setInt(5, t.getServes());
+            statement.setString(6, t.getImage());
+            statement.setInt(7, 1);
+            statement.setString(8, t.getCookTime());
+            statement.setInt(9, 0);
+            statement.setDate(10, Date.valueOf(LocalDate.now()));
+            statement.setInt(11, t.getCreateUser());
             if (statement.executeUpdate() > 0) {
                 return true;
             }
@@ -133,12 +184,18 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
     public boolean updateData(Recipes t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Recipes set Name=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
-            statement.setString(1, t.getName());
-            statement.setInt(2, t.getStatus());
-            statement.setDate(3, Date.valueOf(LocalDate.now()));
-            statement.setInt(4, t.getUpdateUser());
-            statement.setInt(5, t.getId());
+            statement = con.prepareCall("update Recipes set CategoryId=?, AuthorId=?, Name=?, Origin=?, Serves=?, Image=?, CookTime=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+            statement.setInt(1, t.getCategoryId());
+            statement.setInt(2, t.getAuthorId());
+            statement.setString(3, t.getName());
+            statement.setString(4, t.getOrigin());
+            statement.setInt(5, t.getServes());
+            statement.setString(6, t.getImage());
+            statement.setString(7, t.getCookTime());
+            statement.setInt(8, t.getStatus());
+            statement.setDate(9, Date.valueOf(LocalDate.now()));
+            statement.setInt(10, t.getUpdateUser());
+            statement.setInt(11, t.getId());
             if (statement.executeUpdate() > 0) {
                 return true;
             }
@@ -163,5 +220,17 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+    
+     public boolean checkExistRecipe(int id) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("select * from Recipes where Id=?");
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            return result.next();
+        } catch (SQLException ex) {
+            return false;
+        }
     }
 }

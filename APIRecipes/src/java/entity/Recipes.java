@@ -16,7 +16,7 @@ public class Recipes implements Serializable {
 
     private int id;
     private int categoryId;
-    private int userId;
+    private int authorId;
     private String name;
     private String origin;
     private int serves;
@@ -29,10 +29,10 @@ public class Recipes implements Serializable {
     private Date updateDate;
     private int updateUser;
 
-    public Recipes(int id, int categoryId, int userId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public Recipes(int id, int categoryId, int authorId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
         this.id = id;
         this.categoryId = categoryId;
-        this.userId = userId;
+        this.authorId = authorId;
         this.name = name;
         this.origin = origin;
         this.serves = serves;
@@ -48,7 +48,7 @@ public class Recipes implements Serializable {
 
     public Recipes(int categoryId, int userId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
         this.categoryId = categoryId;
-        this.userId = userId;
+        this.authorId = userId;
         this.name = name;
         this.origin = origin;
         this.serves = serves;
@@ -81,12 +81,12 @@ public class Recipes implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getAuthorId() {
+        return authorId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 
     public String getName() {

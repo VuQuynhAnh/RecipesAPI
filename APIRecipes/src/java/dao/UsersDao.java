@@ -5,7 +5,7 @@
  */
 package dao;
 
-import entity.Category;
+import entity.Users;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,48 +16,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import viewModel.CategoryViewModel;
+import viewModel.UsersViewModel;
 
 /**
  *
  * @author DELL
  */
-public class CategoryDao implements IService<Category, CategoryViewModel, Integer> {
+public class UsersDao implements IService<Users, UsersViewModel, Integer> {
 
     Connection con = null;
 
-    public CategoryDao() {
+    public UsersDao() {
         con = GetConnection.getConnect();
     }
 
     @Override
-    public List<CategoryViewModel> getData() {
-        List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
+    public List<UsersViewModel> getData() {
+        List<UsersViewModel> listCategoryViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call GetAllCategory()}");
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                CategoryViewModel categoryViewModel = new CategoryViewModel();
-                categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setStatus(result.getInt("Status"));
-                categoryViewModel.setCreateDate(result.getDate("CreateDate"));
-                categoryViewModel.setCreateUser(result.getInt("CreateUser"));
-                categoryViewModel.setUpdateDate(result.getDate("UpdateDate"));
-                categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
-                categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
-                categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
-                listCategoryViewModels.add(categoryViewModel);
+                UsersViewModel userViewModel = new UsersViewModel();
+                userViewModel.setId(result.getInt("Id"));
+                userViewModel.setUserName(result.getString("UserName"));
+                userViewModel.setStatus(result.getInt("Status"));
+                userViewModel.setCreateDate(result.getDate("CreateDate"));
+                userViewModel.setCreateUser(result.getInt("CreateUser"));
+                userViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                userViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                listCategoryViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listCategoryViewModels;
     }
 
-    public List<CategoryViewModel> getData(String keyword, boolean isGetAll) {
-        List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
+    public List<UsersViewModel> getData(String keyword, boolean isGetAll) {
+        List<UsersViewModel> listCategoryViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call FilterListCategory(?,?)}");
@@ -68,9 +68,9 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
             statement.setBoolean(2, isGetAll);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                CategoryViewModel categoryViewModel = new CategoryViewModel();
+                UsersViewModel categoryViewModel = new UsersViewModel();
                 categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setName(result.getString("Name"));
+                categoryViewModel.setUserName(result.getString("UserName"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -81,14 +81,14 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 listCategoryViewModels.add(categoryViewModel);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listCategoryViewModels;
     }
 
     @Override
-    public CategoryViewModel getDataById(Integer id) {
-        CategoryViewModel categoryViewModel = new CategoryViewModel();
+    public UsersViewModel getDataById(Integer id) {
+        UsersViewModel categoryViewModel = new UsersViewModel();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call GetCategoryById(?)}");
@@ -96,7 +96,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setName(result.getString("Name"));
+                categoryViewModel.setUserName(result.getString("UserName"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -106,17 +106,17 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return categoryViewModel;
     }
 
     @Override
-    public boolean insertData(Category t) {
+    public boolean insertData(Users t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into Category(Name, Status, CreateDate, CreateUser) values (?,?,?,?)");
-            statement.setString(1, t.getName());
+            statement = con.prepareCall("insert into Users(UserName, Status, CreateDate, CreateUser) values (?,?,?,?)");
+            statement.setString(1, t.getUserName());
             statement.setInt(2, 0);
             statement.setDate(3, Date.valueOf(LocalDate.now()));
             statement.setInt(4, t.getCreateUser());
@@ -124,17 +124,17 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
     @Override
-    public boolean updateData(Category t) {
+    public boolean updateData(Users t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Category set Name=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
-            statement.setString(1, t.getName());
+            statement = con.prepareCall("update Users set UserName=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+            statement.setString(1, t.getUserName());
             statement.setInt(2, t.getStatus());
             statement.setDate(3, Date.valueOf(LocalDate.now()));
             statement.setInt(4, t.getUpdateUser());
@@ -143,7 +143,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -152,7 +152,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Category set Status = 1, UpdateDate=?, UpdateUser=? where Id=?");
+            statement = con.prepareCall("update Users set Status = 1, UpdateDate=?, UpdateUser=? where Id=?");
             statement.setDate(1, Date.valueOf(LocalDate.now()));
             statement.setInt(2, userId);
             statement.setInt(3, id);
@@ -160,15 +160,15 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
-    
-     public boolean checkExistCategory(int id) {
+
+    public boolean checkExistUser(int id) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("select * from Category where Id=?");
+            statement = con.prepareCall("select * from Users where Id=?");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             return result.next();
