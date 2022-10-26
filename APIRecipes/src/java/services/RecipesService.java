@@ -101,8 +101,6 @@ public class RecipesService {
             return "Recipe name is requied!";
         } else if (input.getRecipe().getServes() < 0) {
             return "Serves is must more or equal 0!";
-        } else if (input.getRecipe().getStatus() < 0) {
-            return "Status is must more or equal 0!";
         } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
             return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
@@ -156,20 +154,107 @@ public class RecipesService {
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String update(Recipes recipe) {
-        if (recipe.getName().trim().length() == 0) {
+    public String update(RecipeInputData input) {
+        // Validate recipe
+        if (input.getRecipe().getName().trim().length() == 0) {
             return "Recipe name is requied!";
-        } else if (recipe.getServes() < 0) {
+        } else if (input.getRecipe().getServes() < 0) {
             return "Serves is must more or equal 0!";
-        } else if (recipe.getStatus() < 0) {
+        } else if (input.getRecipe().getStatus() < 0) {
             return "Status is must more or equal 0!";
-        } else if (!categoryDao.checkExistCategory(recipe.getCategoryId())) {
-            return "Category is not exist!";
-        } else if (!userDao.checkExistUser(recipe.getAuthorId())) {
-            return "Author is not exist!";
-        } else if (!recipesDao.checkExistRecipe(recipe.getId())) {
-            return "Can not find Recipes width id = " + recipe.getId() + "!";
-        } else if (recipesDao.updateData(recipe)) {
+        } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
+            return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
+        } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
+            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or deleted!";
+        } else if (recipesDao.getDataById(input.getRecipe().getId()).getId() <= 0) {
+            return "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
+        }
+        // Validate Steps
+        int index = 1;
+        for (Steps step : input.getListSteps()) {
+            if (step.getDescription().trim().length() == 0) {
+                return "Step description at " + index + " is requied!";
+            }
+            step.setStepNumber(index);
+            index += 1;
+        }
+
+        // Validate FoodIngredient
+        index = 1;
+        for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
+            if (foodIngredient.getUnitOfMeasurement().length() == 0) {
+                return "FoodIngredient UnitOfMeasurement at index = " + index + " is requied!";
+            } else if (foodIngredient.getUnitOfMeasurement().length() > 250) {
+                return "FoodIngredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
+            } else if (!ingredientDao.checkExistIngredient(foodIngredient.getIngredientId())) {
+                return "FoodIngredient IngredientId at index = " + index + " is not exist or deleted!";
+            }
+            index += 1;
+        }
+        if (recipesDao.updateData(input.getRecipe())) {
+            // Update Steps
+            // Check Exist Step item in DB
+            List<Steps> listStepInDB = stepDao.getData(input.getRecipe().getId());
+            for (Steps stepDB : listStepInDB) {
+                int countExistInList = 0;
+
+                // For loop and check if item in DB exist in list input then continue
+                for (Steps stepInput : input.getListSteps()) {
+                    if (stepInput.getId() == stepDB.getId()) {
+                        countExistInList += 1;
+                        break;
+                    }
+                }
+                // if item in DB not exist in list input, delete this item in DB
+                if (countExistInList == 0) {
+                    stepDao.deleteData(stepDB.getId());
+                }
+            }
+            int stepNumber = 1;
+            for (Steps step : input.getListSteps()) {
+                step.setRecipeId(input.getRecipe().getId());
+                step.setStatus(0);
+                step.setStepNumber(stepNumber);
+
+                // if stepId <= 0 => insert new step to DB
+                if (step.getId() <= 0) {
+                    stepDao.insertData(step);
+                } // if stepId > 0 => update step
+                else {
+                    stepDao.updateData(step);
+                }
+                stepNumber += 1;
+            }
+
+            // Update FoodIngredient
+            // Check Exist Step item in DB
+            List<FoodIngredientViewModel> listFoodIngerdient = foodIngredientDao.getData(input.getRecipe().getId());
+            for (FoodIngredientViewModel itemDB : listFoodIngerdient) {
+                int countExistInList = 0;
+
+                // For loop and check if item in DB exist in list input then continue
+                for (FoodIngredient itemInput : input.getListFoodInfgredients()) {
+                    if (itemInput.getIngredientId() == itemDB.getIngredientId()) {
+                        countExistInList += 1;
+                        break;
+                    }
+                }
+                // if item in DB not exist in list input, delete this item in DB
+                if (countExistInList == 0) {
+                    foodIngredientDao.deleteFoodIngredient(input.getRecipe().getId(), itemDB.getIngredientId());
+                }
+            }
+            for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
+                foodIngredient.setStatus(0);
+                foodIngredient.setRecipeId(input.getRecipe().getId());
+                // If exist in DB => update item
+                if (foodIngredientDao.checkExistFoodIngredient(input.getRecipe().getId(), foodIngredient.getIngredientId())) {
+                    foodIngredientDao.updateData(foodIngredient);
+                } // If not exist in DB => insert new to DB
+                else {
+                    foodIngredientDao.insertData(foodIngredient);
+                }
+            }
             return "Success!";
         }
         return "Failed!";
@@ -180,8 +265,8 @@ public class RecipesService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     public String delete(@PathParam("id") int id, @PathParam("deleteId") int deleteId) {
-        if (recipesDao.checkExistRecipe(id)) {
-            return "Can not find Recipes width id = " + id + "!";
+        if (!recipesDao.checkExistRecipe(id)) {
+            return "Recipes width id = " + id + " is not exist or deleted!";
         } else if (recipesDao.deleteData(id, deleteId)) {
             return "Success!";
         }

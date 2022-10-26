@@ -104,7 +104,7 @@ public class FoodIngredientDao {
         return false;
     }
 
-    public boolean deleteFoodIngredient(Integer recipeId, int ingredientId) {
+    public boolean deleteFoodIngredient(int recipeId, int ingredientId) {
         PreparedStatement statement;
         try {
             statement = con.prepareCall("update FoodIngredient set Status = 1 where RecipeId=? and IngredientId=?");
@@ -119,7 +119,7 @@ public class FoodIngredientDao {
         return false;
     }
 
-    public boolean checkExistSteps(int recipeId, int ingredientId) {
+    public boolean checkExistFoodIngredient(int recipeId, int ingredientId) {
         if (recipeId <= 0 || ingredientId <= 0) {
             return false;
         }
