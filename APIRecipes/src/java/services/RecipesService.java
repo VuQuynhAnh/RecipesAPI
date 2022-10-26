@@ -12,7 +12,6 @@ import dao.RecipesDao;
 import dao.StepsDao;
 import dao.UsersDao;
 import entity.FoodIngredient;
-import entity.Recipes;
 import entity.Steps;
 import java.util.List;
 import javax.ejb.Stateless;

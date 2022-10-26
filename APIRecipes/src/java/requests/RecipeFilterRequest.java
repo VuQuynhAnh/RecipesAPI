@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author DELL
  */
-public class RecipeFilterRequest implements Serializable{
+public class RecipeFilterRequest implements Serializable {
 
     private String keyword;
     private int catId;

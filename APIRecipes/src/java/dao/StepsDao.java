@@ -19,17 +19,12 @@ import java.util.logging.Logger;
  *
  * @author DELL
  */
-public class StepsDao implements IService<Steps, Steps, Integer> {
+public class StepsDao {
 
     Connection con = null;
 
     public StepsDao() {
         con = GetConnection.getConnect();
-    }
-
-    @Override
-    public List<Steps> getData() {
-        return new ArrayList<>();
     }
 
     public List<Steps> getData(Integer recipeId) {
@@ -54,7 +49,6 @@ public class StepsDao implements IService<Steps, Steps, Integer> {
         return listSteps;
     }
 
-    @Override
     public Steps getDataById(Integer id) {
         Steps step = new Steps();
         PreparedStatement statement;
@@ -75,7 +69,6 @@ public class StepsDao implements IService<Steps, Steps, Integer> {
         return step;
     }
 
-    @Override
     public boolean insertData(Steps t) {
         PreparedStatement statement;
         try {
@@ -93,7 +86,6 @@ public class StepsDao implements IService<Steps, Steps, Integer> {
         return false;
     }
 
-    @Override
     public boolean updateData(Steps t) {
         PreparedStatement statement;
         try {
@@ -108,11 +100,6 @@ public class StepsDao implements IService<Steps, Steps, Integer> {
         } catch (SQLException ex) {
             Logger.getLogger(StepsDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
-    }
-
-    @Override
-    public boolean deleteData(Integer id, int userId) {
         return false;
     }
 
