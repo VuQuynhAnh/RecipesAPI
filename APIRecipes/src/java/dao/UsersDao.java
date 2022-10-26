@@ -171,7 +171,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         }
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("select * from Users where Id=?");
+            statement = con.prepareCall("select * from Users where Id=? and Status = 0");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             return result.next();

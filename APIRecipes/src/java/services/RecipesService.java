@@ -6,9 +6,12 @@
 package services;
 
 import dao.CategoryDao;
+import dao.FoodIngredientDao;
+import dao.IngredientDao;
 import dao.RecipesDao;
 import dao.StepsDao;
 import dao.UsersDao;
+import entity.FoodIngredient;
 import entity.Recipes;
 import entity.Steps;
 import java.util.List;
@@ -24,6 +27,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
+import responses.RecipeOutputData;
+import viewModel.FoodIngredientViewModel;
 import viewModel.RecipesViewModel;
 
 /**
@@ -38,12 +43,16 @@ public class RecipesService {
     UsersDao userDao = null;
     CategoryDao categoryDao = null;
     StepsDao stepDao = null;
+    IngredientDao ingredientDao = null;
+    FoodIngredientDao foodIngredientDao = null;
 
     public RecipesService() {
         recipesDao = new RecipesDao();
         userDao = new UsersDao();
         categoryDao = new CategoryDao();
         stepDao = new StepsDao();
+        ingredientDao = new IngredientDao();
+        foodIngredientDao = new FoodIngredientDao();
     }
 
     @GET
@@ -67,6 +76,21 @@ public class RecipesService {
         return recipesDao.getDataById(id);
     }
 
+    @GET
+    @Path("getRecipe/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RecipeOutputData getRecipesOutput(@PathParam("id") int id) {
+        RecipesViewModel recipe = recipesDao.getDataById(id);
+        List<Steps> listSteps = stepDao.getData(id);
+        List<FoodIngredientViewModel> listFoodIngredients = foodIngredientDao.getData(id);
+
+        return new RecipeOutputData(
+                recipe,
+                listSteps,
+                listFoodIngredients
+        );
+    }
+
     @POST
     @Path("insert")
     @Produces(MediaType.TEXT_PLAIN)
@@ -80,9 +104,9 @@ public class RecipesService {
         } else if (input.getRecipe().getStatus() < 0) {
             return "Status is must more or equal 0!";
         } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
-            return "Category is not exist!";
+            return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
-            return "Author is not exist!";
+            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or deleted!";
         }
         // Validate Steps
         int stepNumber = 1;
@@ -95,9 +119,35 @@ public class RecipesService {
         }
 
         // Validate FoodIngredient
-        int RecipeId = recipesDao.insertRecipe(input.getRecipe());
-        if (RecipeId > 0) {
+        int index = 1;
+        for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
+            if (foodIngredient.getUnitOfMeasurement().length() == 0) {
+                return "FoodIngredient UnitOfMeasurement at index = " + index + " is requied!";
+            } else if (foodIngredient.getUnitOfMeasurement().length() > 250) {
+                return "FoodIngredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
+            } else if (!ingredientDao.checkExistIngredient(foodIngredient.getIngredientId())) {
+                return "FoodIngredient IngredientId at index = " + index + " is not exist or deleted!";
+            }
+            index += 1;
+        }
 
+        // Insert Recipe and return recipeId
+        int recipeId = recipesDao.insertRecipe(input.getRecipe());
+        if (recipeId > 0) {
+
+            // Insert Steps
+            for (Steps step : input.getListSteps()) {
+                step.setRecipeId(recipeId);
+                step.setStatus(0);
+                stepDao.insertData(step);
+            }
+
+            // Insert FoodIngredient
+            for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
+                foodIngredient.setRecipeId(recipeId);
+                foodIngredient.setStatus(0);
+                foodIngredientDao.insertData(foodIngredient);
+            }
             return "Success!";
         }
         return "Failed!";

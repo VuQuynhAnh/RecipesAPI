@@ -136,7 +136,7 @@ public class StepsDao implements IService<Steps, Steps, Integer> {
         }
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("select * from Steps where Id=?");
+            statement = con.prepareCall("select * from Steps where Id=? and Status = 0");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             return result.next();

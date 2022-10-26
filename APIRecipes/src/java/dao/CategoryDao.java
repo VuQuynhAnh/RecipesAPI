@@ -171,7 +171,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         }
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("select * from Category where Id=?");
+            statement = con.prepareCall("select * from Category where Id=? and Status = 0");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             return result.next();

@@ -171,7 +171,7 @@ public class IngredientDao implements IService<Ingredient, IngredientViewModel, 
         }
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("select * from Ingredient where Id=?");
+            statement = con.prepareCall("select * from Ingredient where Id=? and Status = 0");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             return result.next();

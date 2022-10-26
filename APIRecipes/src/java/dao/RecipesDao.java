@@ -249,7 +249,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("select * from Recipes where Id=?");
+            statement = con.prepareCall("select * from Recipes where Id=? and Status = 0");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             return result.next();
