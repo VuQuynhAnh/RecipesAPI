@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import requestModel.RecipeRequest;
+import requests.RecipeFilterRequest;
 import viewModel.RecipesViewModel;
 
 /**
@@ -66,7 +66,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
 
-    public List<RecipesViewModel> getData(RecipeRequest request) {
+    public List<RecipesViewModel> getData(RecipeFilterRequest request) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -157,6 +157,10 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
 
     @Override
     public boolean insertData(Recipes t) {
+        return false;
+    }
+
+    public int insertRecipe(Recipes t) {
         PreparedStatement statement;
         try {
             statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?)");
@@ -172,12 +176,29 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             statement.setDate(10, Date.valueOf(LocalDate.now()));
             statement.setInt(11, t.getCreateUser());
             if (statement.executeUpdate() > 0) {
-                return true;
+                return getIdRecipeAfterInsert(t);
             }
         } catch (SQLException ex) {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        return 0;
+    }
+
+    private int getIdRecipeAfterInsert(Recipes t) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call GetRecipeIdAfterInsert(?,?,?)}");
+            statement.setInt(1, t.getCategoryId());
+            statement.setInt(2, t.getAuthorId());
+            statement.setString(3, t.getName());
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                return result.getInt("Id");
+            }
+        } catch (SQLException ex) {
+            return 0;
+        }
+        return 0;
     }
 
     @Override
@@ -221,8 +242,11 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         return false;
     }
-    
-     public boolean checkExistRecipe(int id) {
+
+    public boolean checkExistRecipe(int id) {
+        if (id <= 0) {
+            return false;
+        }
         PreparedStatement statement;
         try {
             statement = con.prepareCall("select * from Recipes where Id=?");

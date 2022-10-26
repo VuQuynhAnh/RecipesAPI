@@ -72,6 +72,8 @@ public class IngredientService {
     public String update(Ingredient ingredient) {
         if (ingredient.getName().trim().length() == 0) {
             return "Ingredient name is requied!";
+        } else if (dao.checkExistIngredient(ingredient.getId())) {
+            return "Can not find Ingredient width id = " + ingredient.getId() + "!";
         } else if (dao.updateData(ingredient)) {
             return "Success!";
         }
@@ -83,7 +85,7 @@ public class IngredientService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     public String delete(@PathParam("id") int id, @PathParam("deleteId") int deleteId) {
-        if (dao.getDataById(id).getId() <= 0) {
+        if (dao.checkExistIngredient(id)) {
             return "Can not find Ingredient width id = " + id + "!";
         } else if (dao.deleteData(id, deleteId)) {
             return "Success!";

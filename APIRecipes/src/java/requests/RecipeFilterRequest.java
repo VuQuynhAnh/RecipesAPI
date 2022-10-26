@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package requestModel;
+package requests;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author DELL
  */
-public class RecipeRequest implements Serializable{
+public class RecipeFilterRequest implements Serializable{
 
     private String keyword;
     private int catId;
@@ -25,10 +25,10 @@ public class RecipeRequest implements Serializable{
     private String cookTime;
     private int status;
 
-    public RecipeRequest() {
+    public RecipeFilterRequest() {
     }
 
-    public RecipeRequest(String keyword, int catId, int authorId, String name, String origin, int minServer, int maxServer, int minTotalViews, int maxTotalViews, String cookTime, int status) {
+    public RecipeFilterRequest(String keyword, int catId, int authorId, String name, String origin, int minServer, int maxServer, int minTotalViews, int maxTotalViews, String cookTime, int status) {
         this.keyword = keyword;
         this.catId = catId;
         this.authorId = authorId;

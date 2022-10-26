@@ -166,6 +166,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
     }
 
     public boolean checkExistUser(int id) {
+        if (id <= 0) {
+            return false;
+        }
         PreparedStatement statement;
         try {
             statement = con.prepareCall("select * from Users where Id=?");

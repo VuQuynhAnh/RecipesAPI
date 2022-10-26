@@ -72,6 +72,8 @@ public class CategoryService {
     public String update(Category category) {
         if (category.getName().trim().length() == 0) {
             return "Category name is requied!";
+        } else if (dao.checkExistCategory(category.getId())) {
+            return "Can not find Category width id = " + category.getId() + "!";
         } else if (dao.updateData(category)) {
             return "Success!";
         }
@@ -83,7 +85,7 @@ public class CategoryService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     public String delete(@PathParam("id") int id, @PathParam("deleteId") int deleteId) {
-        if (dao.getDataById(id).getId() <= 0) {
+        if (dao.checkExistCategory(id)) {
             return "Can not find Category width id = " + id + "!";
         } else if (dao.deleteData(id, deleteId)) {
             return "Success!";

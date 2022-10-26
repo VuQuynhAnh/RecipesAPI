@@ -164,4 +164,19 @@ public class IngredientDao implements IService<Ingredient, IngredientViewModel, 
         }
         return false;
     }
+
+    public boolean checkExistIngredient(int id) {
+        if (id <= 0) {
+            return false;
+        }
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("select * from Ingredient where Id=?");
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            return result.next();
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
 }

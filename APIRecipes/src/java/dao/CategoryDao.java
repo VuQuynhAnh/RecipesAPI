@@ -164,8 +164,11 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         }
         return false;
     }
-    
-     public boolean checkExistCategory(int id) {
+
+    public boolean checkExistCategory(int id) {
+        if (id <= 0) {
+            return false;
+        }
         PreparedStatement statement;
         try {
             statement = con.prepareCall("select * from Category where Id=?");

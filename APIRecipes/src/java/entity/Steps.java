@@ -6,7 +6,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.sql.Date;
 
 /**
  *
@@ -19,36 +18,6 @@ public class Steps implements Serializable {
     private int stepNumber;
     private String description;
     private int status;
-    private Date createDate;
-    private int createUser;
-    private Date updateDate;
-    private int updateUser;
-
-    public Steps(int id, int recipeId, int stepNumber, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
-        this.id = id;
-        this.recipeId = recipeId;
-        this.stepNumber = stepNumber;
-        this.description = description;
-        this.status = status;
-        this.createDate = createDate;
-        this.createUser = createUser;
-        this.updateDate = updateDate;
-        this.updateUser = updateUser;
-    }
-
-    public Steps(int recipeId, int stepNumber, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
-        this.recipeId = recipeId;
-        this.stepNumber = stepNumber;
-        this.description = description;
-        this.status = status;
-        this.createDate = createDate;
-        this.createUser = createUser;
-        this.updateDate = updateDate;
-        this.updateUser = updateUser;
-    }
-
-    public Steps() {
-    }
 
     public int getId() {
         return id;
@@ -90,36 +59,7 @@ public class Steps implements Serializable {
         this.status = status;
     }
 
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public int getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(int createUser) {
-        this.createUser = createUser;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public int getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(int updateUser) {
-        this.updateUser = updateUser;
+    public Steps() {
     }
 
 }
