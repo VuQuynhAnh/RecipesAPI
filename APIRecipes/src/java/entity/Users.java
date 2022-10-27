@@ -23,6 +23,7 @@ public class Users implements Serializable {
     private String password;
     private String email;
     private String job;
+    private int role;
     private String avatar;
     private String description;
     private int status;
@@ -31,8 +32,7 @@ public class Users implements Serializable {
     private Date updateDate;
     private int updateUser;
 
-    public Users(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
-        this.id = id;
+    public Users(String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
         this.userName = userName;
         this.displayName = displayName;
         this.sex = sex;
@@ -41,6 +41,7 @@ public class Users implements Serializable {
         this.password = password;
         this.email = email;
         this.job = job;
+        this.role = role;
         this.avatar = avatar;
         this.description = description;
         this.status = status;
@@ -50,7 +51,8 @@ public class Users implements Serializable {
         this.updateUser = updateUser;
     }
 
-    public Users(String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public Users(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+        this.id = id;
         this.userName = userName;
         this.displayName = displayName;
         this.sex = sex;
@@ -59,6 +61,7 @@ public class Users implements Serializable {
         this.password = password;
         this.email = email;
         this.job = job;
+        this.role = role;
         this.avatar = avatar;
         this.description = description;
         this.status = status;
@@ -138,6 +141,14 @@ public class Users implements Serializable {
 
     public void setJob(String job) {
         this.job = job;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
     }
 
     public String getAvatar() {

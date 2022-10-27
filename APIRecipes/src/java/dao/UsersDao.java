@@ -41,6 +41,15 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 UsersViewModel userViewModel = new UsersViewModel();
                 userViewModel.setId(result.getInt("Id"));
                 userViewModel.setUserName(result.getString("UserName"));
+                userViewModel.setDisplayName(result.getString("DisplayName"));
+                userViewModel.setSex(result.getInt("Sex"));
+                userViewModel.setAddress(result.getString("Address"));
+                userViewModel.setPhoneNumber(result.getString("PhoneNumber"));
+                userViewModel.setEmail(result.getString("Email"));
+                userViewModel.setJob(result.getString("Job"));
+                userViewModel.setRole(result.getInt("Role"));
+                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
                 userViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -68,17 +77,26 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
             statement.setBoolean(2, isGetAll);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                UsersViewModel categoryViewModel = new UsersViewModel();
-                categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setUserName(result.getString("UserName"));
-                categoryViewModel.setStatus(result.getInt("Status"));
-                categoryViewModel.setCreateDate(result.getDate("CreateDate"));
-                categoryViewModel.setCreateUser(result.getInt("CreateUser"));
-                categoryViewModel.setUpdateDate(result.getDate("UpdateDate"));
-                categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
-                categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
-                categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
-                listCategoryViewModels.add(categoryViewModel);
+                UsersViewModel userViewModel = new UsersViewModel();
+                userViewModel.setId(result.getInt("Id"));
+                userViewModel.setUserName(result.getString("UserName"));
+                userViewModel.setDisplayName(result.getString("DisplayName"));
+                userViewModel.setSex(result.getInt("Sex"));
+                userViewModel.setAddress(result.getString("Address"));
+                userViewModel.setPhoneNumber(result.getString("PhoneNumber"));
+                userViewModel.setEmail(result.getString("Email"));
+                userViewModel.setJob(result.getString("Job"));
+                userViewModel.setRole(result.getInt("Role"));
+                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setDescription(result.getString("Description"));
+                userViewModel.setStatus(result.getInt("Status"));
+                userViewModel.setCreateDate(result.getDate("CreateDate"));
+                userViewModel.setCreateUser(result.getInt("CreateUser"));
+                userViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                userViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                listCategoryViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,27 +106,36 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
 
     @Override
     public UsersViewModel getDataById(Integer id) {
-        UsersViewModel categoryViewModel = new UsersViewModel();
+        UsersViewModel userViewModel = new UsersViewModel();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call GetCategoryById(?)}");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-                categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setUserName(result.getString("UserName"));
-                categoryViewModel.setStatus(result.getInt("Status"));
-                categoryViewModel.setCreateDate(result.getDate("CreateDate"));
-                categoryViewModel.setCreateUser(result.getInt("CreateUser"));
-                categoryViewModel.setUpdateDate(result.getDate("UpdateDate"));
-                categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
-                categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
-                categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                userViewModel.setId(result.getInt("Id"));
+                userViewModel.setUserName(result.getString("UserName"));
+                userViewModel.setDisplayName(result.getString("DisplayName"));
+                userViewModel.setSex(result.getInt("Sex"));
+                userViewModel.setAddress(result.getString("Address"));
+                userViewModel.setPhoneNumber(result.getString("PhoneNumber"));
+                userViewModel.setEmail(result.getString("Email"));
+                userViewModel.setJob(result.getString("Job"));
+                userViewModel.setRole(result.getInt("Role"));
+                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setDescription(result.getString("Description"));
+                userViewModel.setStatus(result.getInt("Status"));
+                userViewModel.setCreateDate(result.getDate("CreateDate"));
+                userViewModel.setCreateUser(result.getInt("CreateUser"));
+                userViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                userViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return categoryViewModel;
+        return userViewModel;
     }
 
     @Override
