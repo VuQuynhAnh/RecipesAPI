@@ -32,6 +32,7 @@ public class ApplicationConfig extends Application {
         resources.add(services.CategoryService.class);
         resources.add(services.IngredientService.class);
         resources.add(services.RecipesService.class);
+        resources.add(services.UsersService.class);
     }
     
 }

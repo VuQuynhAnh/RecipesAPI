@@ -103,7 +103,7 @@ public class RecipesService {
         } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
             return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
-            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or deleted!";
+            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
         }
         // Validate Steps
         int stepNumber = 1;
@@ -164,7 +164,7 @@ public class RecipesService {
         } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
             return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
-            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or deleted!";
+            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
         } else if (recipesDao.getDataById(input.getRecipe().getId()).getId() <= 0) {
             return "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
         }

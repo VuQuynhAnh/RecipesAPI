@@ -6,13 +6,13 @@ go
 Create table Users -- Người dùng
 (
 	Id int primary key identity,
-	UserName nvarchar(250) not null,
+	UserName nvarchar(250) unique not null,
 	DisplayName nvarchar(250) not null,
 	Sex int default 0,
 	Address nvarchar(250),
 	PhoneNumber varchar(20) not null unique,
 	Password varchar(250) not null,
-	Email varchar(250) unique,
+	Email varchar(250),
 	Job nvarchar(250),
 	Role int not null default 0,
 	Avatar varchar(250),
@@ -27,8 +27,9 @@ go
 
 Create table LoginDevice -- Thiết bị đăng nhập
 (
-	DeviceName varchar(250) primary key,
-	UserId int foreign key references Users(Id),
+	Id int primary key identity,
+	DeviceName varchar(250) not null,
+	UserId int foreign key references Users(Id) not null,
 	Status int default 0,
 	LastLoginDate date not null,
 	LastLogoutDate date,
@@ -166,7 +167,13 @@ insert into Category values
 (N'Đồ Trung Quốc', 1, '2022-10-23', 1, null, null)
 go
 
-insert into Users values (N'Anh.vu3', N'Vũ Quỳnh Anh', 1, N'Yên Bái', '0787424822', 'ạhạhdshljfsdhjfdshj', 'anh.vu3@sotatek.com', 'DEV C#', 1, '', N'Người phát triển API', 0, '2022/10/24', 0, '', 0)
+insert into Users values (N'Anh.vu3', N'Vũ Quỳnh Anh', 1, N'Yên Bái', '0787424822', 'jjadaskjdasfafkengewgwgwgsagsg', 'anh.vu3@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/24', 0, '', 0)
+go
+insert into Users values (N'Duyen.pham', N'Phạm Thị Duyên', 0, N'Thái Bình', '0787114822', 'sdgsadgsdg', 'duyen.pham@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/28', 0, '', 0)
+go
+insert into Users values (N'My.nguyen', N'Nguyễn Thanh Mỹ', 1, N'Hà Tây', '0787115522', 'asdg', 'my.nguyen@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
+go
+insert into Users values (N'Long.Tran', N'Trần Quang Long', 1, N'Nam Định', '0187115522', 'htrkgjvrtjnkrvtnj', 'long.tran@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
 go
 
 insert into Recipes values(1,1,'Rice','Viet Nam', 3, '',1,'',0,'2022-10-25',1,null,null)
@@ -175,12 +182,6 @@ insert into Recipes values(2,1,'Fist','Thai Lan', 7, '',100,'',1,'2022-10-25',1,
 go
 
 insert into Steps values (1, 1, 'Cook com', 0)
-go
-
-insert into FoodIngredient values (1, 1, '100 gam', 0)
-go
-
-select * from FoodIngredient
 go
 
 -- Proc Category
@@ -393,5 +394,88 @@ left join Ingredient i on fi.IngredientId = i.Id
 where fi.Status = 0 and fi.RecipeId = @recipeId
 go
 
-exec FilterListRecipes N'',0,0,N'',N'',0,0,0,0,N'',-1
+-- proc Users
+create proc GetAllUsers
+as
+select 
+	u.*,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay
+from Users as u
+left join Users as createUser on u.CreateUser = createUser.Id
+left join Users as updateUser on u.UpdateUser = updateUser.Id
+order by id desc
+go
 
+create proc FilterListUsers
+	@keyword nvarchar(250),
+	@sex int,
+	@role int,
+	@status int
+as
+select 
+	u.*,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay
+from Users as u
+left join Users as createUser on u.CreateUser = createUser.Id
+left join Users as updateUser on u.UpdateUser = updateUser.Id
+where (u.UserName like N'%' + @keyword + '%'
+		or u.DisplayName like N'%' + @keyword + '%'
+		or u.Address like N'%' + @keyword + '%'
+		or u.PhoneNumber like N'%' + @keyword + '%'
+		or u.Email like N'%' + @keyword + '%'
+	  )
+	  and (@sex = - 1 or u.Sex = @sex)
+	  and (@role = - 1 or u.Role = @role)
+	  and (@status = -1 or u.Status = @status)
+order by id desc
+go
+
+create proc GetUserById
+	@id int
+as
+select 
+	u.*,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay
+from Users as u
+left join Users as createUser on u.CreateUser = createUser.Id
+left join Users as updateUser on u.UpdateUser = updateUser.Id
+where u.Id = @id
+go
+
+create proc LoginUser
+	@userName varchar(250),
+	@password varchar(250)
+as
+select 
+	u.*,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay
+from Users as u
+left join Users as createUser on u.CreateUser = createUser.Id
+left join Users as updateUser on u.UpdateUser = updateUser.Id
+where (u.UserName = @userName 
+		or u.PhoneNumber = @userName
+		or u.Email = @userName
+	)
+	and u.Password = @password
+go
+
+--proc logindevice
+create proc GetDetailLoginDevice
+	@userId int,
+	@deviceName varchar(250)
+as
+	select * from LoginDevice
+where UserId = @userId
+	and DeviceName = @deviceName
+go
+
+exec GetAllUsers
+go
+exec FilterListUsers N'',1,1,-1
+go
+exec FilterListRecipes N'',0,0,N'',N'',0,0,0,0,N'',-1
+go

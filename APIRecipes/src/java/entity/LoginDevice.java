@@ -14,18 +14,28 @@ import java.sql.Date;
  */
 public class LoginDevice implements Serializable {
 
+    private int id;
     private String deviceName;
     private int userId;
     private int status;
     private Date lastLoginDate;
     private Date lastLogoutDate;
 
-    public LoginDevice(String deviceName, int userId, int status, Date lastLoginDate, Date lastLogoutDate) {
+    public LoginDevice(int id, String deviceName, int userId, int status, Date lastLoginDate, Date lastLogoutDate) {
+        this.id = id;
         this.deviceName = deviceName;
         this.userId = userId;
         this.status = status;
         this.lastLoginDate = lastLoginDate;
         this.lastLogoutDate = lastLogoutDate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LoginDevice() {
