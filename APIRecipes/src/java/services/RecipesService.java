@@ -8,11 +8,15 @@ package services;
 import dao.CategoryDao;
 import dao.FoodIngredientDao;
 import dao.IngredientDao;
+import dao.RatingDao;
 import dao.RecipesDao;
 import dao.StepsDao;
 import dao.UsersDao;
 import entity.FoodIngredient;
+import entity.Rating;
 import entity.Steps;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -44,6 +48,7 @@ public class RecipesService {
     StepsDao stepDao = null;
     IngredientDao ingredientDao = null;
     FoodIngredientDao foodIngredientDao = null;
+    RatingDao ratingDao = null;
 
     public RecipesService() {
         recipesDao = new RecipesDao();
@@ -52,6 +57,7 @@ public class RecipesService {
         stepDao = new StepsDao();
         ingredientDao = new IngredientDao();
         foodIngredientDao = new FoodIngredientDao();
+        ratingDao = new RatingDao();
     }
 
     @GET
@@ -65,7 +71,22 @@ public class RecipesService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<RecipesViewModel> getRecipes(RecipeFilterRequest request) {
-        return recipesDao.getData(request);
+        List<RecipesViewModel> listInput = recipesDao.getData(request);
+        List<RecipesViewModel> listData = new ArrayList();
+        if (request.getMinRating() >= 0 && request.getMaxRating() == 0) {
+            for (RecipesViewModel item : listInput) {
+                if (request.getMinRating() <= item.getAvgRating()) {
+                    listData.add(item);
+                }
+            }
+        } else if (request.getMinRating() >= 0 && request.getMaxRating() >= 0) {
+            for (RecipesViewModel item : listInput) {
+                if (request.getMinRating() <= item.getAvgRating() && item.getAvgRating() <= request.getMaxRating()) {
+                    listData.add(item);
+                }
+            }
+        }
+        return listData;
     }
 
     @GET
@@ -82,7 +103,6 @@ public class RecipesService {
         RecipesViewModel recipe = recipesDao.getDataById(id);
         List<Steps> listSteps = stepDao.getData(id);
         List<FoodIngredientViewModel> listFoodIngredients = foodIngredientDao.getData(id);
-
         return new RecipeOutputData(
                 recipe,
                 listSteps,

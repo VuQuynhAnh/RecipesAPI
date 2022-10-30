@@ -22,13 +22,15 @@ public class RecipeFilterRequest implements Serializable {
     private int maxServer;
     private int minTotalViews;
     private int maxTotalViews;
+    private double minRating;
+    private double maxRating;
     private String cookTime;
     private int status;
 
     public RecipeFilterRequest() {
     }
 
-    public RecipeFilterRequest(String keyword, int catId, int authorId, String name, String origin, int minServer, int maxServer, int minTotalViews, int maxTotalViews, String cookTime, int status) {
+    public RecipeFilterRequest(String keyword, int catId, int authorId, String name, String origin, int minServer, int maxServer, int minTotalViews, int maxTotalViews, double minRating, double maxRating, String cookTime, int status) {
         this.keyword = keyword;
         this.catId = catId;
         this.authorId = authorId;
@@ -38,8 +40,26 @@ public class RecipeFilterRequest implements Serializable {
         this.maxServer = maxServer;
         this.minTotalViews = minTotalViews;
         this.maxTotalViews = maxTotalViews;
+        this.minRating = minRating;
+        this.maxRating = maxRating;
         this.cookTime = cookTime;
         this.status = status;
+    }
+
+    public double getMinRating() {
+        return minRating;
+    }
+
+    public void setMinRating(double minRating) {
+        this.minRating = minRating;
+    }
+
+    public double getMaxRating() {
+        return maxRating;
+    }
+
+    public void setMaxRating(double maxRating) {
+        this.maxRating = maxRating;
     }
 
     public String getKeyword() {

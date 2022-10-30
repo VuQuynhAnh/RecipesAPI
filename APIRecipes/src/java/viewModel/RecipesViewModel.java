@@ -19,13 +19,32 @@ public class RecipesViewModel extends Recipes implements Serializable {
     private String author;
     private String createUserDisplay;
     private String updateUserDisplay;
+    private double avgRating;
+    private int totalRating;
 
-    public RecipesViewModel(int id, int categoryId, int userId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser,String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay) {
-        super(id, categoryId, userId, name, origin, serves, image, totalViews, cookTime, status, createDate, createUser, updateDate, updateUser);
+    public RecipesViewModel(String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay, double avgRating, int totalRating, int id, int categoryId, int authorId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+        super(id, categoryId, authorId, name, origin, serves, image, totalViews, cookTime, status, createDate, createUser, updateDate, updateUser);
         this.categoryDisplay = categoryDisplay;
         this.author = author;
         this.createUserDisplay = createUserDisplay;
         this.updateUserDisplay = updateUserDisplay;
+        this.avgRating = avgRating;
+        this.totalRating = totalRating;
+    }
+
+    public double getAvgRating() {
+        return avgRating;
+    }
+    public void setAvgRating(double avgRating) {
+        this.avgRating = avgRating;
+    }
+
+    public int getTotalRating() {
+        return totalRating;
+    }
+
+    public void setTotalRating(int totalRating) {
+        this.totalRating = totalRating;
     }
 
     public RecipesViewModel() {

@@ -24,13 +24,13 @@ import viewModel.RecipesViewModel;
  * @author DELL
  */
 public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> {
-
+    
     Connection con = null;
-
+    
     public RecipesDao() {
         con = GetConnection.getConnect();
     }
-
+    
     @Override
     public List<RecipesViewModel> getData() {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
@@ -60,12 +60,13 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setAuthor(result.getString("Author"));
                 listRecipeViewModels.add(recipeViewModel);
             }
+            setRating(listRecipeViewModels);
         } catch (SQLException ex) {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listRecipeViewModels;
     }
-
+    
     public List<RecipesViewModel> getData(RecipeFilterRequest request) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
@@ -82,7 +83,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             statement.setInt(9, request.getMaxTotalViews());
             statement.setString(10, request.getCookTime());
             statement.setInt(11, request.getStatus());
-
+            
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 RecipesViewModel recipeViewModel = new RecipesViewModel();
@@ -106,12 +107,13 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setAuthor(result.getString("Author"));
                 listRecipeViewModels.add(recipeViewModel);
             }
+            setRating(listRecipeViewModels);
         } catch (SQLException ex) {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listRecipeViewModels;
     }
-
+    
     @Override
     public RecipesViewModel getDataById(Integer id) {
         RecipesViewModel recipeViewModel = new RecipesViewModel();
@@ -139,7 +141,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
-
+                setRating(recipeViewModel);
                 // If have Recipe and Recipe is not delete
                 if (result.getInt("Id") > 0 && result.getInt("status") == 0) {
                     statement = con.prepareCall("update Recipes set TotalViews=? where Id=?");
@@ -154,12 +156,12 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         return recipeViewModel;
     }
-
+    
     @Override
     public boolean insertData(Recipes t) {
         return false;
     }
-
+    
     public int insertRecipe(Recipes t) {
         PreparedStatement statement;
         try {
@@ -183,7 +185,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         return 0;
     }
-
+    
     private int getIdRecipeAfterInsert(Recipes t) {
         PreparedStatement statement;
         try {
@@ -200,7 +202,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         return 0;
     }
-
+    
     @Override
     public boolean updateData(Recipes t) {
         PreparedStatement statement;
@@ -225,7 +227,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         return false;
     }
-
+    
     @Override
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
@@ -242,7 +244,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         }
         return false;
     }
-
+    
     public boolean checkExistRecipe(int id) {
         if (id <= 0) {
             return false;
@@ -255,6 +257,48 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             return result.next();
         } catch (SQLException ex) {
             return false;
+        }
+    }
+    
+    private void setRating(List<RecipesViewModel> listReipeViewModels) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call GetReceptionRating()}");
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                int totalRating = result.getInt("TotalRating");
+                double avgRating = result.getDouble("AvgRating");
+                int id = result.getInt("Id");
+                for (RecipesViewModel model : listReipeViewModels) {
+                    if (model.getId() == id) {
+                        model.setTotalRating(totalRating);
+                        model.setAvgRating(avgRating);
+                        break;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void setRating(RecipesViewModel reipeViewModels) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call GetReceptionRating()}");
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                int totalRating = result.getInt("TotalRating");
+                double avgRating = result.getDouble("AvgRating");
+                int id = result.getInt("Id");
+                if (reipeViewModels.getId() == id) {
+                    reipeViewModels.setTotalRating(totalRating);
+                    reipeViewModels.setAvgRating(avgRating);
+                    break;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -105,7 +105,6 @@ Create table Rating
 	RecipeId int foreign key references Recipes(Id),
 	UserId int foreign key references Users(Id),
 	Rating int not null default 5,
-	Status int default 0,
 	CreateDate date not null default getdate(),
 )
 go
@@ -339,6 +338,7 @@ left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
 left join Users as author on recipe.AuthorId = author.Id
 left join Category as cat on recipe.CategoryId = cat.Id
+left join Rating as rat on recipe.Id = rat.RecipeId
 where recipe.Id = @id
 go
 
@@ -473,9 +473,40 @@ where UserId = @userId
 	and DeviceName = @deviceName
 go
 
+
+-- proc rating
+create proc GetRatingByRecipeId
+	@recipeId int
+as
+	select 
+		*
+	from Rating
+	where RecipeId = @recipeId
+go
+
+create proc GetReceptionRating
+as
+select 
+	recipe.Id as Id,
+	AVG(rating.Rating) as AvgRating,
+	COUNT(rating.Id) as TotalRating
+from Recipes recipe
+left join Rating rating on recipe.Id = rating.RecipeId
+group by recipe.Id
+go
+
 exec GetAllUsers
 go
 exec FilterListUsers N'',1,1,-1
 go
 exec FilterListRecipes N'',0,0,N'',N'',0,0,0,0,N'',-1
 go
+
+insert into Rating values 
+	(1, 1, 3,''),
+	(1, 1, 4,''),
+	(1, 1, 5,''),
+	(1, 1, 3,'')
+go
+
+select * from Rating

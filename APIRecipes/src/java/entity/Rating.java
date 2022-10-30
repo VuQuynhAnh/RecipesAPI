@@ -18,23 +18,20 @@ public class Rating implements Serializable {
     private int recipeId;
     private int userId;
     private int rating;
-    private int status;
     private Date createDate;
 
-    public Rating(int id, int recipeId, int userId, int rating, int status, Date createDate) {
+    public Rating(int id, int recipeId, int userId, int rating, Date createDate) {
         this.id = id;
         this.recipeId = recipeId;
         this.userId = userId;
         this.rating = rating;
-        this.status = status;
         this.createDate = createDate;
     }
 
-    public Rating(int recipeId, int userId, int rating, int status, Date createDate) {
+    public Rating(int recipeId, int userId, int rating, Date createDate) {
         this.recipeId = recipeId;
         this.userId = userId;
         this.rating = rating;
-        this.status = status;
         this.createDate = createDate;
     }
 
@@ -68,14 +65,6 @@ public class Rating implements Serializable {
 
     public void setRating(int rating) {
         this.rating = rating;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public Date getCreateDate() {
