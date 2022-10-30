@@ -14,9 +14,9 @@ import dao.StepsDao;
 import dao.UsersDao;
 import entity.FoodIngredient;
 import entity.Rating;
+import entity.RecipesSave;
 import entity.Steps;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -64,6 +64,13 @@ public class RecipesService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<RecipesViewModel> getRecipes() {
         return recipesDao.getData();
+    }
+
+    @GET
+    @Path("getSaveRecipe/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<RecipesViewModel> getSaveRecipe(@PathParam("userId") int userId) {
+        return recipesDao.getSaveRecipe(userId);
     }
 
     @POST
@@ -292,4 +299,20 @@ public class RecipesService {
         return "Failed!";
     }
 
+    @POST
+    @Path("rating")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String insert(Rating rating) {
+        if (rating.getRating() < 0 || rating.getRating() > 5) {
+            return "Rating min is 0 and max is 5!";
+        } else if (!recipesDao.checkExistRecipe(rating.getRecipeId())) {
+            return "Recipe with id = " + rating.getRecipeId() + " is not exist or deleted!";
+        } else if (!userDao.checkExistUser(rating.getUserId())) {
+            return "User with id = " + rating.getUserId() + " is not exist or deleted!";
+        } else if (ratingDao.insertData(rating)) {
+            return "Success!";
+        }
+        return "Failed!";
+    }
 }

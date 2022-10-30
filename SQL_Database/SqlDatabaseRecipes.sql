@@ -114,10 +114,7 @@ Create table RecipesSave
 	RecipeId int foreign key references Recipes(Id),
 	UserId int foreign key references Users(Id),
 	Status int default 0,
-	CreateDate date not null default getdate(),
-	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	CreateDate date not null default getdate()
 )
 go
 
@@ -284,6 +281,25 @@ left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
 left join Users as author on recipe.AuthorId = author.Id
 left join Category as cat on recipe.CategoryId = cat.Id
+go
+
+create proc GetSaveRecipes
+	@userId int
+as
+select 
+	recipe.*,
+	cat.Name as CategoryDisplay,
+	author.UserName as Author,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay,
+	recipeSave.CreateDate as SaveDate
+from RecipesSave as recipeSave
+left join Recipes as recipe on recipe.Id = recipeSave.RecipeId
+left join Users as createUser on recipe.CreateUser = createUser.Id
+left join Users as updateUser on recipe.UpdateUser = updateUser.Id
+left join Users as author on recipe.AuthorId = author.Id
+left join Category as cat on recipe.CategoryId = cat.Id
+where recipe.Status = 0 and recipeSave.UserId = @userId
 go
 
 create proc FilterListRecipes
@@ -509,4 +525,5 @@ insert into Rating values
 	(1, 1, 3,'')
 go
 
-select * from Rating
+insert into RecipesSave values(1,1,0,'2022-10-30')
+go

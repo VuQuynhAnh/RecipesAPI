@@ -67,6 +67,42 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
     
+    public List<RecipesViewModel> getSaveRecipe(int userId) {
+        List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call GetSaveRecipes(?)}");
+            statement.setInt(1, userId);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                RecipesViewModel recipeViewModel = new RecipesViewModel();
+                recipeViewModel.setId(result.getInt("Id"));
+                recipeViewModel.setCategoryId(result.getInt("CategoryId"));
+                recipeViewModel.setAuthorId(result.getInt("AuthorId"));
+                recipeViewModel.setName(result.getString("Name"));
+                recipeViewModel.setOrigin(result.getString("Origin"));
+                recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setTotalViews(result.getInt("TotalViews"));
+                recipeViewModel.setCookTime(result.getString("CookTime"));
+                recipeViewModel.setStatus(result.getInt("Status"));
+                recipeViewModel.setCreateDate(result.getDate("CreateDate"));
+                recipeViewModel.setCreateUser(result.getInt("CreateUser"));
+                recipeViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                recipeViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                recipeViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
+                recipeViewModel.setAuthor(result.getString("Author"));
+                listRecipeViewModels.add(recipeViewModel);
+            }
+            setRating(listRecipeViewModels);
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listRecipeViewModels;
+    }
+    
     public List<RecipesViewModel> getData(RecipeFilterRequest request) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
