@@ -48,6 +48,20 @@ public class UsersService {
     }
 
     @GET
+    @Path("getListFollowOtherUser/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UsersViewModel> getListFollowOtherUser(@PathParam("userId")  int userId) {
+        return userDao.getListFollowOtherUser(userId);
+    }
+    
+    @GET
+    @Path("getListFollowedByOthersUser/{followerId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UsersViewModel> getListFollowedByOthersUser(@PathParam("followerId")  int followerId) {
+        return userDao.getListFollowedByOthersUser(followerId);
+    }
+    
+     @GET
     @Path("{keyword}/{sex}/{role}/{status}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<UsersViewModel> filterData(@PathParam("keyword") String keyword, @PathParam("sex") int sex, @PathParam("role") int role, @PathParam("status") int status) {

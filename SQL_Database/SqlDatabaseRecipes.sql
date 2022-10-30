@@ -123,9 +123,7 @@ Create table Followers
 	UserId int foreign key references Users(Id),
 	FollowerId int foreign key references Users(Id),
 	Status int default 0,
-	CreateDate date not null default getdate(),
-	UpdateDate date,
-	UpdateUser int
+	CreateDate date not null default getdate()
 )
 go
 
@@ -509,6 +507,37 @@ select
 from Recipes recipe
 left join Rating rating on recipe.Id = rating.RecipeId
 group by recipe.Id
+go
+
+-- proc follower
+create proc GetListFollowOtherUser
+	@userId int
+as
+select 
+	followedByOther.*,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay
+from Followers as fo
+left join Users as followOther on followOther.Id = fo.UserId
+left join Users as followedByOther on followedByOther.Id = fo.FollowerId
+left join Users as createUser on followOther.CreateUser = createUser.Id
+left join Users as updateUser on followOther.UpdateUser = updateUser.Id
+where followOther.Status = 0 and  followOther.Id = @userId
+go
+
+create proc GetListFollowedByOthersUser
+	@followerId int
+as
+select 
+	followOther.*,
+	createUser.UserName as CreateUserDisplay,
+	updateUser.UserName as UpdateUserDisplay
+from Followers as fo
+left join Users as followOther on followOther.Id = fo.UserId
+left join Users as followedByOther on followedByOther.Id = fo.FollowerId
+left join Users as createUser on followOther.CreateUser = createUser.Id
+left join Users as updateUser on followOther.UpdateUser = updateUser.Id
+where followOther.Status = 0 and  followedByOther.Id = @followerId
 go
 
 exec GetAllUsers

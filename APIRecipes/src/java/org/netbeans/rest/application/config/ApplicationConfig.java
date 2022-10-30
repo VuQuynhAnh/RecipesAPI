@@ -30,6 +30,7 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(services.CategoryService.class);
+        resources.add(services.FollowerService.class);
         resources.add(services.IngredientService.class);
         resources.add(services.RecipeSaveService.class);
         resources.add(services.RecipesService.class);

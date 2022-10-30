@@ -34,7 +34,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
 
     @Override
     public List<UsersViewModel> getData() {
-        List<UsersViewModel> listCategoryViewModels = new ArrayList<>();
+        List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call GetAllUsers()}");
@@ -59,23 +59,23 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
-                listCategoryViewModels.add(userViewModel);
+                listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return listCategoryViewModels;
+        return listUserViewModels;
     }
 
     public List<UsersViewModel> getData(String keyword, int sex, int role, int status) {
-        List<UsersViewModel> listCategoryViewModels = new ArrayList<>();
+        List<UsersViewModel> listUsersViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call FilterListUsers(?,?,?,?)}");
             if (keyword.equalsIgnoreCase("_")) {
                 keyword = "";
             }
-            statement.setString(1, "%" + keyword + "%");
+            statement.setString(1, keyword);
             statement.setInt(2, sex);
             statement.setInt(3, role);
             statement.setInt(4, status);
@@ -101,12 +101,82 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
-                listCategoryViewModels.add(userViewModel);
+                listUsersViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return listCategoryViewModels;
+        return listUsersViewModels;
+    }
+
+    public List<UsersViewModel> getListFollowOtherUser(int userId) {
+        List<UsersViewModel> listUserViewModels = new ArrayList<>();
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call GetListFollowOtherUser(?)}");
+            statement.setInt(1, userId);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                UsersViewModel userViewModel = new UsersViewModel();
+                userViewModel.setId(result.getInt("Id"));
+                userViewModel.setUserName(result.getString("UserName"));
+                userViewModel.setDisplayName(result.getString("DisplayName"));
+                userViewModel.setSex(result.getInt("Sex"));
+                userViewModel.setAddress(result.getString("Address"));
+                userViewModel.setPhoneNumber(result.getString("PhoneNumber"));
+                userViewModel.setEmail(result.getString("Email"));
+                userViewModel.setJob(result.getString("Job"));
+                userViewModel.setRole(result.getInt("Role"));
+                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setDescription(result.getString("Description"));
+                userViewModel.setStatus(result.getInt("Status"));
+                userViewModel.setCreateDate(result.getDate("CreateDate"));
+                userViewModel.setCreateUser(result.getInt("CreateUser"));
+                userViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                userViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                listUserViewModels.add(userViewModel);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listUserViewModels;
+    }
+
+    public List<UsersViewModel> getListFollowedByOthersUser(int followerId) {
+        List<UsersViewModel> listUserViewModels = new ArrayList<>();
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call GetListFollowedByOthersUser(?)}");
+            statement.setInt(1, followerId);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                UsersViewModel userViewModel = new UsersViewModel();
+                userViewModel.setId(result.getInt("Id"));
+                userViewModel.setUserName(result.getString("UserName"));
+                userViewModel.setDisplayName(result.getString("DisplayName"));
+                userViewModel.setSex(result.getInt("Sex"));
+                userViewModel.setAddress(result.getString("Address"));
+                userViewModel.setPhoneNumber(result.getString("PhoneNumber"));
+                userViewModel.setEmail(result.getString("Email"));
+                userViewModel.setJob(result.getString("Job"));
+                userViewModel.setRole(result.getInt("Role"));
+                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setDescription(result.getString("Description"));
+                userViewModel.setStatus(result.getInt("Status"));
+                userViewModel.setCreateDate(result.getDate("CreateDate"));
+                userViewModel.setCreateUser(result.getInt("CreateUser"));
+                userViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                userViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                listUserViewModels.add(userViewModel);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listUserViewModels;
     }
 
     @Override
