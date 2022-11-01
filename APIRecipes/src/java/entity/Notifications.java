@@ -21,10 +21,8 @@ public class Notifications implements Serializable {
     private int status;
     private Date createDate;
     private int createUser;
-    private Date updateDate;
-    private int updateUser;
 
-    public Notifications(int id, int userId, int notificationId, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public Notifications(int id, int userId, int notificationId, String description, int status, Date createDate, int createUser) {
         this.id = id;
         this.userId = userId;
         this.notificationId = notificationId;
@@ -32,19 +30,15 @@ public class Notifications implements Serializable {
         this.status = status;
         this.createDate = createDate;
         this.createUser = createUser;
-        this.updateDate = updateDate;
-        this.updateUser = updateUser;
     }
 
-    public Notifications(int userId, int notificationId, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public Notifications(int userId, int notificationId, String description, int status, Date createDate, int createUser) {
         this.userId = userId;
         this.notificationId = notificationId;
         this.description = description;
         this.status = status;
         this.createDate = createDate;
         this.createUser = createUser;
-        this.updateDate = updateDate;
-        this.updateUser = updateUser;
     }
 
     public int getId() {
@@ -101,22 +95,6 @@ public class Notifications implements Serializable {
 
     public void setCreateUser(int createUser) {
         this.createUser = createUser;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public int getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(int updateUser) {
-        this.updateUser = updateUser;
     }
 
     public Notifications() {

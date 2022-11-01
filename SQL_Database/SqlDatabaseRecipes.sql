@@ -133,10 +133,7 @@ Create table NotificationType
 	Name nvarchar(250) not null,
 	Description ntext,
 	Status int default 0,
-	CreateDate date not null default getdate(),
-	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	CreateDate date not null default getdate()
 )
 go
 
@@ -148,9 +145,7 @@ Create table Notifications
 	Description ntext,
 	Status int default 0,
 	CreateDate date not null default getdate(),
-	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	CreateUser int not null default 0
 )
 go
 
