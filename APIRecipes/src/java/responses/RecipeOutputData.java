@@ -5,9 +5,9 @@
  */
 package responses;
 
+import entity.Ingredient;
 import entity.Steps;
 import java.util.List;
-import viewModel.FoodIngredientViewModel;
 import viewModel.RecipesViewModel;
 
 /**
@@ -18,15 +18,9 @@ public class RecipeOutputData {
 
     private RecipesViewModel recipesViewModel;
     private List<Steps> listSteps;
-    private List<FoodIngredientViewModel> listFoodInfgredients;
+    private List<Ingredient> listIngredients;
 
     public RecipeOutputData() {
-    }
-
-    public RecipeOutputData(RecipesViewModel recipesViewModel, List<Steps> listSteps, List<FoodIngredientViewModel> listFoodInfgredients) {
-        this.recipesViewModel = recipesViewModel;
-        this.listSteps = listSteps;
-        this.listFoodInfgredients = listFoodInfgredients;
     }
 
     public RecipesViewModel getRecipesViewModel() {
@@ -45,12 +39,18 @@ public class RecipeOutputData {
         this.listSteps = listSteps;
     }
 
-    public List<FoodIngredientViewModel> getListFoodInfgredients() {
-        return listFoodInfgredients;
+    public List<Ingredient> getListIngredients() {
+        return listIngredients;
     }
 
-    public void setListFoodInfgredients(List<FoodIngredientViewModel> listFoodInfgredients) {
-        this.listFoodInfgredients = listFoodInfgredients;
+    public void setListIngredients(List<Ingredient> listIngredients) {
+        this.listIngredients = listIngredients;
+    }
+
+    public RecipeOutputData(RecipesViewModel recipesViewModel, List<Steps> listSteps, List<Ingredient> listIngredients) {
+        this.recipesViewModel = recipesViewModel;
+        this.listSteps = listSteps;
+        this.listIngredients = listIngredients;
     }
 
 }
