@@ -10,6 +10,7 @@ import dao.IngredientDao;
 import dao.RatingDao;
 import dao.RecipesDao;
 import dao.StepsDao;
+import dao.UploadImageDao;
 import dao.UsersDao;
 import entity.Ingredient;
 import entity.Rating;
@@ -45,6 +46,7 @@ public class RecipesService {
     StepsDao stepDao = null;
     IngredientDao ingredientDao = null;
     RatingDao ratingDao = null;
+    UploadImageDao uploadImageDao = null;
 
     public RecipesService() {
         recipesDao = new RecipesDao();
@@ -53,6 +55,7 @@ public class RecipesService {
         stepDao = new StepsDao();
         ingredientDao = new IngredientDao();
         ratingDao = new RatingDao();
+        uploadImageDao = new UploadImageDao();
     }
 
     @GET
