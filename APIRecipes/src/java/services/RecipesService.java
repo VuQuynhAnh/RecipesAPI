@@ -6,15 +6,13 @@
 package services;
 
 import dao.CategoryDao;
-import dao.FoodIngredientDao;
 import dao.IngredientDao;
 import dao.RatingDao;
 import dao.RecipesDao;
 import dao.StepsDao;
 import dao.UsersDao;
-import entity.FoodIngredient;
+import entity.Ingredient;
 import entity.Rating;
-import entity.RecipesSave;
 import entity.Steps;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,6 @@ import javax.ws.rs.core.MediaType;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
 import responses.RecipeOutputData;
-import viewModel.FoodIngredientViewModel;
 import viewModel.RecipesViewModel;
 
 /**
@@ -47,7 +44,6 @@ public class RecipesService {
     CategoryDao categoryDao = null;
     StepsDao stepDao = null;
     IngredientDao ingredientDao = null;
-    FoodIngredientDao foodIngredientDao = null;
     RatingDao ratingDao = null;
 
     public RecipesService() {
@@ -56,7 +52,6 @@ public class RecipesService {
         categoryDao = new CategoryDao();
         stepDao = new StepsDao();
         ingredientDao = new IngredientDao();
-        foodIngredientDao = new FoodIngredientDao();
         ratingDao = new RatingDao();
     }
 
@@ -109,11 +104,11 @@ public class RecipesService {
     public RecipeOutputData getRecipesOutput(@PathParam("id") int id) {
         RecipesViewModel recipe = recipesDao.getDataById(id);
         List<Steps> listSteps = stepDao.getData(id);
-        List<FoodIngredientViewModel> listFoodIngredients = foodIngredientDao.getData(id);
+        List<Ingredient> listIngredients = ingredientDao.getData(id);
         return new RecipeOutputData(
                 recipe,
                 listSteps,
-                listFoodIngredients
+                listIngredients
         );
     }
 
@@ -142,16 +137,18 @@ public class RecipesService {
             stepNumber += 1;
         }
 
-        // Validate FoodIngredient
+        // Validate Ingredient
         int index = 1;
-        for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
-            if (foodIngredient.getUnitOfMeasurement().length() == 0) {
-                return "FoodIngredient UnitOfMeasurement at index = " + index + " is requied!";
-            } else if (foodIngredient.getUnitOfMeasurement().length() > 250) {
-                return "FoodIngredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
-            } else if (!ingredientDao.checkExistIngredient(foodIngredient.getIngredientId())) {
-                return "FoodIngredient IngredientId at index = " + index + " is not exist or deleted!";
-            }
+        for (Ingredient ingredient : input.getListInfgredients()) {
+            if (ingredient.getUnitOfMeasurement().length() == 0) {
+                return "Ingredient UnitOfMeasurement at index = " + index + " is requied!";
+            } else if (ingredient.getUnitOfMeasurement().length() > 250) {
+                return "Ingredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
+            } else if (ingredient.getName().length() == 0) {
+                return "Ingredient Name at index = " + index + " is requied!";
+            } else if (ingredient.getName().length() > 250) {
+                return "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
+            }    
             index += 1;
         }
 
@@ -166,11 +163,11 @@ public class RecipesService {
                 stepDao.insertData(step);
             }
 
-            // Insert FoodIngredient
-            for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
-                foodIngredient.setRecipeId(recipeId);
-                foodIngredient.setStatus(0);
-                foodIngredientDao.insertData(foodIngredient);
+            // Insert Ingredient
+            for (Ingredient ingredient : input.getListInfgredients()) {
+                ingredient.setRecipeId(recipeId);
+                ingredient.setStatus(0);
+                ingredientDao.insertData(ingredient);
             }
             return "Success!";
         }
@@ -205,16 +202,18 @@ public class RecipesService {
             index += 1;
         }
 
-        // Validate FoodIngredient
+        // Validate Ingredient
         index = 1;
-        for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
+        for (Ingredient foodIngredient : input.getListInfgredients()) {
             if (foodIngredient.getUnitOfMeasurement().length() == 0) {
                 return "FoodIngredient UnitOfMeasurement at index = " + index + " is requied!";
             } else if (foodIngredient.getUnitOfMeasurement().length() > 250) {
                 return "FoodIngredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
-            } else if (!ingredientDao.checkExistIngredient(foodIngredient.getIngredientId())) {
-                return "FoodIngredient IngredientId at index = " + index + " is not exist or deleted!";
-            }
+            } else if (foodIngredient.getName().length() == 0) {
+                return "Ingredient Name at index = " + index + " is requied!";
+            } else if (foodIngredient.getName().length() > 250) {
+                return "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
+            } 
             index += 1;
         }
         if (recipesDao.updateData(input.getRecipe())) {
@@ -252,33 +251,34 @@ public class RecipesService {
                 stepNumber += 1;
             }
 
-            // Update FoodIngredient
+            // Update Ingredient
             // Check Exist Step item in DB
-            List<FoodIngredientViewModel> listFoodIngerdient = foodIngredientDao.getData(input.getRecipe().getId());
-            for (FoodIngredientViewModel itemDB : listFoodIngerdient) {
+            List<Ingredient> listIngredientInDB = ingredientDao.getData(input.getRecipe().getId());
+            for (Ingredient ingredientDB : listIngredientInDB) {
                 int countExistInList = 0;
 
                 // For loop and check if item in DB exist in list input then continue
-                for (FoodIngredient itemInput : input.getListFoodInfgredients()) {
-                    if (itemInput.getIngredientId() == itemDB.getIngredientId()) {
+                for (Ingredient ingredientInput : input.getListInfgredients()) {
+                    if (ingredientInput.getId() == ingredientDB.getId()) {
                         countExistInList += 1;
                         break;
                     }
                 }
                 // if item in DB not exist in list input, delete this item in DB
                 if (countExistInList == 0) {
-                    foodIngredientDao.deleteFoodIngredient(input.getRecipe().getId(), itemDB.getIngredientId());
+                    ingredientDao.deleteData(ingredientDB.getId());
                 }
             }
-            for (FoodIngredient foodIngredient : input.getListFoodInfgredients()) {
-                foodIngredient.setStatus(0);
-                foodIngredient.setRecipeId(input.getRecipe().getId());
-                // If exist in DB => update item
-                if (foodIngredientDao.checkExistFoodIngredient(input.getRecipe().getId(), foodIngredient.getIngredientId())) {
-                    foodIngredientDao.updateData(foodIngredient);
-                } // If not exist in DB => insert new to DB
+            for (Ingredient ingredient : input.getListInfgredients()) {
+                ingredient.setRecipeId(input.getRecipe().getId());
+                ingredient.setStatus(0);
+
+                // if ingredientId <= 0 => insert new Ingredient to DB
+                if (ingredient.getId() <= 0) {
+                    ingredientDao.insertData(ingredient);
+                } // if ingredientId > 0 => update Ingredient
                 else {
-                    foodIngredientDao.insertData(foodIngredient);
+                    ingredientDao.updateData(ingredient);
                 }
             }
             return "Success!";

@@ -48,19 +48,6 @@ Create table Category -- Danh mục
 )
 go
 
-Create table Ingredient  -- Đồ ăn
-(
-	Id int primary key identity,
-	Name nvarchar(250) not null,
-	Status int default 0,
-	CreateDate date not null default getdate(),
-	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
-)
-go
-
-
 Create table Recipes -- Công thức
 (
 	Id int primary key identity,
@@ -80,10 +67,11 @@ Create table Recipes -- Công thức
 )
 go
 
-Create table FoodIngredient -- Bảng phụ giữa công thức và nguyên liệu
+Create table Ingredient -- Bảng nguyên liệu
 (
+	Id int primary key identity,
 	RecipeId int foreign key references Recipes(Id),
-	IngredientId int foreign key references Ingredient(Id),
+	Name nvarchar(250) not null,
 	UnitOfMeasurement nvarchar(250) not null,
 	Status int default 0
 )
@@ -214,49 +202,6 @@ as
 	left join Users as createUser on cat.CreateUser = createUser.Id
 	left join Users as updateUser on cat.UpdateUser = updateUser.Id
 	where cat.Id = @id
-go
-
--- Proc Ingredient
-create proc GetAllIngredient
-as
-select 
-	ingredient.*,
-	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
-from Ingredient ingredient
-left join Users as createUser on ingredient.CreateUser = createUser.Id
-left join Users as updateUser on ingredient.UpdateUser = updateUser.Id
-go
-
-create proc FilterListIngredient
-	@keyword nvarchar(250),
-	@isGetAll bit
-as
-begin
-	select 
-		ingredient.*,
-		createUser.UserName as CreateUserDisplay,
-		updateUser.UserName as UpdateUserDisplay
-	from Ingredient ingredient
-	left join Users as createUser on ingredient.CreateUser = createUser.Id
-	left join Users as updateUser on ingredient.UpdateUser = updateUser.Id
-	where
-		ingredient.Name like N'%' + @keyword + '%'
-		and (@isGetAll = 1 or ingredient.Status = 0)
-end
-go
-
-create proc GetIngredientById
-	@id int
-as
-	select 
-		ingredient.*,
-		createUser.UserName as CreateUserDisplay,
-		updateUser.UserName as UpdateUserDisplay
-	from Ingredient ingredient
-	left join Users as createUser on ingredient.CreateUser = createUser.Id
-	left join Users as updateUser on ingredient.UpdateUser = updateUser.Id
-	where ingredient.Id = @id
 go
 
 -- Proc Recipes
@@ -392,15 +337,25 @@ as
 go
 
 -- prop FoodIngredient
-create proc getFoodIngredient
+create proc getIngredient
 	@recipeId int
 as
 select 
-	fi.*, 
-	i.Name as IngredientDisplay 
-from FoodIngredient fi
-left join Ingredient i on fi.IngredientId = i.Id
+	fi.*
+from Ingredient fi
 where fi.Status = 0 and fi.RecipeId = @recipeId
+go
+
+select * from Ingredient
+go
+
+create proc GetIngredientById
+	@id int
+as
+	select 
+		*
+	from Ingredient
+	where Id = @id
 go
 
 -- proc Users
