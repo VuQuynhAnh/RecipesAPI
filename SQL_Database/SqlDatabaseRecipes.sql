@@ -15,7 +15,7 @@ Create table Users -- Người dùng
 	Email varchar(250),
 	Job nvarchar(250),
 	Role int not null default 0,
-	Avatar varchar(250),
+	Avatar ntext,
 	Description ntext,
 	Status int default 0,
 	CreateDate date not null default getdate(),
@@ -40,6 +40,7 @@ Create table Category -- Danh mục
 (
 	Id int primary key identity,
 	Name nvarchar(250) not null,
+	Image ntext,
 	Status int default 0,
 	CreateDate date not null default getdate(),
 	CreateUser int not null default 0,
@@ -140,8 +141,8 @@ go
 --Insert data temp
 
 insert into Category values
-(N'Đồ Việt Nam', 0, '2022-10-23', 1, null, null),
-(N'Đồ Trung Quốc', 1, '2022-10-23', 1, null, null)
+(N'Đồ Việt Nam','', 0, '2022-10-23', 1, null, null),
+(N'Đồ Trung Quốc','', 1, '2022-10-23', 1, null, null)
 go
 
 insert into Users values (N'Anh.vu3', N'Vũ Quỳnh Anh', 1, N'Yên Bái', '0787424822', 'jjadaskjdasfafkengewgwgwgsagsg', 'anh.vu3@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/24', 0, '', 0)
@@ -175,7 +176,9 @@ go
 
 create proc FilterListCategory
 	@keyword nvarchar(250),
-	@isGetAll bit
+	@isGetAll bit,
+	@pageIndex int,
+	@pageSize int
 as
 begin
 	select 
@@ -188,6 +191,9 @@ begin
 	where
 		cat.Name like N'%' + @keyword + '%'
 		and (@isGetAll = 1 or cat.Status = 0)
+	order by id desc
+	OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+	Fetch NEXT @pageSize ROWS ONLY  
 end
 go
 
@@ -490,6 +496,8 @@ left join Users as updateUser on followOther.UpdateUser = updateUser.Id
 where followOther.Status = 0 and  followedByOther.Id = @followerId
 go
 
+select * from Category
+go
 exec GetAllUsers
 go
 exec FilterListUsers N'',1,1,-1

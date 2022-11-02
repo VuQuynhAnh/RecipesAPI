@@ -41,6 +41,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 CategoryViewModel categoryViewModel = new CategoryViewModel();
                 categoryViewModel.setId(result.getInt("Id"));
                 categoryViewModel.setName(result.getString("Name"));
+                categoryViewModel.setImage(result.getString("Image"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -56,21 +57,25 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return listCategoryViewModels;
     }
 
-    public List<CategoryViewModel> getData(String keyword, boolean isGetAll) {
+    public List<CategoryViewModel> getData(String keyword, boolean isGetAll, int pageIndex, int pageSize) {
         List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListCategory(?,?)}");
-            if (keyword.equalsIgnoreCase("_")) {
-                keyword = "";
-            }
+            statement = con.prepareCall("{call FilterListCategory(?,?,?,?)}");
+            keyword = keyword.equalsIgnoreCase("_") ? "" : keyword;
+            pageIndex = pageIndex > 0 ? pageIndex : 1;
+            pageSize = pageSize > 0 ? pageSize : 1;
             statement.setString(1, "%" + keyword + "%");
             statement.setBoolean(2, isGetAll);
+            statement.setInt(3, pageIndex);
+            statement.setInt(4, pageSize);
+
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 CategoryViewModel categoryViewModel = new CategoryViewModel();
                 categoryViewModel.setId(result.getInt("Id"));
                 categoryViewModel.setName(result.getString("Name"));
+                categoryViewModel.setImage(result.getString("Image"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -97,6 +102,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
             if (result.next()) {
                 categoryViewModel.setId(result.getInt("Id"));
                 categoryViewModel.setName(result.getString("Name"));
+                categoryViewModel.setImage(result.getString("Image"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -115,11 +121,12 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
     public boolean insertData(Category t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into Category(Name, Status, CreateDate, CreateUser) values (?,?,?,?)");
+            statement = con.prepareCall("insert into Category(Name, Image, Status, CreateDate, CreateUser) values (?,?,?,?,?)");
             statement.setString(1, t.getName());
-            statement.setInt(2, 0);
-            statement.setDate(3, Date.valueOf(LocalDate.now()));
-            statement.setInt(4, t.getCreateUser());
+            statement.setString(2, t.getImage());
+            statement.setInt(3, 0);
+            statement.setDate(4, Date.valueOf(LocalDate.now()));
+            statement.setInt(5, t.getCreateUser());
             if (statement.executeUpdate() > 0) {
                 return true;
             }
@@ -133,12 +140,13 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
     public boolean updateData(Category t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Category set Name=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+            statement = con.prepareCall("update Category set Name=?, Image=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
             statement.setString(1, t.getName());
-            statement.setInt(2, t.getStatus());
-            statement.setDate(3, Date.valueOf(LocalDate.now()));
-            statement.setInt(4, t.getUpdateUser());
-            statement.setInt(5, t.getId());
+            statement.setString(2, t.getImage());
+            statement.setInt(3, t.getStatus());
+            statement.setDate(4, Date.valueOf(LocalDate.now()));
+            statement.setInt(5, t.getUpdateUser());
+            statement.setInt(6, t.getId());
             if (statement.executeUpdate() > 0) {
                 return true;
             }

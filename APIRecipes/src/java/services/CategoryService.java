@@ -5,8 +5,13 @@
  */
 package services;
 
+import common.FolderNameConstant;
 import dao.CategoryDao;
+import dao.UploadImageDao;
+import dao.UsersDao;
 import entity.Category;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -17,6 +22,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import viewModel.CategoryViewModel;
 
@@ -28,39 +34,65 @@ import viewModel.CategoryViewModel;
 @Path("/category")
 public class CategoryService {
 
-    CategoryDao dao = null;
+    CategoryDao categoryDao = null;
+    UploadImageDao uploadImageDao = null;
+    UsersDao usersDao = null;
+    DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
+    LocalDateTime dateTimeNow = LocalDateTime.now();
 
     public CategoryService() {
-        dao = new CategoryDao();
+        categoryDao = new CategoryDao();
+        uploadImageDao = new UploadImageDao();
+        usersDao = new UsersDao();
     }
 
     @GET
+    @Path("getAll")
     @Produces(MediaType.APPLICATION_JSON)
     public List<CategoryViewModel> getCategories() {
-        return dao.getData();
+        return categoryDao.getData();
     }
 
     @GET
-    @Path("{keyword}/{isGetAll}")
+    @Path("getLists")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CategoryViewModel> getCategories(@PathParam("keyword") String keyword, @PathParam("isGetAll") boolean isGetAll) {
-        return dao.getData(keyword, isGetAll);
+    public List<CategoryViewModel> getCategories(
+            @QueryParam("keyword") String keyword,
+            @QueryParam("isGetAll") boolean isGetAll,
+            @QueryParam("pageIndex") int pageIndex,
+            @QueryParam("pageSize") int pageSize
+    ) {
+        return categoryDao.getData(keyword, isGetAll, pageIndex, pageSize);
     }
 
     @GET
-    @Path("detail/{id}")
+    @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public CategoryViewModel getCategoryById(@PathParam("id") int id) {
-        return dao.getDataById(id);
+    public CategoryViewModel getCategoryById(@QueryParam("id") int id) {
+        return categoryDao.getDataById(id);
     }
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String insert(Category category) {
+
+        // validate
         if (category.getName().trim().length() == 0) {
             return "Category name is requied!";
-        } else if (dao.insertData(category)) {
+        } else if (!usersDao.checkExistUser(category.getCreateUser())) {
+            return "Category createUser with id = " + category.getCreateUser() + " is not exist or deleted!";
+        } else if (!usersDao.isUserAdmin(category.getCreateUser())) {
+            return "Category createUser with id = " + category.getCreateUser() + " is not a admin!";
+        }
+
+        // convert image
+        if (category.getImage().length() > 0) {
+
+            String fileName = "cat_" + category.getCreateUser() + "_" + dateTimeNow.format(formatDate);
+            category.setImage(uploadImageDao.uploadImage(category.getImage(), FolderNameConstant.category, fileName));
+        }
+        if (categoryDao.insertData(category)) {
             return "Success!";
         }
         return "Failed!";
@@ -70,24 +102,40 @@ public class CategoryService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String update(Category category) {
+        // validate
         if (category.getName().trim().length() == 0) {
             return "Category name is requied!";
-        } else if (dao.getDataById(category.getId()).getId() <= 0) {
-            return "Category width id = " + category.getId() + " is not exist!";
-        } else if (dao.updateData(category)) {
+        } else if (categoryDao.getDataById(category.getId()).getId() <= 0) {
+            return "Category width id = " + category.getId() + " is not exist or deleted!";
+        } else if (!usersDao.checkExistUser(category.getUpdateUser())) {
+            return "Category updateUser with id = " + category.getUpdateUser() + " is not exist or deleted!";
+        } else if (!usersDao.isUserAdmin(category.getUpdateUser())) {
+            return "Category updateUser with id = " + category.getUpdateUser() + " is not a admin!";
+        }
+
+        // convert image
+        if (category.getImage().length() > 0 && !category.getImage().contains(FolderNameConstant.category)) {
+            String fileName = "cat_" + category.getCreateUser() + "_" + dateTimeNow.format(formatDate);
+            category.setImage(uploadImageDao.uploadImage(category.getImage(), FolderNameConstant.category, fileName));
+        }
+        if (categoryDao.updateData(category)) {
             return "Success!";
         }
         return "Failed!";
     }
 
     @DELETE
-    @Path("delete/{id}/{deleteId}")
+    @Path("delete")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@PathParam("id") int id, @PathParam("deleteId") int deleteId) {
-        if (!dao.checkExistCategory(id)) {
+    public String delete(@QueryParam("id") int id, @QueryParam("updateUser") int deleteId) {
+        if (!categoryDao.checkExistCategory(id)) {
             return "Category width id = " + id + " is not exist or deleted!";
-        } else if (dao.deleteData(id, deleteId)) {
+        } else if (!usersDao.checkExistUser(deleteId)) {
+            return "Category updateUser with id = " + deleteId + " is not exist or deleted!";
+        } else if (!usersDao.isUserAdmin(deleteId)) {
+            return "Category updateUser with id = " + deleteId + " is not a admin!";
+        } else if (categoryDao.deleteData(id, deleteId)) {
             return "Success!";
         }
         return "Failed!";

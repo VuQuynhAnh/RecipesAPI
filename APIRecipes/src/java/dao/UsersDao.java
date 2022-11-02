@@ -356,6 +356,26 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         }
     }
 
+    public boolean isUserAdmin(int id) {
+        if (id <= 0) {
+            return false;
+        }
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("select * from Users where Id=? and Status = 0");
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                if (result.getInt("Role") == 1) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
     public boolean checkExistUserName(String userName, int id) {
         if (userName.length() <= 0) {
             return false;

@@ -5,6 +5,7 @@
  */
 package dao;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,19 +20,25 @@ import java.util.logging.Logger;
  * @author DELL
  */
 public class UploadImageDao {
-    public String uploadImage(String base64){
-        String location = "E://upload/" + "demoname.png";
-        byte[] data = Base64.getDecoder()
-                    .decode(base64.getBytes(StandardCharsets.UTF_8));
+
+    public String uploadImage(String base64, String folder, String imageName) {
+        String path = "E://upload/" + folder;
+        String location = path + "/" + imageName + ".png";
+        byte[] data = Base64.getDecoder().decode(base64.getBytes(StandardCharsets.UTF_8));
+        File file = new File(path);
+        if (!file.exists()) {
+            file.mkdir();
+        }
         try (OutputStream stream = new FileOutputStream(location)) {
             stream.write(data);
             stream.flush();
             stream.close();
+            return location;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(UploadImageDao.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(UploadImageDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return location;
+        return "";
     }
 }

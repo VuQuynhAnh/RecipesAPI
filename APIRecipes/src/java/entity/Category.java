@@ -16,18 +16,19 @@ public class Category implements Serializable {
 
     private int id;
     private String name;
+    private String image;
     private int status;
     private Date createDate;
     private int createUser;
     private Date updateDate;
     private int updateUser;
-    
+
     public Category() {
     }
 
-    public Category(int id, String name, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
-        this.id = id;
+    public Category(String name, String image, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
         this.name = name;
+        this.image = image;
         this.status = status;
         this.createDate = createDate;
         this.createUser = createUser;
@@ -35,13 +36,23 @@ public class Category implements Serializable {
         this.updateUser = updateUser;
     }
 
-    public Category(String name, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public Category(int id, String name, String image, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+        this.id = id;
         this.name = name;
+        this.image = image;
         this.status = status;
         this.createDate = createDate;
         this.createUser = createUser;
         this.updateDate = updateDate;
         this.updateUser = updateUser;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getId() {
