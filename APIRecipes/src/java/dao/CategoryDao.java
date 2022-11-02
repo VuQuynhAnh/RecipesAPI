@@ -49,6 +49,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                categoryViewModel.setTotalRecipes(result.getInt("TotalRecipes"));
                 listCategoryViewModels.add(categoryViewModel);
             }
         } catch (SQLException ex) {
@@ -57,18 +58,21 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return listCategoryViewModels;
     }
 
-    public List<CategoryViewModel> getData(String keyword, boolean isGetAll, int pageIndex, int pageSize) {
+    public List<CategoryViewModel> getData(String keyword, boolean isGetAll, boolean sortIdDESC, boolean sortNameASC, boolean sortTotalRecipeDESC, int pageIndex, int pageSize) {
         List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListCategory(?,?,?,?)}");
+            statement = con.prepareCall("{call FilterListCategory(?,?,?,?,?,?,?)}");
             keyword = keyword.equalsIgnoreCase("_") ? "" : keyword;
             pageIndex = pageIndex > 0 ? pageIndex : 1;
             pageSize = pageSize > 0 ? pageSize : 1;
             statement.setString(1, "%" + keyword + "%");
             statement.setBoolean(2, isGetAll);
-            statement.setInt(3, pageIndex);
-            statement.setInt(4, pageSize);
+            statement.setBoolean(3, sortIdDESC);
+            statement.setBoolean(4, sortNameASC);
+            statement.setBoolean(5, sortTotalRecipeDESC);
+            statement.setInt(6, pageIndex);
+            statement.setInt(7, pageSize);
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -83,6 +87,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                categoryViewModel.setTotalRecipes(result.getInt("TotalRecipes"));
                 listCategoryViewModels.add(categoryViewModel);
             }
         } catch (SQLException ex) {
@@ -110,6 +115,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                categoryViewModel.setTotalRecipes(result.getInt("TotalRecipes"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);

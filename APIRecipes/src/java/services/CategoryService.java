@@ -59,10 +59,13 @@ public class CategoryService {
     public List<CategoryViewModel> getCategories(
             @QueryParam("keyword") String keyword,
             @QueryParam("isGetAll") boolean isGetAll,
+            @QueryParam("sortIdDESC") boolean sortIdDESC,
+            @QueryParam("sortNameASC") boolean sortNameASC,
+            @QueryParam("sortTotalRecipeDESC") boolean sortTotalRecipeDESC,
             @QueryParam("pageIndex") int pageIndex,
             @QueryParam("pageSize") int pageSize
     ) {
-        return categoryDao.getData(keyword, isGetAll, pageIndex, pageSize);
+        return categoryDao.getData(keyword, isGetAll, sortIdDESC, sortNameASC, sortTotalRecipeDESC, pageIndex, pageSize);
     }
 
     @GET

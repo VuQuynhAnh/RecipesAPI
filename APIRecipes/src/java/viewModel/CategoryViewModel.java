@@ -17,11 +17,21 @@ public class CategoryViewModel extends Category implements Serializable {
 
     private String createUserDisplay;
     private String updateUserDisplay;
+    private int totalRecipes;
 
-    public CategoryViewModel(int id, String name, String image, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay) {
+    public CategoryViewModel(int id, String name, String image, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, int totalRecipes) {
         super(id, name, image, status, createDate, createUser, updateDate, updateUser);
         this.createUserDisplay = createUserDisplay;
         this.updateUserDisplay = updateUserDisplay;
+        this.totalRecipes = totalRecipes;
+    }
+
+    public int getTotalRecipes() {
+        return totalRecipes;
+    }
+
+    public void setTotalRecipes(int totalRecipes) {
+        this.totalRecipes = totalRecipes;
     }
 
     public CategoryViewModel() {

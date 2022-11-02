@@ -177,21 +177,47 @@ go
 create proc FilterListCategory
 	@keyword nvarchar(250),
 	@isGetAll bit,
+	@sortIdDESC bit,
+	@sortNameASC bit,
+	@sortTotalRecipeDESC bit,
 	@pageIndex int,
 	@pageSize int
 as
 begin
 	select 
-		cat.*,
+		cat.Id,
+		cat.Name,
+		cast(cat.Image as nvarchar(max)) as Image,
+		cat.Status,
+		cat.CreateDate,
+		cat.CreateUser,
+		cat.UpdateDate,
+		cat.UpdateUser,
+		COUNT(recipe.Id) as TotalRecipes,
 		createUser.UserName as CreateUserDisplay,
 		updateUser.UserName as UpdateUserDisplay
 	from Category cat
 	left join Users as createUser on cat.CreateUser = createUser.Id
 	left join Users as updateUser on cat.UpdateUser = updateUser.Id
+	left join Recipes as recipe on cat.Id = recipe.CategoryId
 	where
 		cat.Name like N'%' + @keyword + '%'
 		and (@isGetAll = 1 or cat.Status = 0)
-	order by id desc
+	group by 
+		cat.Id,
+		cat.Name,
+		cast(cat.Image as nvarchar(max)),
+		cat.Status,
+		cat.CreateDate,
+		cat.CreateUser,
+		cat.UpdateDate,
+		cat.UpdateUser,
+		createUser.UserName,
+		updateUser.UserName
+	order by 
+		case @sortTotalRecipeDESC when 1 then COUNT(recipe.Id) end desc,
+		case @sortIdDESC when 1 then cat.id end desc,
+		case @sortNameASC when 1 then cat.Name end asc
 	OFFSET ((@pageIndex - 1) * @pageSize) Rows  
 	Fetch NEXT @pageSize ROWS ONLY  
 end
