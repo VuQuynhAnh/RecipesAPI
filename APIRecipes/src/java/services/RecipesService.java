@@ -5,6 +5,7 @@
  */
 package services;
 
+import common.FolderNameConstant;
 import dao.CategoryDao;
 import dao.IngredientDao;
 import dao.RatingDao;
@@ -15,7 +16,8 @@ import dao.UsersDao;
 import entity.Ingredient;
 import entity.Rating;
 import entity.Steps;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -24,8 +26,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
@@ -47,6 +49,8 @@ public class RecipesService {
     IngredientDao ingredientDao = null;
     RatingDao ratingDao = null;
     UploadImageDao uploadImageDao = null;
+    DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
+    LocalDateTime dateTimeNow = LocalDateTime.now();
 
     public RecipesService() {
         recipesDao = new RecipesDao();
@@ -65,9 +69,9 @@ public class RecipesService {
     }
 
     @GET
-    @Path("getSaveRecipe/{userId}")
+    @Path("getSaveRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<RecipesViewModel> getSaveRecipe(@PathParam("userId") int userId) {
+    public List<RecipesViewModel> getSaveRecipe(@QueryParam("userId") int userId) {
         return recipesDao.getSaveRecipe(userId);
     }
 
@@ -76,35 +80,20 @@ public class RecipesService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<RecipesViewModel> getRecipes(RecipeFilterRequest request) {
-        List<RecipesViewModel> listInput = recipesDao.getData(request);
-        List<RecipesViewModel> listData = new ArrayList();
-        if (request.getMinRating() >= 0 && request.getMaxRating() == 0) {
-            for (RecipesViewModel item : listInput) {
-                if (request.getMinRating() <= item.getAvgRating()) {
-                    listData.add(item);
-                }
-            }
-        } else if (request.getMinRating() >= 0 && request.getMaxRating() >= 0) {
-            for (RecipesViewModel item : listInput) {
-                if (request.getMinRating() <= item.getAvgRating() && item.getAvgRating() <= request.getMaxRating()) {
-                    listData.add(item);
-                }
-            }
-        }
-        return listData;
+        return recipesDao.getData(request);
     }
 
     @GET
-    @Path("detail/{id}")
+    @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipesViewModel getRecipesById(@PathParam("id") int id) {
+    public RecipesViewModel getRecipesById(@QueryParam("id") int id) {
         return recipesDao.getDataById(id);
     }
 
     @GET
-    @Path("getRecipe/{id}")
+    @Path("getRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipeOutputData getRecipesOutput(@PathParam("id") int id) {
+    public RecipeOutputData getRecipesOutput(@QueryParam("id") int id) {
         RecipesViewModel recipe = recipesDao.getDataById(id);
         List<Steps> listSteps = stepDao.getData(id);
         List<Ingredient> listIngredients = ingredientDao.getData(id);
@@ -129,6 +118,8 @@ public class RecipesService {
             return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
             return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
+        } else if (!userDao.checkExistUser(input.getRecipe().getCreateUser())) {
+            return "Recipe createUser with id = " + input.getRecipe().getCreateUser() + " is not exist or deleted!";
         }
         // Validate Steps
         int stepNumber = 1;
@@ -151,11 +142,15 @@ public class RecipesService {
                 return "Ingredient Name at index = " + index + " is requied!";
             } else if (ingredient.getName().length() > 250) {
                 return "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
-            }    
+            }
             index += 1;
         }
 
         // Insert Recipe and return recipeId
+        if (input.getRecipe().getImage().length() > 0) {
+            String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
+            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), FolderNameConstant.recipe, fileName));
+        }
         int recipeId = recipesDao.insertRecipe(input.getRecipe());
         if (recipeId > 0) {
 
@@ -194,7 +189,10 @@ public class RecipesService {
             return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
         } else if (recipesDao.getDataById(input.getRecipe().getId()).getId() <= 0) {
             return "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
+        } else if (!userDao.checkExistUser(input.getRecipe().getUpdateUser())) {
+            return "Recipe updateUser with id = " + input.getRecipe().getUpdateUser()+ " is not exist or deleted!";
         }
+
         // Validate Steps
         int index = 1;
         for (Steps step : input.getListSteps()) {
@@ -209,15 +207,21 @@ public class RecipesService {
         index = 1;
         for (Ingredient foodIngredient : input.getListInfgredients()) {
             if (foodIngredient.getUnitOfMeasurement().length() == 0) {
-                return "FoodIngredient UnitOfMeasurement at index = " + index + " is requied!";
+                return "Ingredient UnitOfMeasurement at index = " + index + " is requied!";
             } else if (foodIngredient.getUnitOfMeasurement().length() > 250) {
-                return "FoodIngredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
+                return "Ingredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
             } else if (foodIngredient.getName().length() == 0) {
                 return "Ingredient Name at index = " + index + " is requied!";
             } else if (foodIngredient.getName().length() > 250) {
                 return "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
-            } 
+            }
             index += 1;
+        }
+
+        // Check end insert image to server
+        if (input.getRecipe().getImage().length() > 0 && !input.getRecipe().getImage().contains(FolderNameConstant.recipe)) {
+            String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
+            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), FolderNameConstant.recipe, fileName));
         }
         if (recipesDao.updateData(input.getRecipe())) {
             // Update Steps
@@ -290,10 +294,10 @@ public class RecipesService {
     }
 
     @DELETE
-    @Path("delete/{id}/{deleteId}")
+    @Path("delete")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@PathParam("id") int id, @PathParam("deleteId") int deleteId) {
+    public String delete(@QueryParam("id") int id, @QueryParam("deleteId") int deleteId) {
         if (!recipesDao.checkExistRecipe(id)) {
             return "Recipes width id = " + id + " is not exist or deleted!";
         } else if (recipesDao.deleteData(id, deleteId)) {

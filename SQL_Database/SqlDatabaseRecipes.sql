@@ -166,12 +166,32 @@ go
 create proc GetAllCategory
 as
 select 
-	cat.*,
-	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
-from Category cat
-left join Users as createUser on cat.CreateUser = createUser.Id
-left join Users as updateUser on cat.UpdateUser = updateUser.Id
+		cat.Id,
+		cat.Name,
+		cast(cat.Image as nvarchar(max)) as Image,
+		cat.Status,
+		cat.CreateDate,
+		cat.CreateUser,
+		cat.UpdateDate,
+		cat.UpdateUser,
+		COUNT(recipe.Id) as TotalRecipes,
+		createUser.UserName as CreateUserDisplay,
+		updateUser.UserName as UpdateUserDisplay
+	from Category cat
+	left join Users as createUser on cat.CreateUser = createUser.Id
+	left join Users as updateUser on cat.UpdateUser = updateUser.Id
+	left join Recipes as recipe on cat.Id = recipe.CategoryId
+	group by 
+		cat.Id,
+		cat.Name,
+		cast(cat.Image as nvarchar(max)),
+		cat.Status,
+		cat.CreateDate,
+		cat.CreateUser,
+		cat.UpdateDate,
+		cat.UpdateUser,
+		createUser.UserName,
+		updateUser.UserName
 go
 
 create proc FilterListCategory
@@ -227,13 +247,33 @@ create proc GetCategoryById
 	@id int
 as
 	select 
-		cat.*,
+		cat.Id,
+		cat.Name,
+		cast(cat.Image as nvarchar(max)) as Image,
+		cat.Status,
+		cat.CreateDate,
+		cat.CreateUser,
+		cat.UpdateDate,
+		cat.UpdateUser,
+		COUNT(recipe.Id) as TotalRecipes,
 		createUser.UserName as CreateUserDisplay,
 		updateUser.UserName as UpdateUserDisplay
 	from Category cat
 	left join Users as createUser on cat.CreateUser = createUser.Id
 	left join Users as updateUser on cat.UpdateUser = updateUser.Id
+	left join Recipes as recipe on cat.Id = recipe.CategoryId
 	where cat.Id = @id
+	group by 
+		cat.Id,
+		cat.Name,
+		cast(cat.Image as nvarchar(max)),
+		cat.Status,
+		cat.CreateDate,
+		cat.CreateUser,
+		cat.UpdateDate,
+		cat.UpdateUser,
+		createUser.UserName,
+		updateUser.UserName
 go
 
 -- Proc Recipes
@@ -241,7 +281,25 @@ go
 create proc GetAllRecipes
 as
 select 
-	recipe.*,
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)) as Image,
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	Case 
+		when AVG(rating.Rating) is null then 5
+		else AVG(rating.Rating)
+	end	as AvgRating,
+	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
 	createUser.UserName as CreateUserDisplay,
@@ -251,13 +309,51 @@ left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
 left join Users as author on recipe.AuthorId = author.Id
 left join Category as cat on recipe.CategoryId = cat.Id
+left join Rating rating on recipe.Id = rating.RecipeId
+group by 
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)),
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	cat.Name,
+	author.UserName,
+	createUser.UserName,
+	updateUser.UserName
 go
 
 create proc GetSaveRecipes
 	@userId int
 as
 select 
-	recipe.*,
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)) as Image,
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	Case 
+		when AVG(rating.Rating) is null then 5
+		else AVG(rating.Rating)
+	end	as AvgRating,
+	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
 	createUser.UserName as CreateUserDisplay,
@@ -269,7 +365,28 @@ left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
 left join Users as author on recipe.AuthorId = author.Id
 left join Category as cat on recipe.CategoryId = cat.Id
+left join Rating rating on recipe.Id = rating.RecipeId
 where recipe.Status = 0 and recipeSave.UserId = @userId
+group by 
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)),
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	cat.Name,
+	author.UserName,
+	createUser.UserName,
+	updateUser.UserName,
+	recipeSave.CreateDate
 go
 
 create proc FilterListRecipes
@@ -278,15 +395,47 @@ create proc FilterListRecipes
 	@authorId int,
 	@name nvarchar(250),
 	@origin nvarchar(250),
+	@ingredient nvarchar(250),
 	@minServer int,
 	@maxServer int,
 	@minTotalViews int,
 	@maxTotalViews int,
+	@minTotalRating int,
+	@maxTotalRating int,
+	@minAvgRating int,
+	@maxAvgRating int,
 	@cookTime nvarchar(250),
-	@status int
+	@status int,
+	@sortByIdDESC bit,
+	@sortByNameASC bit,
+	@sortByServesASC bit,
+	@sortByServesDESC bit,
+	@sortByTotalViewDESC bit,
+	@sortByAvgRatingDESC bit,
+	@sortByTotalRatingDESC bit,
+	@pageIndex int,
+	@pageSize int
 as
 select 
-	recipe.*,
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)) as Image,
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	Case 
+		when AVG(rating.Rating) is null then 5
+		else AVG(rating.Rating)
+	end	as AvgRating,
+	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
 	createUser.UserName as CreateUserDisplay,
@@ -296,25 +445,91 @@ left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
 left join Users as author on recipe.AuthorId = author.Id
 left join Category as cat on recipe.CategoryId = cat.Id
+left join Rating rating on recipe.Id = rating.RecipeId
+left join Ingredient ingredient on recipe.Id = ingredient.RecipeId
 where
 	(@keyword = null or @keyword = '' or (recipe.Name like N'%' + @keyword + '%' or recipe.Origin like N'%' + @keyword + '%' or recipe.CookTime like N'%' + @keyword + '%'))
 	and (@catId = 0 or recipe.CategoryId = @catId)
 	and (@authorId = 0 or recipe.AuthorId = @authorId)
 	and (@name = null or @name = '' or recipe.Name like N'%' + @name + '%')
 	and (@origin = null or @origin = '' or recipe.Origin like N'%' + @origin + '%')
+	and (@ingredient = null or @ingredient = '' or ingredient.Name like N'%' + @ingredient + '%')
 	and recipe.Serves >= @minServer
 	and (@maxServer <= 0 or recipe.Serves <= @maxServer)
 	and recipe.TotalViews >= @minTotalViews
 	and (@maxTotalViews <= 0 or recipe.TotalViews <= @maxTotalViews)
 	and (@cookTime = null or @cookTime = '' or recipe.CookTime like N'%' + @cookTime + '%')
 	and (@status = -1 or recipe.Status = @status)
+group by 
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)),
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	cat.Name,
+	author.UserName,
+	createUser.UserName,
+	updateUser.UserName
+having 
+	COUNT(rating.Id) >= @minTotalRating
+	and (@maxTotalRating <= 0 or COUNT(rating.Id) <= @maxTotalRating)
+	and (Case 
+			when AVG(rating.Rating) is null then 5
+			else AVG(rating.Rating)
+		end) >= @minAvgRating
+	and (@maxAvgRating <= 0 or 
+		(Case 
+			when AVG(rating.Rating) is null then 5
+			else AVG(rating.Rating)
+		end) <= @maxAvgRating)
+order by 
+	case @sortByIdDESC when 1 then recipe.id end desc,
+	case @sortByNameASC when 1 then recipe.Name end asc,
+	case @sortByServesASC when 1 then recipe.Serves end asc,
+	case @sortByServesDESC when 1 then recipe.Serves end desc,
+	case @sortByTotalViewDESC when 1 then recipe.TotalViews end desc,
+	case @sortByAvgRatingDESC when 1 then 
+		(Case 
+			when AVG(rating.Rating) is null then 5
+			else AVG(rating.Rating)
+		end) end desc,
+	case @sortByTotalRatingDESC when 1 then COUNT(rating.Id) end desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
 go
 
 create proc GetRecipeById
 	@id int
 as
 select 
-	recipe.*,
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)) as Image,
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	(Case 
+			when AVG(rating.Rating) is null then 5
+			else AVG(rating.Rating)
+	end) as AvgRating,
+	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
 	createUser.UserName as CreateUserDisplay,
@@ -324,8 +539,27 @@ left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
 left join Users as author on recipe.AuthorId = author.Id
 left join Category as cat on recipe.CategoryId = cat.Id
-left join Rating as rat on recipe.Id = rat.RecipeId
+left join Rating rating on recipe.Id = rating.RecipeId
 where recipe.Id = @id
+group by 
+	recipe.Id,
+	recipe.CategoryId,
+	recipe.AuthorId,
+	recipe.Name,
+	recipe.Origin,
+	recipe.Serves,
+	cast(recipe.Image as nvarchar(max)),
+	recipe.TotalViews,
+	recipe.CookTime,
+	recipe.Status,
+	recipe.CreateDate,
+	recipe.CreateUser,
+	recipe.UpdateDate,
+	recipe.UpdateUser,
+	cat.Name,
+	author.UserName,
+	createUser.UserName,
+	updateUser.UserName
 go
 
 create proc GetRecipeIdAfterInsert
@@ -455,8 +689,8 @@ left join Users as updateUser on u.UpdateUser = updateUser.Id
 where (u.UserName = @userName 
 		or u.PhoneNumber = @userName
 		or u.Email = @userName
-	)
-	and u.Password = @password
+	  )
+	  and u.Password = @password
 go
 
 --proc logindevice
