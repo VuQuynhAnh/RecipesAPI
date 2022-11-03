@@ -602,7 +602,7 @@ as
 	where step.Id = @id
 go
 
--- prop FoodIngredient
+-- prop Ingredient
 create proc getIngredient
 	@recipeId int
 as
@@ -612,8 +612,6 @@ from Ingredient fi
 where fi.Status = 0 and fi.RecipeId = @recipeId
 go
 
-select * from Ingredient
-go
 
 create proc GetIngredientById
 	@id int
@@ -628,12 +626,52 @@ go
 create proc GetAllUsers
 as
 select 
-	u.*,
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)) as Avatar,
+	cast(u.Description as nvarchar(max)) as Description,
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	COUNT(recipe.Id) as TotalRecipe,
+	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
+left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
+left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
+left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
+group by 
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)),
+	cast(u.Description as nvarchar(max)),
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
+	createUser.UserName,
+	updateUser.UserName
 order by id desc
 go
 
@@ -666,13 +704,53 @@ create proc GetUserById
 	@id int
 as
 select 
-	u.*,
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)) as Avatar,
+	cast(u.Description as nvarchar(max)) as Description,
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	COUNT(recipe.Id) as TotalRecipe,
+	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
+left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
+left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
+left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
 where u.Id = @id
+group by 
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)),
+	cast(u.Description as nvarchar(max)),
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
+	createUser.UserName,
+	updateUser.UserName
 go
 
 create proc LoginUser
@@ -730,30 +808,110 @@ create proc GetListFollowOtherUser
 	@userId int
 as
 select 
-	followedByOther.*,
+	followedByOther.Id,
+	followedByOther.UserName,
+	followedByOther.DisplayName,
+	followedByOther.Sex,
+	followedByOther.Address,
+	followedByOther.PhoneNumber,
+	followedByOther.Email,
+	followedByOther.Job,
+	followedByOther.Role,
+	cast(followedByOther.Avatar as nvarchar(max)) as Avatar,
+	cast(followedByOther.Description as nvarchar(max)) as Description,
+	followedByOther.Status,
+	followedByOther.CreateDate,
+	followedByOther.CreateUser,
+	followedByOther.UpdateDate,
+	followedByOther.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	COUNT(recipe.Id) as TotalRecipe,
+	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Followers as fo
 left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
 left join Users as createUser on followOther.CreateUser = createUser.Id
 left join Users as updateUser on followOther.UpdateUser = updateUser.Id
+left join (select * from Recipes where Status = 0) as recipe on followedByOther.Id = recipe.AuthorId
+left join (select * from Followers where Status = 0) as followOtherUser on followedByOther.Id = followOtherUser.UserId
+left join (select * from Followers where Status = 0) as followedByOthersUser on followedByOther.Id = followedByOthersUser.FollowerId
 where followOther.Status = 0 and  followOther.Id = @userId
+group by 
+	followedByOther.Id,
+	followedByOther.UserName,
+	followedByOther.DisplayName,
+	followedByOther.Sex,
+	followedByOther.Address,
+	followedByOther.PhoneNumber,
+	followedByOther.Email,
+	followedByOther.Job,
+	followedByOther.Role,
+	cast(followedByOther.Avatar as nvarchar(max)),
+	cast(followedByOther.Description as nvarchar(max)),
+	followedByOther.Status,
+	followedByOther.CreateDate,
+	followedByOther.CreateUser,
+	followedByOther.UpdateDate,
+	followedByOther.UpdateUser,
+	createUser.UserName,
+	updateUser.UserName
 go
 
 create proc GetListFollowedByOthersUser
 	@followerId int
 as
 select 
-	followOther.*,
+	followOther.Id,
+	followOther.UserName,
+	followOther.DisplayName,
+	followOther.Sex,
+	followOther.Address,
+	followOther.PhoneNumber,
+	followOther.Email,
+	followOther.Job,
+	followOther.Role,
+	cast(followOther.Avatar as nvarchar(max)) as Avatar,
+	cast(followOther.Description as nvarchar(max)) as Description,
+	followOther.Status,
+	followOther.CreateDate,
+	followOther.CreateUser,
+	followOther.UpdateDate,
+	followOther.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	COUNT(recipe.Id) as TotalRecipe,
+	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Followers as fo
 left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
 left join Users as createUser on followOther.CreateUser = createUser.Id
 left join Users as updateUser on followOther.UpdateUser = updateUser.Id
+left join (select * from Recipes where Status = 0) as recipe on followOther.Id = recipe.AuthorId
+left join (select * from Followers where Status = 0) as followOtherUser on followOther.Id = followOtherUser.UserId
+left join (select * from Followers where Status = 0) as followedByOthersUser on followOther.Id = followedByOthersUser.FollowerId
 where followOther.Status = 0 and  followedByOther.Id = @followerId
+group by
+	followOther.Id,
+	followOther.UserName,
+	followOther.DisplayName,
+	followOther.Sex,
+	followOther.Address,
+	followOther.PhoneNumber,
+	followOther.Email,
+	followOther.Job,
+	followOther.Role,
+	cast(followOther.Avatar as nvarchar(max)),
+	cast(followOther.Description as nvarchar(max)),
+	followOther.Status,
+	followOther.CreateDate,
+	followOther.CreateUser,
+	followOther.UpdateDate,
+	followOther.UpdateUser,
+	createUser.UserName,
+	updateUser.UserName
 go
 
 select * from Category

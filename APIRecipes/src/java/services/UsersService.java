@@ -5,10 +5,14 @@
  */
 package services;
 
+import common.FolderNameConstant;
 import dao.LoginDeviceDao;
+import dao.UploadImageDao;
 import dao.UsersDao;
 import entity.LoginDevice;
 import entity.Users;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -17,8 +21,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import requests.LoginRequest;
 import requests.UpdatePasswordRequest;
@@ -35,43 +39,48 @@ public class UsersService {
 
     UsersDao userDao = null;
     LoginDeviceDao loginDeviceDao = null;
+    UploadImageDao uploadImageDao = null;
+    DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
+    LocalDateTime dateTimeNow = LocalDateTime.now();
 
     public UsersService() {
         userDao = new UsersDao();
         loginDeviceDao = new LoginDeviceDao();
+        uploadImageDao = new UploadImageDao();
     }
 
     @GET
+    @Path("getAll")
     @Produces(MediaType.APPLICATION_JSON)
     public List<UsersViewModel> getAllData() {
         return userDao.getData();
     }
 
     @GET
-    @Path("getListFollowOtherUser/{userId}")
+    @Path("getListFollowOtherUser")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getListFollowOtherUser(@PathParam("userId")  int userId) {
+    public List<UsersViewModel> getListFollowOtherUser(@QueryParam("userId") int userId) {
         return userDao.getListFollowOtherUser(userId);
     }
-    
+
     @GET
-    @Path("getListFollowedByOthersUser/{followerId}")
+    @Path("getListFollowedByOthersUser")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getListFollowedByOthersUser(@PathParam("followerId")  int followerId) {
+    public List<UsersViewModel> getListFollowedByOthersUser(@QueryParam("followerId") int followerId) {
         return userDao.getListFollowedByOthersUser(followerId);
     }
-    
-     @GET
-    @Path("{keyword}/{sex}/{role}/{status}")
+
+    @GET
+    @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> filterData(@PathParam("keyword") String keyword, @PathParam("sex") int sex, @PathParam("role") int role, @PathParam("status") int status) {
+    public List<UsersViewModel> filterData(@QueryParam("keyword") String keyword, @QueryParam("sex") int sex, @QueryParam("role") int role, @QueryParam("status") int status) {
         return userDao.getData(keyword, sex, role, status);
     }
 
     @GET
-    @Path("detail/{id}")
+    @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public UsersViewModel getUsersById(@PathParam("id") int id) {
+    public UsersViewModel getUsersById(@QueryParam("id") int id) {
         return userDao.getDataById(id);
     }
 
@@ -98,7 +107,14 @@ public class UsersService {
             return "User phoneNumber is exist in DB, choose another phoneNumber!";
         } else if (user.getEmail().trim().length() > 0 && userDao.checkExistEmail(user.getEmail(), -1)) {
             return "User email is exist in DB, choose another email!";
-        } else if (userDao.insertData(user)) {
+        }
+
+        // convert image
+        if (user.getAvatar().length() > 0) {
+            String fileName = "user_" + dateTimeNow.format(formatDate);
+            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), FolderNameConstant.user, fileName));
+        }
+        if (userDao.insertData(user)) {
             return "Success!";
         }
         return "Failed!";
@@ -129,17 +145,24 @@ public class UsersService {
             return "User email is exist in DB, choose another email!";
         } else if (userDao.getDataById(user.getId()).getId() <= 0) {
             return "User width id = " + user.getId() + " is not exist!";
-        } else if (userDao.updateData(user)) {
+        }
+
+        // convert image
+        if (user.getAvatar().length() > 0 && !user.getAvatar().contains(FolderNameConstant.user)) {
+            String fileName = "user_" + dateTimeNow.format(formatDate);
+            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), FolderNameConstant.user, fileName));
+        }
+        if (userDao.updateData(user)) {
             return "Success!";
         }
         return "Failed!";
     }
 
     @DELETE
-    @Path("delete/{id}/{deleteId}")
+    @Path("delete}")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@PathParam("id") int id, @PathParam("deleteId") int deleteId) {
+    public String delete(@QueryParam("id") int id, @QueryParam("deleteId") int deleteId) {
         if (!userDao.checkExistUser(id)) {
             return "User width id = " + id + " is not exist or deleted!";
         } else if (userDao.deleteData(id, deleteId)) {
@@ -254,10 +277,10 @@ public class UsersService {
     }
 
     @GET
-    @Path("checkUserIsLogin/{id}/{deviceName}")
+    @Path("checkUserIsLogin")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String checkIsLogin(@PathParam("id") int id, @PathParam("deviceName") String deviceName) {
+    public String checkIsLogin(@QueryParam("id") int id, @QueryParam("deviceName") String deviceName) {
         LoginDevice device = loginDeviceDao.getDataById(id, deviceName);
         if (device.getId() > 0 && device.getStatus() == 0) {
             return "Success!";
@@ -266,10 +289,10 @@ public class UsersService {
     }
 
     @GET
-    @Path("logoutUser/{userId}/{deviceName}")
+    @Path("logoutUser")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String logoutUser(@PathParam("userId") int userId, @PathParam("deviceName") String deviceName) {
+    public String logoutUser(@QueryParam("userId") int userId, @QueryParam("deviceName") String deviceName) {
         LoginDevice device = loginDeviceDao.getDataById(userId, deviceName);
         if (device.getId() > 0 && device.getStatus() == 0) {
             if (loginDeviceDao.logout(userId, deviceName)) {
@@ -277,7 +300,7 @@ public class UsersService {
             }
         } else if (device.getId() <= 0) {
             return "User with Id = " + userId + " is not exist!";
-        }else if ( device.getStatus() == 1) {
+        } else if (device.getStatus() == 1) {
             return "Success!";
         }
         return "Failed!";

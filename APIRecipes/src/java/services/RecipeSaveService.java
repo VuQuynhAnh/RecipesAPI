@@ -16,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -57,10 +58,10 @@ public class RecipeSaveService {
     }
 
     @DELETE
-    @Path("delete/{recipeId}/{userId}")
+    @Path("delete")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@PathParam("recipeId") int recipeId, @PathParam("userId") int userId) {
+    public String delete(@QueryParam("recipeId") int recipeId, @QueryParam("userId") int userId) {
         if (!recipeSaveDao.checkExistRecipeSave(recipeId, userId)) {
             return "This item is not exist or delete!";
         } else if (recipeSaveDao.deleteData(recipeId, userId)) {

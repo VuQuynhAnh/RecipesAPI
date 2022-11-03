@@ -297,10 +297,10 @@ public class RecipesService {
     @Path("delete")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@QueryParam("id") int id, @QueryParam("deleteId") int deleteId) {
+    public String delete(@QueryParam("id") int id, @QueryParam("userId") int userId) {
         if (!recipesDao.checkExistRecipe(id)) {
             return "Recipes width id = " + id + " is not exist or deleted!";
-        } else if (recipesDao.deleteData(id, deleteId)) {
+        } else if (recipesDao.deleteData(id, userId)) {
             return "Success!";
         }
         return "Failed!";

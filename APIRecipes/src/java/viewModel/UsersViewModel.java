@@ -17,14 +17,44 @@ public class UsersViewModel extends Users implements Serializable {
 
     private String createUserDisplay;
     private String updateUserDisplay;
+    private int totalRecipe;
+    private int totalFollowOtherUser;
+    private int totalFollowedByOthersUser;
+
+    public int getTotalRecipe() {
+        return totalRecipe;
+    }
+
+    public void setTotalRecipe(int totalRecipe) {
+        this.totalRecipe = totalRecipe;
+    }
+
+    public int getTotalFollowOtherUser() {
+        return totalFollowOtherUser;
+    }
+
+    public void setTotalFollowOtherUser(int totalFollowOtherUser) {
+        this.totalFollowOtherUser = totalFollowOtherUser;
+    }
+
+    public int getTotalFollowedByOthersUser() {
+        return totalFollowedByOthersUser;
+    }
+
+    public void setTotalFollowedByOthersUser(int totalFollowedByOthersUser) {
+        this.totalFollowedByOthersUser = totalFollowedByOthersUser;
+    }
 
     public UsersViewModel() {
     }
 
-    public UsersViewModel(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay) {
+    public UsersViewModel(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, int totalRecipe, int totalFollowOtherUser, int totalFollowedByOthersUser) {
         super(id, userName, displayName, sex, address, phoneNumber, password, email, job, role, avatar, description, status, createDate, createUser, updateDate, updateUser);
         this.createUserDisplay = createUserDisplay;
         this.updateUserDisplay = updateUserDisplay;
+        this.totalRecipe = totalRecipe;
+        this.totalFollowOtherUser = totalFollowOtherUser;
+        this.totalFollowedByOthersUser = totalFollowedByOthersUser;
     }
 
     public String getCreateUserDisplay() {

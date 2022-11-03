@@ -16,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -57,10 +58,10 @@ public class FollowerService {
     }
 
     @DELETE
-    @Path("unfollow/{userId}/{followerId}")
+    @Path("unfollow")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@PathParam("userId") int userId, @PathParam("followerId") int followerId) {
+    public String delete(@QueryParam("userId") int userId, @QueryParam("followerId") int followerId) {
         if (!followerDao.checkExistFollowerItem(userId, followerId)) {
             return "This item is not exist or delete!";
         } else if (followerDao.deleteData(userId, followerId)) {

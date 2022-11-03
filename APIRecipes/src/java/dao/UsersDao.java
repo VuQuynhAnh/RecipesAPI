@@ -59,6 +59,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
+                userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -101,6 +104,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
+                userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUsersViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -136,6 +142,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
+                userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -171,6 +180,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
+                userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -206,6 +218,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setUpdateUser(result.getInt("UpdateUser"));
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
+                userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -332,6 +347,9 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                         user.setUpdateUser(result.getInt("UpdateUser"));
                         user.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                         user.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                        user.setTotalRecipe(result.getInt("TotalRecipe"));
+                        user.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
+                        user.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                     }
                 }
             }

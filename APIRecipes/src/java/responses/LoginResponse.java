@@ -21,14 +21,14 @@ public class LoginResponse extends UsersViewModel implements Serializable {
     public LoginResponse() {
     }
 
-    public LoginResponse(String message, int statusCode, int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay) {
-        super(id, userName, displayName, sex, address, phoneNumber, password, email, job, role, avatar, description, status, createDate, createUser, updateDate, updateUser, createUserDisplay, updateUserDisplay);
+    public LoginResponse(String message, int statusCode, int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, int totalRecipe, int totalFollowOtherUser, int totalFollowedByOthersUser) {
+        super(id, userName, displayName, sex, address, phoneNumber, password, email, job, role, avatar, description, status, createDate, createUser, updateDate, updateUser, createUserDisplay, updateUserDisplay, totalRecipe, totalFollowOtherUser, totalFollowedByOthersUser);
         this.message = message;
         this.statusCode = statusCode;
     }
-    
-     public LoginResponse(String message, int statusCode, UsersViewModel user) {
-        super(user.getId(), user.getUserName(), user.getDisplayName(), user.getSex(), user.getAddress(), user.getPhoneNumber(), user.getPassword(), user.getEmail(), user.getJob(), user.getRole(), user.getAvatar(), user.getDescription(), user.getStatus(), user.getCreateDate(), user.getCreateUser(), user.getUpdateDate(), user.getUpdateUser(), user.getCreateUserDisplay(), user.getUpdateUserDisplay());
+
+    public LoginResponse(String message, int statusCode, UsersViewModel user) {
+        super(user.getId(), user.getUserName(), user.getDisplayName(), user.getSex(), user.getAddress(), user.getPhoneNumber(), user.getPassword(), user.getEmail(), user.getJob(), user.getRole(), user.getAvatar(), user.getDescription(), user.getStatus(), user.getCreateDate(), user.getCreateUser(), user.getUpdateDate(), user.getUpdateUser(), user.getCreateUserDisplay(), user.getUpdateUserDisplay(), user.getTotalRecipe(), user.getTotalFollowOtherUser(), user.getTotalFollowedByOthersUser());
         this.message = message;
         this.statusCode = statusCode;
     }
