@@ -27,6 +27,14 @@ public class RecipeFilterRequest implements Serializable {
     private int maxTotalRating;
     private int minAvgRating;
     private int maxAvgRating;
+    private float minCalories;
+    private float maxCalories;
+    private float minFat;
+    private float maxFat;
+    private float minProtein;
+    private float maxProtein;
+    private float minCarbo;
+    private float maxCarbo;
     private String cookTime;
     private int status;
     private boolean sortByIdDESC;
@@ -36,42 +44,114 @@ public class RecipeFilterRequest implements Serializable {
     private boolean sortByTotalViewDESC;
     private boolean sortByAvgRatingDESC;
     private boolean sortByTotalRatingDESC;
+    private boolean sortByCaloriesDESC;
+    private boolean sortByFatDESC;
+    private boolean sortByProteinDESC;
+    private boolean sortByCarbo;
     private int pageIndex;
     private int pageSize;
-
-    public RecipeFilterRequest(String keyword, int catId, int authorId, String name, String origin, String ingredient, int minServer, int maxServer, int minTotalViews, int maxTotalViews, int minTotalRating, int maxTotalRating, int minAvgRating, int maxAvgRating, String cookTime, int status, boolean sortByIdDESC, boolean sortByNameASC, boolean sortByServesASC, boolean sortByServesDESC, boolean sortByTotalViewDESC, boolean sortByAvgRatingDESC, boolean sortByTotalRatingDESC, int pageIndex, int pageSize) {
-        this.keyword = keyword;
-        this.catId = catId;
-        this.authorId = authorId;
-        this.name = name;
-        this.origin = origin;
-        this.ingredient = ingredient;
-        this.minServer = minServer;
-        this.maxServer = maxServer;
-        this.minTotalViews = minTotalViews;
-        this.maxTotalViews = maxTotalViews;
-        this.minTotalRating = minTotalRating;
-        this.maxTotalRating = maxTotalRating;
-        this.minAvgRating = minAvgRating;
-        this.maxAvgRating = maxAvgRating;
-        this.cookTime = cookTime;
-        this.status = status;
-        this.sortByIdDESC = sortByIdDESC;
-        this.sortByNameASC = sortByNameASC;
-        this.sortByServesASC = sortByServesASC;
-        this.sortByServesDESC = sortByServesDESC;
-        this.sortByTotalViewDESC = sortByTotalViewDESC;
-        this.sortByAvgRatingDESC = sortByAvgRatingDESC;
-        this.sortByTotalRatingDESC = sortByTotalRatingDESC;
-        this.pageIndex = pageIndex;
-        this.pageSize = pageSize;
-    }
 
     public RecipeFilterRequest() {
     }
 
     public String getKeyword() {
         return keyword;
+    }
+
+    public float getMinCalories() {
+        return minCalories;
+    }
+
+    public void setMinCalories(float minCalories) {
+        this.minCalories = minCalories;
+    }
+
+    public float getMaxCalories() {
+        return maxCalories;
+    }
+
+    public void setMaxCalories(float maxCalories) {
+        this.maxCalories = maxCalories;
+    }
+
+    public float getMinFat() {
+        return minFat;
+    }
+
+    public void setMinFat(float minFat) {
+        this.minFat = minFat;
+    }
+
+    public float getMaxFat() {
+        return maxFat;
+    }
+
+    public void setMaxFat(float maxFat) {
+        this.maxFat = maxFat;
+    }
+
+    public float getMinProtein() {
+        return minProtein;
+    }
+
+    public void setMinProtein(float minProtein) {
+        this.minProtein = minProtein;
+    }
+
+    public float getMaxProtein() {
+        return maxProtein;
+    }
+
+    public void setMaxProtein(float maxProtein) {
+        this.maxProtein = maxProtein;
+    }
+
+    public float getMinCarbo() {
+        return minCarbo;
+    }
+
+    public void setMinCarbo(float minCarbo) {
+        this.minCarbo = minCarbo;
+    }
+
+    public float getMaxCarbo() {
+        return maxCarbo;
+    }
+
+    public void setMaxCarbo(float maxCarbo) {
+        this.maxCarbo = maxCarbo;
+    }
+
+    public boolean isSortByCaloriesDESC() {
+        return sortByCaloriesDESC;
+    }
+
+    public void setSortByCaloriesDESC(boolean sortByCaloriesDESC) {
+        this.sortByCaloriesDESC = sortByCaloriesDESC;
+    }
+
+    public boolean isSortByFatDESC() {
+        return sortByFatDESC;
+    }
+
+    public void setSortByFatDESC(boolean sortByFatDESC) {
+        this.sortByFatDESC = sortByFatDESC;
+    }
+
+    public boolean isSortByProteinDESC() {
+        return sortByProteinDESC;
+    }
+
+    public void setSortByProteinDESC(boolean sortByProteinDESC) {
+        this.sortByProteinDESC = sortByProteinDESC;
+    }
+
+    public boolean isSortByCarbo() {
+        return sortByCarbo;
+    }
+
+    public void setSortByCarbo(boolean sortByCarbo) {
+        this.sortByCarbo = sortByCarbo;
     }
 
     public void setKeyword(String keyword) {

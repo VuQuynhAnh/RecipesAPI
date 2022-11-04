@@ -22,8 +22,8 @@ public class RecipesViewModel extends Recipes implements Serializable {
     private double avgRating;
     private int totalRating;
 
-    public RecipesViewModel(String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay, double avgRating, int totalRating, int id, int categoryId, int authorId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
-        super(id, categoryId, authorId, name, origin, serves, image, totalViews, cookTime, status, createDate, createUser, updateDate, updateUser);
+    public RecipesViewModel(int id, int categoryId, int authorId, String name, String origin, int serves, float calories, float fat, float protein, float carbo, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser,String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay, double avgRating, int totalRating) {
+        super(id, categoryId, authorId, name, origin, serves, calories, fat, protein, carbo, image, totalViews, cookTime, status, createDate, createUser, updateDate, updateUser);
         this.categoryDisplay = categoryDisplay;
         this.author = author;
         this.createUserDisplay = createUserDisplay;

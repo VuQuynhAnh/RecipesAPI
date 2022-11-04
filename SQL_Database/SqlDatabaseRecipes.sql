@@ -57,6 +57,10 @@ Create table Recipes -- Công thức
 	Name nvarchar(250) not null,
 	Origin nvarchar(250),
 	Serves int,
+	Calories float,
+	Fat float,
+	Protein float,
+	Carbo float,
 	Image ntext,
 	TotalViews int default 1,
 	CookTime nvarchar(250),
@@ -153,10 +157,10 @@ insert into Users values (N'My.nguyen', N'Nguyễn Thanh Mỹ', 1, N'Hà Tây', 
 go
 insert into Users values (N'Long.Tran', N'Trần Quang Long', 1, N'Nam Định', '0187115522', 'htrkgjvrtjnkrvtnj', 'long.tran@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
 go
-
-insert into Recipes values(1,1,'Rice','Viet Nam', 3, '',1,'',0,'2022-10-25',1,null,null)
+select * from Recipes
+insert into Recipes values(1,1,'Rice','Viet Nam', 3, 3.5, 2.1, 12, 12, '',1,'',0,'2022-10-25',1,null,null)
 go
-insert into Recipes values(2,1,'Fist','Thai Lan', 7, '',100,'',1,'2022-10-25',1,null,null)
+insert into Recipes values(2,1,'Fist','Thai Lan', 7, 3.5, 1.1, 11, 12, '',100,'',1,'2022-10-25',1,null,null)
 go
 
 insert into Steps values (1, 1, 'Cook com', 0)
@@ -289,6 +293,10 @@ select
 	recipe.Serves,
 	cast(recipe.Image as nvarchar(max)) as Image,
 	recipe.TotalViews,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.CookTime,
 	recipe.Status,
 	recipe.CreateDate,
@@ -320,6 +328,10 @@ group by
 	cast(recipe.Image as nvarchar(max)),
 	recipe.TotalViews,
 	recipe.CookTime,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.Status,
 	recipe.CreateDate,
 	recipe.CreateUser,
@@ -344,6 +356,10 @@ select
 	cast(recipe.Image as nvarchar(max)) as Image,
 	recipe.TotalViews,
 	recipe.CookTime,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.Status,
 	recipe.CreateDate,
 	recipe.CreateUser,
@@ -373,6 +389,10 @@ group by
 	recipe.AuthorId,
 	recipe.Name,
 	recipe.Origin,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.Serves,
 	cast(recipe.Image as nvarchar(max)),
 	recipe.TotalViews,
@@ -404,6 +424,14 @@ create proc FilterListRecipes
 	@maxTotalRating int,
 	@minAvgRating int,
 	@maxAvgRating int,
+	@minCalories float,
+	@maxCalories float,
+	@minFat float,
+	@maxFat float,
+	@minProtein float,
+	@maxProtein float,
+	@minCarbo float,
+	@maxCarbo float,
 	@cookTime nvarchar(250),
 	@status int,
 	@sortByIdDESC bit,
@@ -413,6 +441,10 @@ create proc FilterListRecipes
 	@sortByTotalViewDESC bit,
 	@sortByAvgRatingDESC bit,
 	@sortByTotalRatingDESC bit,
+	@sortByCaloriesDESC bit,
+	@sortByFatDESC bit,
+	@sortByProteinDESC bit,
+	@sortByCarbo bit,
 	@pageIndex int,
 	@pageSize int
 as
@@ -429,6 +461,10 @@ select
 	recipe.Status,
 	recipe.CreateDate,
 	recipe.CreateUser,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.UpdateDate,
 	recipe.UpdateUser,
 	Case 
@@ -458,6 +494,14 @@ where
 	and (@maxServer <= 0 or recipe.Serves <= @maxServer)
 	and recipe.TotalViews >= @minTotalViews
 	and (@maxTotalViews <= 0 or recipe.TotalViews <= @maxTotalViews)
+	and recipe.Calories >= @minCalories
+	and (@maxCalories <= 0 or recipe.Calories <= @maxCalories)
+	and recipe.Fat >= @minFat
+	and (@maxFat <= 0 or recipe.Fat <= @maxFat)
+	and recipe.Protein >= @minProtein
+	and (@maxProtein <= 0 or recipe.Protein <= @maxProtein)
+	and recipe.Carbo >= @minCarbo
+	and (@maxCarbo <= 0 or recipe.Carbo <= @maxCarbo)
 	and (@cookTime = null or @cookTime = '' or recipe.CookTime like N'%' + @cookTime + '%')
 	and (@status = -1 or recipe.Status = @status)
 group by 
@@ -472,6 +516,10 @@ group by
 	recipe.CookTime,
 	recipe.Status,
 	recipe.CreateDate,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.CreateUser,
 	recipe.UpdateDate,
 	recipe.UpdateUser,
@@ -497,6 +545,10 @@ order by
 	case @sortByServesASC when 1 then recipe.Serves end asc,
 	case @sortByServesDESC when 1 then recipe.Serves end desc,
 	case @sortByTotalViewDESC when 1 then recipe.TotalViews end desc,
+	case @sortByCaloriesDESC when 1 then recipe.Calories end desc,
+	case @sortByFatDESC when 1 then recipe.Fat end desc,
+	case @sortByProteinDESC when 1 then recipe.Protein end desc,
+	case @sortByCarbo when 1 then recipe.Carbo end desc,
 	case @sortByAvgRatingDESC when 1 then 
 		(Case 
 			when AVG(rating.Rating) is null then 5
@@ -520,6 +572,10 @@ select
 	cast(recipe.Image as nvarchar(max)) as Image,
 	recipe.TotalViews,
 	recipe.CookTime,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.Status,
 	recipe.CreateDate,
 	recipe.CreateUser,
@@ -545,6 +601,10 @@ group by
 	recipe.Id,
 	recipe.CategoryId,
 	recipe.AuthorId,
+	recipe.Calories,
+	recipe.Carbo,
+	recipe.Fat,
+	recipe.Protein,
 	recipe.Name,
 	recipe.Origin,
 	recipe.Serves,
@@ -565,7 +625,12 @@ go
 create proc GetRecipeIdAfterInsert
 	@catId int,
 	@authorId int,
-	@name nvarchar(250)
+	@name nvarchar(250),
+	@serves int,
+	@calories float,
+	@fat float,
+	@protein float,
+	@carbo float
 as
 begin
 	select top 1 * from Recipes
@@ -573,6 +638,11 @@ begin
 		CategoryId = @catId
 		and AuthorId = @authorId
 		and Name like N'%' + @name + '%'
+		and Serves = @serves
+		and Calories = @calories
+		and Fat = @fat
+		and Protein = @protein
+		and Carbo = @carbo
 		and TotalViews = 1
 		and Status = 0
 	order by Id desc
@@ -977,10 +1047,6 @@ go
 select * from Category
 go
 exec GetAllUsers
-go
-exec FilterListUsers N'',1,1,-1
-go
-exec FilterListRecipes N'',0,0,N'',N'',0,0,0,0,N'',-1
 go
 
 insert into Rating values 

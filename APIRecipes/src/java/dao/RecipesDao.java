@@ -46,6 +46,10 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setName(result.getString("Name"));
                 recipeViewModel.setOrigin(result.getString("Origin"));
                 recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setCalories(result.getFloat("Calories"));
+                recipeViewModel.setCarbo(result.getFloat("Carbo"));
+                recipeViewModel.setFat(result.getFloat("Fat"));
+                recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage(result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -83,6 +87,10 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setName(result.getString("Name"));
                 recipeViewModel.setOrigin(result.getString("Origin"));
                 recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setCalories(result.getFloat("Calories"));
+                recipeViewModel.setCarbo(result.getFloat("Carbo"));
+                recipeViewModel.setFat(result.getFloat("Fat"));
+                recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage(result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -109,7 +117,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListRecipes(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            statement = con.prepareCall("{call FilterListRecipes(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             statement.setString(1, request.getKeyword());
             statement.setInt(2, request.getCatId());
             statement.setInt(3, request.getAuthorId());
@@ -124,17 +132,29 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             statement.setInt(12, request.getMaxTotalRating());
             statement.setInt(13, request.getMinAvgRating());
             statement.setInt(14, request.getMaxAvgRating());
-            statement.setString(15, request.getCookTime());
-            statement.setInt(16, request.getStatus());
-            statement.setBoolean(17, request.isSortByIdDESC());
-            statement.setBoolean(18, request.isSortByNameASC());
-            statement.setBoolean(19, request.isSortByServesASC());
-            statement.setBoolean(20, request.isSortByServesDESC());
-            statement.setBoolean(21, request.isSortByTotalViewDESC());
-            statement.setBoolean(22, request.isSortByAvgRatingDESC());
-            statement.setBoolean(23, request.isSortByAvgRatingDESC());
-            statement.setInt(24, request.getPageIndex());
-            statement.setInt(25, request.getPageSize());
+            statement.setFloat(15, request.getMinCalories());
+            statement.setFloat(16, request.getMaxCalories());
+            statement.setFloat(17, request.getMinFat());
+            statement.setFloat(18, request.getMaxFat());
+            statement.setFloat(19, request.getMinProtein());
+            statement.setFloat(20, request.getMaxProtein());
+            statement.setFloat(21, request.getMinCarbo());
+            statement.setFloat(22, request.getMaxCarbo());
+            statement.setString(23, request.getCookTime());
+            statement.setInt(24, request.getStatus());
+            statement.setBoolean(25, request.isSortByIdDESC());
+            statement.setBoolean(26, request.isSortByNameASC());
+            statement.setBoolean(27, request.isSortByServesASC());
+            statement.setBoolean(28, request.isSortByServesDESC());
+            statement.setBoolean(29, request.isSortByTotalViewDESC());
+            statement.setBoolean(30, request.isSortByAvgRatingDESC());
+            statement.setBoolean(31, request.isSortByAvgRatingDESC());
+            statement.setBoolean(32, request.isSortByCaloriesDESC());
+            statement.setBoolean(33, request.isSortByFatDESC());
+            statement.setBoolean(34, request.isSortByProteinDESC());
+            statement.setBoolean(35, request.isSortByCarbo());
+            statement.setInt(36, request.getPageIndex());
+            statement.setInt(37, request.getPageSize());
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -145,6 +165,10 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setName(result.getString("Name"));
                 recipeViewModel.setOrigin(result.getString("Origin"));
                 recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setCalories(result.getFloat("Calories"));
+                recipeViewModel.setCarbo(result.getFloat("Carbo"));
+                recipeViewModel.setFat(result.getFloat("Fat"));
+                recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage(result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -182,6 +206,10 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setName(result.getString("Name"));
                 recipeViewModel.setOrigin(result.getString("Origin"));
                 recipeViewModel.setServes(result.getInt("Serves"));
+                recipeViewModel.setCalories(result.getFloat("Calories"));
+                recipeViewModel.setCarbo(result.getFloat("Carbo"));
+                recipeViewModel.setFat(result.getFloat("Fat"));
+                recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage(result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -219,18 +247,22 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
     public int insertRecipe(Recipes t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?)");
+            statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Calories, Fat, Protein, Carbo, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             statement.setInt(1, t.getCategoryId());
             statement.setInt(2, t.getAuthorId());
             statement.setString(3, t.getName());
             statement.setString(4, t.getOrigin());
             statement.setInt(5, t.getServes());
-            statement.setString(6, t.getImage());
-            statement.setInt(7, 1);
-            statement.setString(8, t.getCookTime());
-            statement.setInt(9, 0);
-            statement.setDate(10, Date.valueOf(LocalDate.now()));
-            statement.setInt(11, t.getCreateUser());
+            statement.setFloat(6, t.getCalories());
+            statement.setFloat(7, t.getFat());
+            statement.setFloat(8, t.getProtein());
+            statement.setFloat(9, t.getCarbo());
+            statement.setString(10, t.getImage());
+            statement.setInt(11, 1);
+            statement.setString(12, t.getCookTime());
+            statement.setInt(13, 0);
+            statement.setDate(14, Date.valueOf(LocalDate.now()));
+            statement.setInt(15, t.getCreateUser());
             if (statement.executeUpdate() > 0) {
                 return getIdRecipeAfterInsert(t);
             }
@@ -243,10 +275,16 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
     private int getIdRecipeAfterInsert(Recipes t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetRecipeIdAfterInsert(?,?,?)}");
+            statement = con.prepareCall("{call GetRecipeIdAfterInsert(?,?,?,?,?,?,?,?)}");
             statement.setInt(1, t.getCategoryId());
             statement.setInt(2, t.getAuthorId());
             statement.setString(3, t.getName());
+            statement.setInt(4, t.getServes());
+            statement.setFloat(5, t.getCalories());
+            statement.setFloat(6, t.getFat());
+            statement.setFloat(7, t.getProtein());
+            statement.setFloat(8, t.getCarbo());
+
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 return result.getInt("Id");
@@ -261,18 +299,22 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
     public boolean updateData(Recipes t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Recipes set CategoryId=?, AuthorId=?, Name=?, Origin=?, Serves=?, Image=?, CookTime=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+            statement = con.prepareCall("update Recipes set CategoryId=?, AuthorId=?, Name=?, Origin=?, Serves=?, Calories=?, Fat=?, Protein=?, Carbo=?, Image=?, CookTime=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
             statement.setInt(1, t.getCategoryId());
             statement.setInt(2, t.getAuthorId());
             statement.setString(3, t.getName());
             statement.setString(4, t.getOrigin());
             statement.setInt(5, t.getServes());
-            statement.setString(6, t.getImage());
-            statement.setString(7, t.getCookTime());
-            statement.setInt(8, t.getStatus());
-            statement.setDate(9, Date.valueOf(LocalDate.now()));
-            statement.setInt(10, t.getUpdateUser());
-            statement.setInt(11, t.getId());
+            statement.setFloat(6, t.getCalories());
+            statement.setFloat(7, t.getFat());
+            statement.setFloat(8, t.getProtein());
+            statement.setFloat(9, t.getCarbo());
+            statement.setString(10, t.getImage());
+            statement.setString(11, t.getCookTime());
+            statement.setInt(12, t.getStatus());
+            statement.setDate(13, Date.valueOf(LocalDate.now()));
+            statement.setInt(14, t.getUpdateUser());
+            statement.setInt(15, t.getId());
             if (statement.executeUpdate() > 0) {
                 return true;
             }

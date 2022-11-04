@@ -20,6 +20,10 @@ public class Recipes implements Serializable {
     private String name;
     private String origin;
     private int serves;
+    private float calories;
+    private float fat;
+    private float protein;
+    private float carbo;
     private String image;
     private int totalViews;
     private String cookTime;
@@ -29,13 +33,21 @@ public class Recipes implements Serializable {
     private Date updateDate;
     private int updateUser;
 
-    public Recipes(int id, int categoryId, int authorId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public float getCalories() {
+        return calories;
+    }
+
+    public Recipes(int id, int categoryId, int authorId, String name, String origin, int serves, float calories, float fat, float protein, float carbo, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
         this.id = id;
         this.categoryId = categoryId;
         this.authorId = authorId;
         this.name = name;
         this.origin = origin;
         this.serves = serves;
+        this.calories = calories;
+        this.fat = fat;
+        this.protein = protein;
+        this.carbo = carbo;
         this.image = image;
         this.totalViews = totalViews;
         this.cookTime = cookTime;
@@ -46,12 +58,16 @@ public class Recipes implements Serializable {
         this.updateUser = updateUser;
     }
 
-    public Recipes(int categoryId, int userId, String name, String origin, int serves, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
+    public Recipes(int categoryId, int authorId, String name, String origin, int serves, float calories, float fat, float protein, float carbo, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser) {
         this.categoryId = categoryId;
-        this.authorId = userId;
+        this.authorId = authorId;
         this.name = name;
         this.origin = origin;
         this.serves = serves;
+        this.calories = calories;
+        this.fat = fat;
+        this.protein = protein;
+        this.carbo = carbo;
         this.image = image;
         this.totalViews = totalViews;
         this.cookTime = cookTime;
@@ -71,6 +87,34 @@ public class Recipes implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setCalories(float calories) {
+        this.calories = calories;
+    }
+
+    public float getFat() {
+        return fat;
+    }
+
+    public void setFat(float fat) {
+        this.fat = fat;
+    }
+
+    public float getProtein() {
+        return protein;
+    }
+
+    public void setProtein(float protein) {
+        this.protein = protein;
+    }
+
+    public float getCarbo() {
+        return carbo;
+    }
+
+    public void setCarbo(float carbo) {
+        this.carbo = carbo;
     }
 
     public int getCategoryId() {
