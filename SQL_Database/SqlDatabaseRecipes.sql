@@ -677,27 +677,87 @@ go
 
 create proc FilterListUsers
 	@keyword nvarchar(250),
+	@email varchar(250),
+	@phoneNumber varchar(25),
+	@displayName nvarchar(250),
+	@userName varchar(250),
 	@sex int,
 	@role int,
-	@status int
+	@status int,
+	@sortByIdDESC bit,
+	@sortByTotalRecipeDESC bit,
+	@sortByTotalFollowOtherUserDESC bit,
+	@sortByTotalFollowedByOthersUserDESC bit,
+	@pageIndex int,
+	@pageSize int
 as
 select 
-	u.*,
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)) as Avatar,
+	cast(u.Description as nvarchar(max)) as Description,
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	COUNT(recipe.Id) as TotalRecipe,
+	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
+left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
+left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
+left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
 where (u.UserName like N'%' + @keyword + '%'
 		or u.DisplayName like N'%' + @keyword + '%'
 		or u.Address like N'%' + @keyword + '%'
 		or u.PhoneNumber like N'%' + @keyword + '%'
 		or u.Email like N'%' + @keyword + '%'
 	  )
+	  and (@phoneNumber = '' or u.PhoneNumber like N'%' +  @phoneNumber + '%')
+	  and (@email = '' or u.Email like N'%' +  @email + '%')
+	  and (@displayName = '' or u.Email like N'%' + @displayName + '%')
+	  and (@userName = '' or u.UserName like N'%' + @userName + '%')
 	  and (@sex = - 1 or u.Sex = @sex)
 	  and (@role = - 1 or u.Role = @role)
 	  and (@status = -1 or u.Status = @status)
-order by id desc
+group by 
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)),
+	cast(u.Description as nvarchar(max)),
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
+	createUser.UserName,
+	updateUser.UserName
+order by 
+	case @sortByTotalRecipeDESC when 1 then COUNT(recipe.Id) end desc,
+	case @sortByTotalFollowOtherUserDESC when 1 then COUNT(followOtherUser.UserId) end desc,
+	case @sortByTotalFollowedByOthersUserDESC when 1 then COUNT(followedByOthersUser.FollowerId) end desc,
+	case @sortByIdDESC when 1 then u.Id end desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
 go
 
 create proc GetUserById
