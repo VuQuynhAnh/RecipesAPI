@@ -1048,6 +1048,8 @@ select * from Category
 go
 exec GetAllUsers
 go
+select * from Recipes
+go
 
 insert into Rating values 
 	(1, 1, 3,''),
