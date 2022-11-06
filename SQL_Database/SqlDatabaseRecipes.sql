@@ -124,9 +124,11 @@ Create table NotificationType
 (
 	Id int primary key identity,
 	Name nvarchar(250) not null,
-	Description ntext,
 	Status int default 0,
-	CreateDate date not null default getdate()
+	CreateDate date not null default getdate(),
+	CreateUser int not null default 0,
+	UpdateDate date,
+	UpdateUser int
 )
 go
 
@@ -1051,7 +1053,69 @@ group by
 	updateUser.UserName
 go
 
-select * from Category
+-- proc NotificationType
+create proc GetAllNotificationType
+as
+select 
+		notType.Id,
+		notType.Name,
+		notType.Status,
+		notType.CreateDate,
+		notType.CreateUser,
+		notType.UpdateDate,
+		notType.UpdateUser,
+		createUser.UserName as CreateUserDisplay,
+		updateUser.UserName as UpdateUserDisplay
+	from NotificationType notType
+	left join Users as createUser on notType.CreateUser = createUser.Id
+	left join Users as updateUser on notType.UpdateUser = updateUser.Id
+go
+
+create proc FilterListNotificationType
+	@keyword nvarchar(250),
+	@isGetAll bit
+as
+select 
+		notType.Id,
+		notType.Name,
+		notType.Status,
+		notType.CreateDate,
+		notType.CreateUser,
+		notType.UpdateDate,
+		notType.UpdateUser,
+		createUser.UserName as CreateUserDisplay,
+		updateUser.UserName as UpdateUserDisplay
+	from NotificationType notType
+	left join Users as createUser on notType.CreateUser = createUser.Id
+	left join Users as updateUser on notType.UpdateUser = updateUser.Id
+where
+	notType.Name like N'%' + @keyword + '%'
+	and (@isGetAll = 1 or notType.Status = 0)
+go
+
+create proc GetNotificationTypeById
+	@id int
+as
+select 
+		notType.Id,
+		notType.Name,
+		notType.Status,
+		notType.CreateDate,
+		notType.CreateUser,
+		notType.UpdateDate,
+		notType.UpdateUser,
+		createUser.UserName as CreateUserDisplay,
+		updateUser.UserName as UpdateUserDisplay
+	from NotificationType notType
+	left join Users as createUser on notType.CreateUser = createUser.Id
+	left join Users as updateUser on notType.UpdateUser = updateUser.Id
+where
+	notType.Id = @id
+go
+
+
+
+select * from NotificationType
 go
 exec GetAllUsers
 go

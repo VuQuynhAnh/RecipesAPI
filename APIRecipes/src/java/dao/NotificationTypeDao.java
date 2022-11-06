@@ -5,7 +5,7 @@
  */
 package dao;
 
-import entity.Category;
+import entity.NotificationType;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import viewModel.CategoryViewModel;
+import viewModel.NotificationTypeViewModel;
 
 /**
  *
  * @author DELL
  */
-public class NotificationTypeDao implements IService<Category, CategoryViewModel, Integer> {
+public class NotificationTypeDao implements IService<NotificationType, NotificationTypeViewModel, Integer> {
 
     Connection con = null;
 
@@ -31,36 +31,36 @@ public class NotificationTypeDao implements IService<Category, CategoryViewModel
     }
 
     @Override
-    public List<CategoryViewModel> getData() {
-        List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
+    public List<NotificationTypeViewModel> getData() {
+        List<NotificationTypeViewModel> listNotificationTypeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetAllCategory()}");
+            statement = con.prepareCall("{call GetAllNotificationType()}");
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                CategoryViewModel categoryViewModel = new CategoryViewModel();
-                categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setStatus(result.getInt("Status"));
-                categoryViewModel.setCreateDate(result.getDate("CreateDate"));
-                categoryViewModel.setCreateUser(result.getInt("CreateUser"));
-                categoryViewModel.setUpdateDate(result.getDate("UpdateDate"));
-                categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
-                categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
-                categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
-                listCategoryViewModels.add(categoryViewModel);
+                NotificationTypeViewModel notificationTypeViewModel = new NotificationTypeViewModel();
+                notificationTypeViewModel.setId(result.getInt("Id"));
+                notificationTypeViewModel.setName(result.getString("Name"));
+                notificationTypeViewModel.setStatus(result.getInt("Status"));
+                notificationTypeViewModel.setCreateDate(result.getDate("CreateDate"));
+                notificationTypeViewModel.setCreateUser(result.getInt("CreateUser"));
+                notificationTypeViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                notificationTypeViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                notificationTypeViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                notificationTypeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                listNotificationTypeViewModels.add(notificationTypeViewModel);
             }
         } catch (SQLException ex) {
             Logger.getLogger(NotificationTypeDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return listCategoryViewModels;
+        return listNotificationTypeViewModels;
     }
 
-    public List<CategoryViewModel> getData(String keyword, boolean isGetAll) {
-        List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
+    public List<NotificationTypeViewModel> getData(String keyword, boolean isGetAll) {
+        List<NotificationTypeViewModel> listNotificationTypeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListCategory(?,?)}");
+            statement = con.prepareCall("{call FilterListNotificationType(?,?)}");
             if (keyword.equalsIgnoreCase("_")) {
                 keyword = "";
             }
@@ -68,54 +68,54 @@ public class NotificationTypeDao implements IService<Category, CategoryViewModel
             statement.setBoolean(2, isGetAll);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                CategoryViewModel categoryViewModel = new CategoryViewModel();
-                categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setStatus(result.getInt("Status"));
-                categoryViewModel.setCreateDate(result.getDate("CreateDate"));
-                categoryViewModel.setCreateUser(result.getInt("CreateUser"));
-                categoryViewModel.setUpdateDate(result.getDate("UpdateDate"));
-                categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
-                categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
-                categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
-                listCategoryViewModels.add(categoryViewModel);
+                NotificationTypeViewModel notificationTypeViewModel = new NotificationTypeViewModel();
+                notificationTypeViewModel.setId(result.getInt("Id"));
+                notificationTypeViewModel.setName(result.getString("Name"));
+                notificationTypeViewModel.setStatus(result.getInt("Status"));
+                notificationTypeViewModel.setCreateDate(result.getDate("CreateDate"));
+                notificationTypeViewModel.setCreateUser(result.getInt("CreateUser"));
+                notificationTypeViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                notificationTypeViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                notificationTypeViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                notificationTypeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                listNotificationTypeViewModels.add(notificationTypeViewModel);
             }
         } catch (SQLException ex) {
             Logger.getLogger(NotificationTypeDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return listCategoryViewModels;
+        return listNotificationTypeViewModels;
     }
 
     @Override
-    public CategoryViewModel getDataById(Integer id) {
-        CategoryViewModel categoryViewModel = new CategoryViewModel();
+    public NotificationTypeViewModel getDataById(Integer id) {
+        NotificationTypeViewModel notificationViewModel = new NotificationTypeViewModel();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetCategoryById(?)}");
+            statement = con.prepareCall("{call GetNotificationTypeById(?)}");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-                categoryViewModel.setId(result.getInt("Id"));
-                categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setStatus(result.getInt("Status"));
-                categoryViewModel.setCreateDate(result.getDate("CreateDate"));
-                categoryViewModel.setCreateUser(result.getInt("CreateUser"));
-                categoryViewModel.setUpdateDate(result.getDate("UpdateDate"));
-                categoryViewModel.setUpdateUser(result.getInt("UpdateUser"));
-                categoryViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
-                categoryViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
+                notificationViewModel.setId(result.getInt("Id"));
+                notificationViewModel.setName(result.getString("Name"));
+                notificationViewModel.setStatus(result.getInt("Status"));
+                notificationViewModel.setCreateDate(result.getDate("CreateDate"));
+                notificationViewModel.setCreateUser(result.getInt("CreateUser"));
+                notificationViewModel.setUpdateDate(result.getDate("UpdateDate"));
+                notificationViewModel.setUpdateUser(result.getInt("UpdateUser"));
+                notificationViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
+                notificationViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(NotificationTypeDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return categoryViewModel;
+        return notificationViewModel;
     }
 
     @Override
-    public boolean insertData(Category t) {
+    public boolean insertData(NotificationType t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into Category(Name, Status, CreateDate, CreateUser) values (?,?,?,?)");
+            statement = con.prepareCall("insert into NotificationType(Name, Status, CreateDate, CreateUser) values (?,?,?,?)");
             statement.setString(1, t.getName());
             statement.setInt(2, 0);
             statement.setDate(3, Date.valueOf(LocalDate.now()));
@@ -130,10 +130,10 @@ public class NotificationTypeDao implements IService<Category, CategoryViewModel
     }
 
     @Override
-    public boolean updateData(Category t) {
+    public boolean updateData(NotificationType t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Category set Name=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+            statement = con.prepareCall("update NotificationType set Name=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
             statement.setString(1, t.getName());
             statement.setInt(2, t.getStatus());
             statement.setDate(3, Date.valueOf(LocalDate.now()));
@@ -152,7 +152,7 @@ public class NotificationTypeDao implements IService<Category, CategoryViewModel
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update Category set Status = 1, UpdateDate=?, UpdateUser=? where Id=?");
+            statement = con.prepareCall("update NotificationType set Status = 1, UpdateDate=?, UpdateUser=? where Id=?");
             statement.setDate(1, Date.valueOf(LocalDate.now()));
             statement.setInt(2, userId);
             statement.setInt(3, id);
