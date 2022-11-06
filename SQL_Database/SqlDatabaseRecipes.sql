@@ -715,6 +715,7 @@ select
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
+	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
 	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
@@ -758,6 +759,7 @@ create proc FilterListUsers
 	@sortByTotalRecipeDESC bit,
 	@sortByTotalFollowOtherUserDESC bit,
 	@sortByTotalFollowedByOthersUserDESC bit,
+	@sortByTotalViewsDESC bit,
 	@pageIndex int,
 	@pageSize int
 as
@@ -781,6 +783,7 @@ select
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
+	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
 	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
@@ -824,6 +827,7 @@ group by
 order by 
 	case @sortByTotalRecipeDESC when 1 then COUNT(recipe.Id) end desc,
 	case @sortByTotalFollowOtherUserDESC when 1 then COUNT(followOtherUser.UserId) end desc,
+	case @sortByTotalViewsDESC when 1 then Sum(recipe.TotalViews) end desc,
 	case @sortByTotalFollowedByOthersUserDESC when 1 then COUNT(followedByOthersUser.FollowerId) end desc,
 	case @sortByIdDESC when 1 then u.Id end desc
 OFFSET ((@pageIndex - 1) * @pageSize) Rows  
@@ -853,6 +857,7 @@ select
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
+	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
 	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
@@ -957,6 +962,7 @@ select
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
+	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
 	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Followers as fo
@@ -1012,6 +1018,7 @@ select
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
+	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
 	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Followers as fo

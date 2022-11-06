@@ -18,8 +18,19 @@ public class UsersViewModel extends Users implements Serializable {
     private String createUserDisplay;
     private String updateUserDisplay;
     private int totalRecipe;
+    private int totalViews;
     private int totalFollowOtherUser;
     private int totalFollowedByOthersUser;
+
+    public UsersViewModel(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, int totalRecipe, int totalViews, int totalFollowOtherUser, int totalFollowedByOthersUser) {
+        super(id, userName, displayName, sex, address, phoneNumber, password, email, job, role, avatar, description, status, createDate, createUser, updateDate, updateUser);
+        this.createUserDisplay = createUserDisplay;
+        this.updateUserDisplay = updateUserDisplay;
+        this.totalRecipe = totalRecipe;
+        this.totalViews = totalViews;
+        this.totalFollowOtherUser = totalFollowOtherUser;
+        this.totalFollowedByOthersUser = totalFollowedByOthersUser;
+    }
 
     public int getTotalRecipe() {
         return totalRecipe;
@@ -27,6 +38,14 @@ public class UsersViewModel extends Users implements Serializable {
 
     public void setTotalRecipe(int totalRecipe) {
         this.totalRecipe = totalRecipe;
+    }
+
+    public int getTotalViews() {
+        return totalViews;
+    }
+
+    public void setTotalViews(int totalViews) {
+        this.totalViews = totalViews;
     }
 
     public int getTotalFollowOtherUser() {
@@ -46,15 +65,6 @@ public class UsersViewModel extends Users implements Serializable {
     }
 
     public UsersViewModel() {
-    }
-
-    public UsersViewModel(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, int totalRecipe, int totalFollowOtherUser, int totalFollowedByOthersUser) {
-        super(id, userName, displayName, sex, address, phoneNumber, password, email, job, role, avatar, description, status, createDate, createUser, updateDate, updateUser);
-        this.createUserDisplay = createUserDisplay;
-        this.updateUserDisplay = updateUserDisplay;
-        this.totalRecipe = totalRecipe;
-        this.totalFollowOtherUser = totalFollowOtherUser;
-        this.totalFollowedByOthersUser = totalFollowedByOthersUser;
     }
 
     public String getCreateUserDisplay() {

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import requests.UserFilterRequest;
 import viewModel.UsersViewModel;
 
 /**
@@ -60,6 +61,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUserViewModels.add(userViewModel);
@@ -70,19 +72,29 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return listUserViewModels;
     }
 
-    public List<UsersViewModel> getData(String keyword, int sex, int role, int status) {
+    public List<UsersViewModel> getData(UserFilterRequest request) {
         List<UsersViewModel> listUsersViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListUsers(?,?,?,?)}");
-            if (keyword.equalsIgnoreCase("_")) {
-                keyword = "";
+            statement = con.prepareCall("{call FilterListUsers(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            if (request.getKeyword().equalsIgnoreCase("_")) {
+                request.setKeyword("");
             }
-            statement.setString(1, keyword);
-            statement.setInt(2, sex);
-            statement.setInt(3, role);
-            statement.setInt(4, status);
-
+            statement.setString(1, request.getKeyword());
+            statement.setString(2, request.getEmail());
+            statement.setString(3, request.getPhoneNumber());
+            statement.setString(4, request.getDisplayName());
+            statement.setString(5, request.getUserName());
+            statement.setInt(6, request.getSex());
+            statement.setInt(7, request.getRole());
+            statement.setInt(8, request.getStatus());
+            statement.setBoolean(9, request.isSortByIdDESC());
+            statement.setBoolean(10, request.isSortByTotalRecipeDESC());
+            statement.setBoolean(11, request.isSortByTotalFollowOtherUserDESC());
+            statement.setBoolean(12, request.isSortByTotalFollowedByOthersUserDESC());
+            statement.setBoolean(13, request.isSortByTotalViewsDESC());
+            statement.setInt(14, request.getPageIndex());
+            statement.setInt(15, request.getPageSize());
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -105,6 +117,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUsersViewModels.add(userViewModel);
@@ -143,6 +156,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUserViewModels.add(userViewModel);
@@ -181,6 +195,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
                 listUserViewModels.add(userViewModel);
@@ -219,6 +234,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 userViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 userViewModel.setTotalRecipe(result.getInt("TotalRecipe"));
+                userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
             }

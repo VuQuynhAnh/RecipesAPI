@@ -26,6 +26,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import requests.LoginRequest;
 import requests.UpdatePasswordRequest;
+import requests.UserFilterRequest;
 import responses.LoginResponse;
 import viewModel.UsersViewModel;
 
@@ -70,11 +71,12 @@ public class UsersService {
         return userDao.getListFollowedByOthersUser(followerId);
     }
 
-    @GET
+    @POST
     @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> filterData(@QueryParam("keyword") String keyword, @QueryParam("sex") int sex, @QueryParam("role") int role, @QueryParam("status") int status) {
-        return userDao.getData(keyword, sex, role, status);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<UsersViewModel> filterData(UserFilterRequest request) {
+        return userDao.getData(request);
     }
 
     @GET
@@ -159,13 +161,13 @@ public class UsersService {
     }
 
     @DELETE
-    @Path("delete}")
+    @Path("delete")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String delete(@QueryParam("id") int id, @QueryParam("deleteId") int deleteId) {
+    public String delete(@QueryParam("id") int id, @QueryParam("userId") int userId) {
         if (!userDao.checkExistUser(id)) {
             return "User width id = " + id + " is not exist or deleted!";
-        } else if (userDao.deleteData(id, deleteId)) {
+        } else if (userDao.deleteData(id, userId)) {
             return "Success!";
         }
         return "Failed!";
