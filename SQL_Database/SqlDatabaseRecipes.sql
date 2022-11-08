@@ -1113,6 +1113,67 @@ where
 	notType.Id = @id
 go
 
+-- proc Notification
+create proc GetAllNotifications
+as
+select 
+		notifi.*,
+		createUser.UserName as CreateUserDisplay,
+		forUser.UserName as UserDisplay
+	from Notifications notifi
+	left join Users as createUser on notifi.CreateUser = createUser.Id
+	left join Users as forUser on notifi.UserId = forUser.Id
+go
+
+create proc FilterListNotificationByUserId
+	@userId int,
+	@status int
+as
+select 
+		notifi.*,
+		createUser.UserName as CreateUserDisplay,
+		forUser.UserName as UserDisplay
+	from Notifications notifi
+	left join Users as createUser on notifi.CreateUser = createUser.Id
+	left join Users as forUser on notifi.UserId = forUser.Id
+	where 
+		(notifi.UserId = @userId)and
+		(@status = -1 or notifi.Status = @status)
+go
+
+create proc FilterListNotificationByCreateUserId
+	@createUserId int,
+	@status int
+as
+select 
+		notifi.*,
+		createUser.UserName as CreateUserDisplay,
+		forUser.UserName as UserDisplay
+	from Notifications notifi
+	left join Users as createUser on notifi.CreateUser = createUser.Id
+	left join Users as forUser on notifi.UserId = forUser.Id
+	where 
+		(notifi.CreateUser = @createUserId) and
+		(@status = -1 or notifi.Status = @status)
+go
+
+create proc GetNotificationById
+	@id int
+as
+select 
+		notifi.*,
+		createUser.UserName as CreateUserDisplay,
+		forUser.UserName as UserDisplay
+	from Notifications notifi
+	left join Users as createUser on notifi.CreateUser = createUser.Id
+	left join Users as forUser on notifi.UserId = forUser.Id
+	where 
+		notifi.Id = @id
+go
+
+
+
+select * from Notifications
 
 
 select * from NotificationType
