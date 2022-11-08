@@ -1171,6 +1171,9 @@ select
 		notifi.Id = @id
 go
 
+select Password from Users where id = 5
+
+
 
 
 select * from Notifications
