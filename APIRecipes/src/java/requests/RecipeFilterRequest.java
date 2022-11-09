@@ -6,6 +6,7 @@
 package requests;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -14,7 +15,7 @@ import java.io.Serializable;
 public class RecipeFilterRequest implements Serializable {
 
     private String keyword;
-    private int catId;
+    private List<Integer> listCatId;
     private int authorId;
     private String name;
     private String origin;
@@ -52,6 +53,14 @@ public class RecipeFilterRequest implements Serializable {
     private int pageSize;
 
     public RecipeFilterRequest() {
+    }
+
+    public List<Integer> getListCatId() {
+        return listCatId;
+    }
+
+    public void setListCatId(List<Integer> listCatId) {
+        this.listCatId = listCatId;
     }
 
     public String getKeyword() {
@@ -156,14 +165,6 @@ public class RecipeFilterRequest implements Serializable {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
-    }
-
-    public int getCatId() {
-        return catId;
-    }
-
-    public void setCatId(int catId) {
-        this.catId = catId;
     }
 
     public int getAuthorId() {

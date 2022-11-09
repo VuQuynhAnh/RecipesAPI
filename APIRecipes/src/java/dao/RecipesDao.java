@@ -113,13 +113,13 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
 
-    public List<RecipesViewModel> getData(RecipeFilterRequest request) {
+    public List<RecipesViewModel> getData(RecipeFilterRequest request, String listCatId) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call FilterListRecipes(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             statement.setString(1, request.getKeyword());
-            statement.setInt(2, request.getCatId());
+            statement.setString(2, listCatId);
             statement.setInt(3, request.getAuthorId());
             statement.setString(4, request.getName());
             statement.setString(5, request.getOrigin());

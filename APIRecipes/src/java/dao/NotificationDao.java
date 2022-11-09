@@ -195,7 +195,7 @@ public class NotificationDao{
         return false;
     }
 
-    public boolean checkExistCategory(int id) {
+    public boolean checkExistNotification(int id) {
         if (id <= 0) {
             return false;
         }

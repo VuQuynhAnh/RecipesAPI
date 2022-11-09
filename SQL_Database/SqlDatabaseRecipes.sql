@@ -411,9 +411,21 @@ group by
 	recipeSave.CreateDate
 go
 
-create proc FilterListRecipes
+--exec FilterListRecipes '',',1,2,',0,'','','',0,1000,0,1000,0,1000,0,1000,0,1000,0,1000,0,1000,0,1000, '', -1, 0,0,0,0,0,0,0,0,0,0,0,1,20
+--go
+
+--create proc checkprocnew 
+--	@catId varchar(max)
+--as
+--select * from Recipes where @catId = '' or @catId = ',' or @catId like '%,' + CAST(CategoryId AS VARCHAR(20)) + ',%'
+--go
+
+--exec checkprocnew ''
+--go
+
+alter proc FilterListRecipes
 	@keyword nvarchar(250),
-	@catId int,
+	@catId varchar(max),
 	@authorId int,
 	@name nvarchar(250),
 	@origin nvarchar(250),
@@ -487,7 +499,7 @@ left join Rating rating on recipe.Id = rating.RecipeId
 left join Ingredient ingredient on recipe.Id = ingredient.RecipeId
 where
 	(@keyword = null or @keyword = '' or (recipe.Name like N'%' + @keyword + '%' or recipe.Origin like N'%' + @keyword + '%' or recipe.CookTime like N'%' + @keyword + '%'))
-	and (@catId = 0 or recipe.CategoryId = @catId)
+	and (@catId = '' or @catId = ',' or @catId like '%,' + CAST(recipe.CategoryId AS VARCHAR(20)) + ',%')
 	and (@authorId = 0 or recipe.AuthorId = @authorId)
 	and (@name = null or @name = '' or recipe.Name like N'%' + @name + '%')
 	and (@origin = null or @origin = '' or recipe.Origin like N'%' + @origin + '%')
@@ -560,6 +572,7 @@ order by
 OFFSET ((@pageIndex - 1) * @pageSize) Rows  
 Fetch NEXT @pageSize ROWS ONLY  
 go
+
 
 create proc GetRecipeById
 	@id int
@@ -1170,8 +1183,6 @@ select
 	where 
 		notifi.Id = @id
 go
-
-select Password from Users where id = 5
 
 
 

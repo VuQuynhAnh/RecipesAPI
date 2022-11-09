@@ -80,7 +80,14 @@ public class RecipesService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<RecipesViewModel> getRecipes(RecipeFilterRequest request) {
-        return recipesDao.getData(request);
+        String listCatId = "";
+        if (!request.getListCatId().isEmpty()) {
+            listCatId += ",";
+            for (int catId : request.getListCatId()) {
+                listCatId += String.valueOf(catId) + ",";
+            }
+        }
+        return recipesDao.getData(request, listCatId);
     }
 
     @GET
@@ -190,7 +197,7 @@ public class RecipesService {
         } else if (recipesDao.getDataById(input.getRecipe().getId()).getId() <= 0) {
             return "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
         } else if (!userDao.checkExistUser(input.getRecipe().getUpdateUser())) {
-            return "Recipe updateUser with id = " + input.getRecipe().getUpdateUser()+ " is not exist or deleted!";
+            return "Recipe updateUser with id = " + input.getRecipe().getUpdateUser() + " is not exist or deleted!";
         }
 
         // Validate Steps
