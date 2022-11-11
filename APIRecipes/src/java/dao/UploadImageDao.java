@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -22,10 +24,24 @@ import java.util.logging.Logger;
 public class UploadImageDao {
 
     public String uploadImage(String base64, String folder, String imageName) {
-        String path = "E://upload/" + folder;
+
+//        try {
+//            ServletContext context = (ServletContext) FacesContext.getCurrentInstance().getExternalContext()
+//                    .getContext();
+//            String path = context.getRealPath("/WEB-INF/image/");
+//        } catch (Exception e) {
+//            System.err.println(e);
+//        }
+
+        String home = System.getProperty("user.home") + "/upload";
+        File file = new File(home);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        String path = home + "/" + folder;
         String location = path + "/" + imageName + ".png";
         byte[] data = Base64.getDecoder().decode(base64.getBytes(StandardCharsets.UTF_8));
-        File file = new File(path);
+        file = new File(path);
         if (!file.exists()) {
             file.mkdir();
         }
