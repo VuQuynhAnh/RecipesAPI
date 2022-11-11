@@ -93,7 +93,7 @@ public class UsersService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String insert(final @Context ServletConfig config, Users user) {
-        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+        String path = config.getServletContext().getRealPath("/images");
 
         if (user.getUserName().trim().length() == 0) {
             return "User userName is requied!";
@@ -131,7 +131,7 @@ public class UsersService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String updatefinal(@Context ServletConfig config, Users user) {
-        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+        String path = config.getServletContext().getRealPath("/images");
 
         if (user.getUserName().trim().length() == 0) {
             return "User userName is requied!";

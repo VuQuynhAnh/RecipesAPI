@@ -118,7 +118,7 @@ public class RecipesService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String insert(final @Context ServletConfig config, RecipeInputData input) {
-        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+        String path = config.getServletContext().getRealPath("/images");
 
         // Validate Recipe input
         if (input.getRecipe().getName().trim().length() == 0) {
@@ -187,7 +187,7 @@ public class RecipesService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String update(final @Context ServletConfig config, RecipeInputData input) {
-        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+        String path = config.getServletContext().getRealPath("/images");
 
         // Validate recipe
         if (input.getRecipe().getName().trim().length() == 0) {
