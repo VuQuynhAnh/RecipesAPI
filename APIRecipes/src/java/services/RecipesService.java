@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -28,6 +29,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
@@ -115,7 +117,9 @@ public class RecipesService {
     @Path("insert")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String insert(RecipeInputData input) {
+    public String insert(final @Context ServletConfig config, RecipeInputData input) {
+        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+
         // Validate Recipe input
         if (input.getRecipe().getName().trim().length() == 0) {
             return "Recipe name is requied!";
@@ -156,7 +160,7 @@ public class RecipesService {
         // Insert Recipe and return recipeId
         if (input.getRecipe().getImage().length() > 0) {
             String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
-            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), FolderNameConstant.recipe, fileName));
+            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), path, FolderNameConstant.recipe, fileName));
         }
         int recipeId = recipesDao.insertRecipe(input.getRecipe());
         if (recipeId > 0) {
@@ -182,7 +186,9 @@ public class RecipesService {
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String update(RecipeInputData input) {
+    public String update(final @Context ServletConfig config, RecipeInputData input) {
+        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+
         // Validate recipe
         if (input.getRecipe().getName().trim().length() == 0) {
             return "Recipe name is requied!";
@@ -228,7 +234,7 @@ public class RecipesService {
         // Check end insert image to server
         if (input.getRecipe().getImage().length() > 0 && !input.getRecipe().getImage().contains(FolderNameConstant.recipe)) {
             String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
-            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), FolderNameConstant.recipe, fileName));
+            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), path, FolderNameConstant.recipe, fileName));
         }
         if (recipesDao.updateData(input.getRecipe())) {
             // Update Steps

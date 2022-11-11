@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,6 +24,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import requests.LoginRequest;
 import requests.UpdatePasswordRequest;
@@ -90,7 +92,9 @@ public class UsersService {
     @Path("insert")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String insert(Users user) {
+    public String insert(final @Context ServletConfig config, Users user) {
+        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+
         if (user.getUserName().trim().length() == 0) {
             return "User userName is requied!";
         } else if (user.getDisplayName().trim().length() == 0) {
@@ -114,7 +118,7 @@ public class UsersService {
         // convert image
         if (user.getAvatar().length() > 0) {
             String fileName = "user_" + dateTimeNow.format(formatDate);
-            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), FolderNameConstant.user, fileName));
+            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), path, FolderNameConstant.user, fileName));
         }
         if (userDao.insertData(user)) {
             return "Success!";
@@ -126,7 +130,9 @@ public class UsersService {
     @Path("updateUser")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String update(Users user) {
+    public String updatefinal(@Context ServletConfig config, Users user) {
+        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+
         if (user.getUserName().trim().length() == 0) {
             return "User userName is requied!";
         } else if (user.getDisplayName().trim().length() == 0) {
@@ -152,7 +158,7 @@ public class UsersService {
         // convert image
         if (user.getAvatar().length() > 0 && !user.getAvatar().contains(FolderNameConstant.user)) {
             String fileName = "user_" + dateTimeNow.format(formatDate);
-            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), FolderNameConstant.user, fileName));
+            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), path, FolderNameConstant.user, fileName));
         }
         if (userDao.updateData(user)) {
             return "Success!";

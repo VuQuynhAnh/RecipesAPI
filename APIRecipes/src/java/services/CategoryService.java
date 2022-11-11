@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,6 +23,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import viewModel.CategoryViewModel;
 
@@ -77,7 +79,8 @@ public class CategoryService {
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String insert(Category category) {
+    public String insert(final @Context ServletConfig config, Category category) {
+        String path = config.getServletContext().getRealPath("/WEB-INF/image");
 
         // validate
         if (category.getName().trim().length() == 0) {
@@ -91,7 +94,7 @@ public class CategoryService {
         // convert image
         if (category.getImage().length() > 0) {
             String fileName = "cat_" + category.getCreateUser() + "_" + dateTimeNow.format(formatDate);
-            category.setImage(uploadImageDao.uploadImage(category.getImage(), FolderNameConstant.category, fileName));
+            category.setImage(uploadImageDao.uploadImage(category.getImage(), path, FolderNameConstant.category, fileName));
         }
         if (categoryDao.insertData(category)) {
             return "Success!";
@@ -102,7 +105,9 @@ public class CategoryService {
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String update(Category category) {
+    public String update(final @Context ServletConfig config, Category category) {
+        String path = config.getServletContext().getRealPath("/WEB-INF/image");
+
         // validate
         if (category.getName().trim().length() == 0) {
             return "Category name is requied!";
@@ -117,7 +122,7 @@ public class CategoryService {
         // convert image
         if (category.getImage().length() > 0 && !category.getImage().contains(FolderNameConstant.category)) {
             String fileName = "cat_" + category.getCreateUser() + "_" + dateTimeNow.format(formatDate);
-            category.setImage(uploadImageDao.uploadImage(category.getImage(), FolderNameConstant.category, fileName));
+            category.setImage(uploadImageDao.uploadImage(category.getImage(), path, FolderNameConstant.category, fileName));
         }
         if (categoryDao.updateData(category)) {
             return "Success!";

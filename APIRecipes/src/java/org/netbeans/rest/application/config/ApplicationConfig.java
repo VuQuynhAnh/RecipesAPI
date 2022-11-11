@@ -32,7 +32,6 @@ public class ApplicationConfig extends Application {
         resources.add(services.CORSFilter.class);
         resources.add(services.CategoryService.class);
         resources.add(services.FollowerService.class);
-//        resources.add(services.NotificationService.class);
         resources.add(services.NotificationService.class);
         resources.add(services.NotificationTypeService.class);
         resources.add(services.RecipeSaveService.class);
