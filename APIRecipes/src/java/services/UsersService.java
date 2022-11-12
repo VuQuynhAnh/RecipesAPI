@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import requests.LoginRequest;
 import requests.UpdatePasswordRequest;
 import requests.UserFilterRequest;
@@ -55,37 +56,42 @@ public class UsersService {
     @GET
     @Path("getAll")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getAllData() {
-        return userDao.getData();
+    public List<UsersViewModel> getAllData(@Context UriInfo ui) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return userDao.getData(url);
     }
 
     @GET
     @Path("getListFollowOtherUser")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getListFollowOtherUser(@QueryParam("userId") int userId) {
-        return userDao.getListFollowOtherUser(userId);
+    public List<UsersViewModel> getListFollowOtherUser(@Context UriInfo ui, @QueryParam("userId") int userId) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return userDao.getListFollowOtherUser(url, userId);
     }
 
     @GET
     @Path("getListFollowedByOthersUser")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getListFollowedByOthersUser(@QueryParam("followerId") int followerId) {
-        return userDao.getListFollowedByOthersUser(followerId);
+    public List<UsersViewModel> getListFollowedByOthersUser(@Context UriInfo ui, @QueryParam("followerId") int followerId) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return userDao.getListFollowedByOthersUser(url, followerId);
     }
 
     @POST
     @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> filterData(UserFilterRequest request) {
-        return userDao.getData(request);
+    public List<UsersViewModel> filterData(@Context UriInfo ui, UserFilterRequest request) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return userDao.getData(url, request);
     }
 
     @GET
     @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public UsersViewModel getUsersById(@QueryParam("id") int id) {
-        return userDao.getDataById(id);
+    public UsersViewModel getUsersById(@Context UriInfo ui, @QueryParam("id") int id) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return userDao.getDataById(url, id);
     }
 
     @POST
@@ -151,7 +157,7 @@ public class UsersService {
             return "User phoneNumber is exist in DB, choose another phoneNumber!";
         } else if (user.getEmail().trim().length() > 0 && userDao.checkExistEmail(user.getEmail(), user.getId())) {
             return "User email is exist in DB, choose another email!";
-        } else if (userDao.getDataById(user.getId()).getId() <= 0) {
+        } else if (userDao.getDataById("", user.getId()).getId() <= 0) {
             return "User width id = " + user.getId() + " is not exist!";
         }
 
@@ -193,7 +199,7 @@ public class UsersService {
         } else if (request.getUpdateId() <= 0) {
             return "User updateId is requied!";
         }
-        Users user = userDao.getDataById(request.getId());
+        Users user = userDao.getDataById("", request.getId());
 
         if (user.getId() <= 0) {
             return "User width id = " + request.getId() + " is not exist!";
@@ -220,8 +226,9 @@ public class UsersService {
     @Path("loginUser")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponse loginUser(LoginRequest request) {
-        UsersViewModel userLogin = userDao.loginUser(request.getLoginUser(), request.getPassword(), false);
+    public LoginResponse loginUser(@Context UriInfo ui, LoginRequest request) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        UsersViewModel userLogin = userDao.loginUser(url, request.getLoginUser(), request.getPassword(), false);
         String message = "Success!";
         int statusCode = 0;
         if (userLogin.getStatus() != 0) {
@@ -260,8 +267,9 @@ public class UsersService {
     @Path("loginAdmin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponse loginAdmin(LoginRequest request) {
-        UsersViewModel userLogin = userDao.loginUser(request.getLoginUser(), request.getPassword(), true);
+    public LoginResponse loginAdmin(@Context UriInfo ui, LoginRequest request) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        UsersViewModel userLogin = userDao.loginUser(url, request.getLoginUser(), request.getPassword(), true);
         String message = "Success!";
         int statusCode = 0;
         if (userLogin.getStatus() != 0) {

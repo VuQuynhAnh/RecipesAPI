@@ -423,7 +423,7 @@ go
 --exec checkprocnew ''
 --go
 
-alter proc FilterListRecipes
+create proc FilterListRecipes
 	@keyword nvarchar(250),
 	@catId varchar(max),
 	@authorId int,

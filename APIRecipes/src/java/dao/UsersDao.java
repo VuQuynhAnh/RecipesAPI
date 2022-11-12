@@ -25,7 +25,7 @@ import viewModel.UsersViewModel;
  *
  * @author DELL
  */
-public class UsersDao implements IService<Users, UsersViewModel, Integer> {
+public class UsersDao {
 
     Connection con = null;
 
@@ -33,8 +33,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         con = GetConnection.getConnect();
     }
 
-    @Override
-    public List<UsersViewModel> getData() {
+    public List<UsersViewModel> getData(String serverUrl) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -51,7 +50,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -72,7 +71,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return listUserViewModels;
     }
 
-    public List<UsersViewModel> getData(UserFilterRequest request) {
+    public List<UsersViewModel> getData(String serverUrl, UserFilterRequest request) {
         List<UsersViewModel> listUsersViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -107,7 +106,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -128,7 +127,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return listUsersViewModels;
     }
 
-    public List<UsersViewModel> getListFollowOtherUser(int userId) {
+    public List<UsersViewModel> getListFollowOtherUser(String serverUrl, int userId) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -146,7 +145,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -167,7 +166,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return listUserViewModels;
     }
 
-    public List<UsersViewModel> getListFollowedByOthersUser(int followerId) {
+    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -185,7 +184,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -206,8 +205,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return listUserViewModels;
     }
 
-    @Override
-    public UsersViewModel getDataById(Integer id) {
+    public UsersViewModel getDataById(String serverUrl, Integer id) {
         UsersViewModel userViewModel = new UsersViewModel();
         PreparedStatement statement;
         try {
@@ -224,7 +222,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(result.getString("Avatar"));
+                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -244,7 +242,6 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return userViewModel;
     }
 
-    @Override
     public boolean insertData(Users t) {
         PreparedStatement statement;
         try {
@@ -272,7 +269,6 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return false;
     }
 
-    @Override
     public boolean updateData(Users t) {
         PreparedStatement statement;
         try {
@@ -300,7 +296,6 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return false;
     }
 
-    @Override
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {
@@ -334,7 +329,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
         return false;
     }
 
-    public UsersViewModel loginUser(String loginUser, String password, boolean isLoginAdmin) {
+    public UsersViewModel loginUser(String serverUrl, String loginUser, String password, boolean isLoginAdmin) {
         UsersViewModel user = new UsersViewModel();
         PreparedStatement statement;
         try {
@@ -355,7 +350,7 @@ public class UsersDao implements IService<Users, UsersViewModel, Integer> {
                         user.setPhoneNumber(result.getString("PhoneNumber"));
                         user.setEmail(result.getString("Email"));
                         user.setJob(result.getString("Job"));
-                        user.setAvatar(result.getString("Avatar"));
+                        user.setAvatar(serverUrl + result.getString("Avatar"));
                         user.setDescription(result.getString("Description"));
                         user.setCreateDate(result.getDate("CreateDate"));
                         user.setCreateUser(result.getInt("CreateUser"));

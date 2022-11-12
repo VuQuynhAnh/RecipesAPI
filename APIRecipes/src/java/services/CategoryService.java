@@ -10,6 +10,7 @@ import dao.CategoryDao;
 import dao.UploadImageDao;
 import dao.UsersDao;
 import entity.Category;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import viewModel.CategoryViewModel;
 
 /**
@@ -50,14 +52,16 @@ public class CategoryService {
     @GET
     @Path("getAll")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CategoryViewModel> getCategories() {
-        return categoryDao.getData();
+    public List<CategoryViewModel> getCategories(@Context UriInfo ui) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return categoryDao.getData(url);
     }
 
     @GET
     @Path("getLists")
     @Produces(MediaType.APPLICATION_JSON)
     public List<CategoryViewModel> getCategories(
+            @Context UriInfo ui,
             @QueryParam("keyword") String keyword,
             @QueryParam("isGetAll") boolean isGetAll,
             @QueryParam("sortIdDESC") boolean sortIdDESC,
@@ -66,14 +70,16 @@ public class CategoryService {
             @QueryParam("pageIndex") int pageIndex,
             @QueryParam("pageSize") int pageSize
     ) {
-        return categoryDao.getData(keyword, isGetAll, sortIdDESC, sortNameASC, sortTotalRecipeDESC, pageIndex, pageSize);
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return categoryDao.getData(url, keyword, isGetAll, sortIdDESC, sortNameASC, sortTotalRecipeDESC, pageIndex, pageSize);
     }
 
     @GET
     @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public CategoryViewModel getCategoryById(@QueryParam("id") int id) {
-        return categoryDao.getDataById(id);
+    public CategoryViewModel getCategoryById(@Context UriInfo ui, @QueryParam("id") int id) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return categoryDao.getDataById(url, id);
     }
 
     @POST
@@ -111,7 +117,7 @@ public class CategoryService {
         // validate
         if (category.getName().trim().length() == 0) {
             return "Category name is requied!";
-        } else if (categoryDao.getDataById(category.getId()).getId() <= 0) {
+        } else if (categoryDao.getDataById("", category.getId()).getId() <= 0) {
             return "Category width id = " + category.getId() + " is not exist or deleted!";
         } else if (!usersDao.checkExistUser(category.getUpdateUser())) {
             return "Category updateUser with id = " + category.getUpdateUser() + " is not exist or deleted!";

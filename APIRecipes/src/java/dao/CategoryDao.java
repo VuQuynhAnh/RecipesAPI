@@ -22,7 +22,7 @@ import viewModel.CategoryViewModel;
  *
  * @author DELL
  */
-public class CategoryDao implements IService<Category, CategoryViewModel, Integer> {
+public class CategoryDao {
 
     Connection con = null;
 
@@ -30,8 +30,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         con = GetConnection.getConnect();
     }
 
-    @Override
-    public List<CategoryViewModel> getData() {
+    public List<CategoryViewModel> getData(String serverUrl) {
         List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -41,7 +40,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 CategoryViewModel categoryViewModel = new CategoryViewModel();
                 categoryViewModel.setId(result.getInt("Id"));
                 categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setImage(result.getString("Image"));
+                categoryViewModel.setImage(serverUrl + result.getString("Image"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -58,7 +57,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return listCategoryViewModels;
     }
 
-    public List<CategoryViewModel> getData(String keyword, boolean isGetAll, boolean sortIdDESC, boolean sortNameASC, boolean sortTotalRecipeDESC, int pageIndex, int pageSize) {
+    public List<CategoryViewModel> getData(String serverUrl, String keyword, boolean isGetAll, boolean sortIdDESC, boolean sortNameASC, boolean sortTotalRecipeDESC, int pageIndex, int pageSize) {
         List<CategoryViewModel> listCategoryViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -79,7 +78,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
                 CategoryViewModel categoryViewModel = new CategoryViewModel();
                 categoryViewModel.setId(result.getInt("Id"));
                 categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setImage(result.getString("Image"));
+                categoryViewModel.setImage(serverUrl + result.getString("Image"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -96,8 +95,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return listCategoryViewModels;
     }
 
-    @Override
-    public CategoryViewModel getDataById(Integer id) {
+    public CategoryViewModel getDataById(String serverUrl, Integer id) {
         CategoryViewModel categoryViewModel = new CategoryViewModel();
         PreparedStatement statement;
         try {
@@ -107,7 +105,7 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
             if (result.next()) {
                 categoryViewModel.setId(result.getInt("Id"));
                 categoryViewModel.setName(result.getString("Name"));
-                categoryViewModel.setImage(result.getString("Image"));
+                categoryViewModel.setImage(serverUrl + result.getString("Image"));
                 categoryViewModel.setStatus(result.getInt("Status"));
                 categoryViewModel.setCreateDate(result.getDate("CreateDate"));
                 categoryViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -123,7 +121,6 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return categoryViewModel;
     }
 
-    @Override
     public boolean insertData(Category t) {
         PreparedStatement statement;
         try {
@@ -142,7 +139,6 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return false;
     }
 
-    @Override
     public boolean updateData(Category t) {
         PreparedStatement statement;
         try {
@@ -162,7 +158,6 @@ public class CategoryDao implements IService<Category, CategoryViewModel, Intege
         return false;
     }
 
-    @Override
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {

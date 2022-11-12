@@ -31,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
 import responses.RecipeOutputData;
@@ -66,22 +67,25 @@ public class RecipesService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<RecipesViewModel> getRecipes() {
-        return recipesDao.getData();
+    public List<RecipesViewModel> getRecipes(@Context UriInfo ui) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return recipesDao.getData(url);
     }
 
     @GET
     @Path("getSaveRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<RecipesViewModel> getSaveRecipe(@QueryParam("userId") int userId) {
-        return recipesDao.getSaveRecipe(userId);
+    public List<RecipesViewModel> getSaveRecipe(@Context UriInfo ui, @QueryParam("userId") int userId) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return recipesDao.getSaveRecipe(url, userId);
     }
 
     @POST
     @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<RecipesViewModel> getRecipes(RecipeFilterRequest request) {
+    public List<RecipesViewModel> getRecipes(@Context UriInfo ui, RecipeFilterRequest request) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
         String listCatId = "";
         if (!request.getListCatId().isEmpty()) {
             listCatId += ",";
@@ -89,21 +93,23 @@ public class RecipesService {
                 listCatId += String.valueOf(catId) + ",";
             }
         }
-        return recipesDao.getData(request, listCatId);
+        return recipesDao.getData(url, request, listCatId);
     }
 
     @GET
     @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipesViewModel getRecipesById(@QueryParam("id") int id) {
-        return recipesDao.getDataById(id);
+    public RecipesViewModel getRecipesById(@Context UriInfo ui, @QueryParam("id") int id) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        return recipesDao.getDataById(url, id);
     }
 
     @GET
     @Path("getRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipeOutputData getRecipesOutput(@QueryParam("id") int id) {
-        RecipesViewModel recipe = recipesDao.getDataById(id);
+    public RecipeOutputData getRecipesOutput(@Context UriInfo ui, @QueryParam("id") int id) {
+        String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
+        RecipesViewModel recipe = recipesDao.getDataById(url, id);
         List<Steps> listSteps = stepDao.getData(id);
         List<Ingredient> listIngredients = ingredientDao.getData(id);
         return new RecipeOutputData(
@@ -200,7 +206,7 @@ public class RecipesService {
             return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
             return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
-        } else if (recipesDao.getDataById(input.getRecipe().getId()).getId() <= 0) {
+        } else if (recipesDao.getDataById("", input.getRecipe().getId()).getId() <= 0) {
             return "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
         } else if (!userDao.checkExistUser(input.getRecipe().getUpdateUser())) {
             return "Recipe updateUser with id = " + input.getRecipe().getUpdateUser() + " is not exist or deleted!";

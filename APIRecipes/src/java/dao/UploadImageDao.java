@@ -23,7 +23,8 @@ public class UploadImageDao {
 
     public String uploadImage(String base64, String path, String folder, String imageName) {
         path += "/" + folder;
-        String location = path + "/" + imageName + ".png";
+        imageName += ".png";
+        String location = path + "/" + imageName;
         byte[] data = Base64.getDecoder().decode(base64.getBytes(StandardCharsets.UTF_8));
         File file = new File(path);
         if (!file.exists()) {
@@ -33,7 +34,7 @@ public class UploadImageDao {
             stream.write(data);
             stream.flush();
             stream.close();
-            return location;
+            return folder + "/" + imageName;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(UploadImageDao.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

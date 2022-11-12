@@ -23,7 +23,7 @@ import viewModel.RecipesViewModel;
  *
  * @author DELL
  */
-public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> {
+public class RecipesDao {
 
     Connection con = null;
 
@@ -31,8 +31,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         con = GetConnection.getConnect();
     }
 
-    @Override
-    public List<RecipesViewModel> getData() {
+    public List<RecipesViewModel> getData(String serverUrl) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -50,7 +49,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -72,7 +71,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
 
-    public List<RecipesViewModel> getSaveRecipe(int userId) {
+    public List<RecipesViewModel> getSaveRecipe(String serverUrl, int userId) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -91,7 +90,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -113,7 +112,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
 
-    public List<RecipesViewModel> getData(RecipeFilterRequest request, String listCatId) {
+    public List<RecipesViewModel> getData(String serverUrl, RecipeFilterRequest request, String listCatId) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
@@ -169,7 +168,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -191,8 +190,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return listRecipeViewModels;
     }
 
-    @Override
-    public RecipesViewModel getDataById(Integer id) {
+    public RecipesViewModel getDataById(String serverUrl, Integer id) {
         RecipesViewModel recipeViewModel = new RecipesViewModel();
         PreparedStatement statement;
         try {
@@ -210,7 +208,7 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(result.getString("Image"));
+                recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -237,11 +235,6 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return recipeViewModel;
-    }
-
-    @Override
-    public boolean insertData(Recipes t) {
-        return false;
     }
 
     public int insertRecipe(Recipes t) {
@@ -295,7 +288,6 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return 0;
     }
 
-    @Override
     public boolean updateData(Recipes t) {
         PreparedStatement statement;
         try {
@@ -324,7 +316,6 @@ public class RecipesDao implements IService<Recipes, RecipesViewModel, Integer> 
         return false;
     }
 
-    @Override
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {
