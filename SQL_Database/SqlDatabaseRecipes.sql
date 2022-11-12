@@ -139,7 +139,7 @@ Create table Notifications
 	NotificationId int foreign key references NotificationType(Id),
 	Description ntext,
 	Status int default 0,
-	CreateDate date not null default getdate(),
+	CreateDate datetime not null default CURRENT_TIMESTAMP,
 	CreateUser int not null default 0
 )
 go
@@ -1206,3 +1206,8 @@ go
 
 insert into RecipesSave values(1,1,0,'2022-10-30')
 go
+
+insert into NotificationType values ('check notification type', 0, '2022-11-12',1,'',0)
+go
+
+insert into Notifications values(2,1,'check notificaton', 0, '2022-11-12',3)

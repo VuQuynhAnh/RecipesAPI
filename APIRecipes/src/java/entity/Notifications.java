@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  *
@@ -19,10 +20,10 @@ public class Notifications implements Serializable {
     private int notificationId;
     private String description;
     private int status;
-    private Date createDate;
+    private String createDate;
     private int createUser;
 
-    public Notifications(int id, int userId, int notificationId, String description, int status, Date createDate, int createUser) {
+    public Notifications(int id, int userId, int notificationId, String description, int status, String createDate, int createUser) {
         this.id = id;
         this.userId = userId;
         this.notificationId = notificationId;
@@ -32,7 +33,7 @@ public class Notifications implements Serializable {
         this.createUser = createUser;
     }
 
-    public Notifications(int userId, int notificationId, String description, int status, Date createDate, int createUser) {
+    public Notifications(int userId, int notificationId, String description, int status, String createDate, int createUser) {
         this.userId = userId;
         this.notificationId = notificationId;
         this.description = description;
@@ -81,11 +82,11 @@ public class Notifications implements Serializable {
         this.status = status;
     }
 
-    public Date getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
