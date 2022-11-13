@@ -95,6 +95,24 @@ public class CategoryDao {
         return listCategoryViewModels;
     }
 
+    public int countCategory(String keyword, boolean isGetAll) {
+        int totalCategory = 0;
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call CountCategory(?,?)}");
+            keyword = keyword.equalsIgnoreCase("_") ? "" : keyword;
+            statement.setString(1, "%" + keyword + "%");
+            statement.setBoolean(2, isGetAll);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalCategory = result.getInt("TotalCategory");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalCategory;
+    }
+
     public CategoryViewModel getDataById(String serverUrl, Integer id) {
         CategoryViewModel categoryViewModel = new CategoryViewModel();
         PreparedStatement statement;

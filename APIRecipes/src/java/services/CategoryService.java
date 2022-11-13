@@ -10,7 +10,6 @@ import dao.CategoryDao;
 import dao.UploadImageDao;
 import dao.UsersDao;
 import entity.Category;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -27,6 +26,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import responses.CategoryResponse;
 import viewModel.CategoryViewModel;
 
 /**
@@ -60,7 +60,7 @@ public class CategoryService {
     @GET
     @Path("getLists")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CategoryViewModel> getCategories(
+    public CategoryResponse getCategories(
             @Context UriInfo ui,
             @QueryParam("keyword") String keyword,
             @QueryParam("isGetAll") boolean isGetAll,
@@ -71,7 +71,13 @@ public class CategoryService {
             @QueryParam("pageSize") int pageSize
     ) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return categoryDao.getData(url, keyword, isGetAll, sortIdDESC, sortNameASC, sortTotalRecipeDESC, pageIndex, pageSize);
+        List<CategoryViewModel> categoryViewModels = categoryDao.getData(url, keyword, isGetAll, sortIdDESC, sortNameASC, sortTotalRecipeDESC, pageIndex, pageSize);
+        int totalCategory = categoryDao.countCategory(keyword, isGetAll);
+        int totalPage = totalCategory / pageSize;
+        if (totalCategory % pageSize != 0) {
+            totalPage += 1;
+        }
+        return new CategoryResponse(totalPage, categoryViewModels);
     }
 
     @GET

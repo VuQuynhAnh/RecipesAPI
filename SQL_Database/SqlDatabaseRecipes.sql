@@ -250,6 +250,21 @@ begin
 end
 go
 
+create proc CountCategory
+	@keyword nvarchar(250),
+	@isGetAll bit
+as
+begin
+select 
+	COUNT(cat.Id) as TotalCategory
+from Category cat
+where
+		cat.Name like N'%' + @keyword + '%'
+		and (@isGetAll = 1 or cat.Status = 0)
+end
+go
+
+
 create proc GetCategoryById
 	@id int
 as

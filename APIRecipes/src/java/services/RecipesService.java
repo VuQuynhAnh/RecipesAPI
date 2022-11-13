@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
-import responses.RecipeOutputData;
+import responses.RecipeResponse;
 import viewModel.RecipesViewModel;
 
 /**
@@ -107,12 +107,12 @@ public class RecipesService {
     @GET
     @Path("getRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipeOutputData getRecipesOutput(@Context UriInfo ui, @QueryParam("id") int id) {
+    public RecipeResponse getRecipesOutput(@Context UriInfo ui, @QueryParam("id") int id) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
         RecipesViewModel recipe = recipesDao.getDataById(url, id);
         List<Steps> listSteps = stepDao.getData(id);
         List<Ingredient> listIngredients = ingredientDao.getData(id);
-        return new RecipeOutputData(
+        return new RecipeResponse(
                 recipe,
                 listSteps,
                 listIngredients
