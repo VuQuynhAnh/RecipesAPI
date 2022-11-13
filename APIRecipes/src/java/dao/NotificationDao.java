@@ -40,11 +40,10 @@ public class NotificationDao {
                 NotificationViewModel notificationViewModel = new NotificationViewModel();
                 notificationViewModel.setId(result.getInt("Id"));
                 notificationViewModel.setUserId(result.getInt("UserId"));
-                notificationViewModel.setNotificationId(result.getInt("NotificationId"));
+                notificationViewModel.setNotificationType(result.getString("NotificationType"));
                 notificationViewModel.setDescription(result.getString("Description"));
                 notificationViewModel.setStatus(result.getInt("Status"));
                 notificationViewModel.setCreateDate(simpleDateFormat.format(result.getTimestamp("CreateDate")));
-                notificationViewModel.setCreateUser(result.getInt("CreateUser"));
                 notificationViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 notificationViewModel.setUserDisplay(result.getString("UserDisplay"));
                 listNotificationViewModels.add(notificationViewModel);
@@ -67,11 +66,10 @@ public class NotificationDao {
                 NotificationViewModel notificationViewModel = new NotificationViewModel();
                 notificationViewModel.setId(result.getInt("Id"));
                 notificationViewModel.setUserId(result.getInt("UserId"));
-                notificationViewModel.setNotificationId(result.getInt("NotificationId"));
+                notificationViewModel.setNotificationType(result.getString("NotificationType"));
                 notificationViewModel.setDescription(result.getString("Description"));
                 notificationViewModel.setStatus(result.getInt("Status"));
                 notificationViewModel.setCreateDate(simpleDateFormat.format(result.getTimestamp("CreateDate")));
-                notificationViewModel.setCreateUser(result.getInt("CreateUser"));
                 notificationViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 notificationViewModel.setUserDisplay(result.getString("UserDisplay"));
                 listNotificationViewModels.add(notificationViewModel);
@@ -94,11 +92,10 @@ public class NotificationDao {
                 NotificationViewModel notificationViewModel = new NotificationViewModel();
                 notificationViewModel.setId(result.getInt("Id"));
                 notificationViewModel.setUserId(result.getInt("UserId"));
-                notificationViewModel.setNotificationId(result.getInt("NotificationId"));
+                notificationViewModel.setNotificationType(result.getString("NotificationType"));
                 notificationViewModel.setDescription(result.getString("Description"));
                 notificationViewModel.setStatus(result.getInt("Status"));
                 notificationViewModel.setCreateDate(simpleDateFormat.format(result.getTimestamp("CreateDate")));
-                notificationViewModel.setCreateUser(result.getInt("CreateUser"));
                 notificationViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 notificationViewModel.setUserDisplay(result.getString("UserDisplay"));
                 listNotificationViewModels.add(notificationViewModel);
@@ -118,12 +115,11 @@ public class NotificationDao {
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 notificationViewModel.setId(result.getInt("Id"));
-                notificationViewModel.setUserId(result.getInt("UserId"));
-                notificationViewModel.setNotificationId(result.getInt("NotificationId"));
+                notificationViewModel.setNotificationType(result.getString("NotificationType"));
                 notificationViewModel.setDescription(result.getString("Description"));
                 notificationViewModel.setStatus(result.getInt("Status"));
+                notificationViewModel.setUserId(result.getInt("UserId"));
                 notificationViewModel.setCreateDate(simpleDateFormat.format(result.getTimestamp("CreateDate")));
-                notificationViewModel.setCreateUser(result.getInt("CreateUser"));
                 notificationViewModel.setCreateUserDisplay(result.getString("CreateUserDisplay"));
                 notificationViewModel.setUserDisplay(result.getString("UserDisplay"));
             }
