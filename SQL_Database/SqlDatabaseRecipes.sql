@@ -124,6 +124,7 @@ Create table NotificationType
 (
 	Id int primary key identity,
 	Name nvarchar(250) not null,
+	Description ntext,
 	Status int default 0,
 	CreateDate date not null default getdate(),
 	CreateUser int not null default 0,
@@ -1070,13 +1071,7 @@ go
 create proc GetAllNotificationType
 as
 select 
-		notType.Id,
-		notType.Name,
-		notType.Status,
-		notType.CreateDate,
-		notType.CreateUser,
-		notType.UpdateDate,
-		notType.UpdateUser,
+		notType.*,
 		createUser.UserName as CreateUserDisplay,
 		updateUser.UserName as UpdateUserDisplay
 	from NotificationType notType
@@ -1089,13 +1084,7 @@ create proc FilterListNotificationType
 	@isGetAll bit
 as
 select 
-		notType.Id,
-		notType.Name,
-		notType.Status,
-		notType.CreateDate,
-		notType.CreateUser,
-		notType.UpdateDate,
-		notType.UpdateUser,
+		notType.*,
 		createUser.UserName as CreateUserDisplay,
 		updateUser.UserName as UpdateUserDisplay
 	from NotificationType notType
@@ -1110,13 +1099,7 @@ create proc GetNotificationTypeById
 	@id int
 as
 select 
-		notType.Id,
-		notType.Name,
-		notType.Status,
-		notType.CreateDate,
-		notType.CreateUser,
-		notType.UpdateDate,
-		notType.UpdateUser,
+		notType.*,
 		createUser.UserName as CreateUserDisplay,
 		updateUser.UserName as UpdateUserDisplay
 	from NotificationType notType
@@ -1207,7 +1190,7 @@ go
 insert into RecipesSave values(1,1,0,'2022-10-30')
 go
 
-insert into NotificationType values ('check notification type', 0, '2022-11-12',1,'',0)
+insert into NotificationType values ('check notification type', 'check description type', 0, '2022-11-12',1,'',0)
 go
 
 insert into Notifications values(2,1,'check notificaton', 0, '2022-11-12',3)

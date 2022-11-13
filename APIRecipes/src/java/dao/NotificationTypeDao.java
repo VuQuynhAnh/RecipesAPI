@@ -41,6 +41,7 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
                 NotificationTypeViewModel notificationTypeViewModel = new NotificationTypeViewModel();
                 notificationTypeViewModel.setId(result.getInt("Id"));
                 notificationTypeViewModel.setName(result.getString("Name"));
+                notificationTypeViewModel.setDescription(result.getString("Description"));
                 notificationTypeViewModel.setStatus(result.getInt("Status"));
                 notificationTypeViewModel.setCreateDate(result.getDate("CreateDate"));
                 notificationTypeViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -71,6 +72,7 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
                 NotificationTypeViewModel notificationTypeViewModel = new NotificationTypeViewModel();
                 notificationTypeViewModel.setId(result.getInt("Id"));
                 notificationTypeViewModel.setName(result.getString("Name"));
+                notificationTypeViewModel.setDescription(result.getString("Description"));
                 notificationTypeViewModel.setStatus(result.getInt("Status"));
                 notificationTypeViewModel.setCreateDate(result.getDate("CreateDate"));
                 notificationTypeViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -97,6 +99,7 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
             if (result.next()) {
                 notificationViewModel.setId(result.getInt("Id"));
                 notificationViewModel.setName(result.getString("Name"));
+                notificationViewModel.setDescription(result.getString("Description"));
                 notificationViewModel.setStatus(result.getInt("Status"));
                 notificationViewModel.setCreateDate(result.getDate("CreateDate"));
                 notificationViewModel.setCreateUser(result.getInt("CreateUser"));
@@ -115,11 +118,12 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
     public boolean insertData(NotificationType t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into NotificationType(Name, Status, CreateDate, CreateUser) values (?,?,?,?)");
+            statement = con.prepareCall("insert into NotificationType(Name, Description, Status, CreateDate, CreateUser) values (?,?,?,?,?)");
             statement.setString(1, t.getName());
-            statement.setInt(2, 0);
-            statement.setDate(3, Date.valueOf(LocalDate.now()));
-            statement.setInt(4, t.getCreateUser());
+            statement.setString(2, t.getDescription());
+            statement.setInt(3, 0);
+            statement.setDate(4, Date.valueOf(LocalDate.now()));
+            statement.setInt(5, t.getCreateUser());
             if (statement.executeUpdate() > 0) {
                 return true;
             }
@@ -133,12 +137,13 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
     public boolean updateData(NotificationType t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update NotificationType set Name=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
-            statement.setString(1, t.getName());
-            statement.setInt(2, t.getStatus());
-            statement.setDate(3, Date.valueOf(LocalDate.now()));
-            statement.setInt(4, t.getUpdateUser());
-            statement.setInt(5, t.getId());
+            statement = con.prepareCall("update NotificationType set Name=?, Description=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+           statement.setString(1, t.getName());
+            statement.setString(2, t.getDescription());
+            statement.setInt(3, t.getStatus());
+            statement.setDate(4, Date.valueOf(LocalDate.now()));
+            statement.setInt(5, t.getUpdateUser());
+            statement.setInt(6, t.getId());
             if (statement.executeUpdate() > 0) {
                 return true;
             }

@@ -5,24 +5,17 @@
  */
 package viewModel;
 
-import entity.Category;
+import entity.NotificationType;
 import java.io.Serializable;
-import java.sql.Date;
 
 /**
  *
  * @author DELL
  */
-public class NotificationTypeViewModel extends Category implements Serializable {
+public class NotificationTypeViewModel extends NotificationType implements Serializable {
 
     private String createUserDisplay;
     private String updateUserDisplay;
-
-    public NotificationTypeViewModel(int id, String name, String image, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay) {
-        super(id, name, image, status, createDate, createUser, updateDate, updateUser);
-        this.createUserDisplay = createUserDisplay;
-        this.updateUserDisplay = updateUserDisplay;
-    }
 
     public NotificationTypeViewModel() {
     }
