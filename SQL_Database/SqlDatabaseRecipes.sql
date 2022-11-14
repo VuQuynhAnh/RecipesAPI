@@ -959,8 +959,8 @@ select
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
-where (u.UserName = @userName 
-		or u.PhoneNumber = @userName
+where (
+		u.PhoneNumber = @userName
 		or u.Email = @userName
 	  )
 	  and u.Password = @password
