@@ -36,5 +36,4 @@ public class OutputResponse {
         this.message = message;
         this.notificationModel = notificationModel;
     }
-
 }

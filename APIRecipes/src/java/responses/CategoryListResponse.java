@@ -12,12 +12,12 @@ import viewModel.CategoryViewModel;
  *
  * @author DELL
  */
-public class CategoryResponse {
+public class CategoryListResponse {
 
     private int totalPage;
     private List<CategoryViewModel> categoryViewModels;
 
-    public CategoryResponse() {
+    public CategoryListResponse() {
     }
 
     public int getTotalPage() {
@@ -36,7 +36,7 @@ public class CategoryResponse {
         this.categoryViewModels = categoryViewModels;
     }
 
-    public CategoryResponse(int totalPage, List<CategoryViewModel> categoryViewModels) {
+    public CategoryListResponse(int totalPage, List<CategoryViewModel> categoryViewModels) {
         this.totalPage = totalPage;
         this.categoryViewModels = categoryViewModels;
     }

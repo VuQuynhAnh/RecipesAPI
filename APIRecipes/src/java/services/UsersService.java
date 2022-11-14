@@ -31,6 +31,7 @@ import requests.LoginRequest;
 import requests.UpdatePasswordRequest;
 import requests.UserFilterRequest;
 import responses.LoginResponse;
+import responses.UserListResponse;
 import viewModel.UsersViewModel;
 
 /**
@@ -64,26 +65,52 @@ public class UsersService {
     @GET
     @Path("getListFollowOtherUser")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getListFollowOtherUser(@Context UriInfo ui, @QueryParam("userId") int userId) {
+    public UserListResponse getListFollowOtherUser(
+            @Context UriInfo ui,
+            @QueryParam("userId") int userId,
+            @QueryParam("pageIndex") int pageIndex,
+            @QueryParam("pageSize") int pageSize) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return userDao.getListFollowOtherUser(url, userId);
+        List<UsersViewModel> usersViewModels = userDao.getListFollowOtherUser(url, userId, pageIndex, pageSize);
+        int totalUsers = userDao.countFollowOtherUser(userId);
+        int totalPage = totalUsers / pageSize;
+        if (totalUsers % pageSize != 0) {
+            totalPage += 1;
+        }
+        return new UserListResponse(totalPage, usersViewModels);
     }
 
     @GET
     @Path("getListFollowedByOthersUser")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> getListFollowedByOthersUser(@Context UriInfo ui, @QueryParam("followerId") int followerId) {
+    public UserListResponse getListFollowedByOthersUser(
+            @Context UriInfo ui,
+            @QueryParam("followerId") int followerId,
+            @QueryParam("pageIndex") int pageIndex,
+            @QueryParam("pageSize") int pageSize) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return userDao.getListFollowedByOthersUser(url, followerId);
+        List<UsersViewModel> usersViewModels = userDao.getListFollowedByOthersUser(url, followerId, pageIndex, pageSize);
+        int totalUsers = userDao.countFollowedByOthersUser(followerId);
+        int totalPage = totalUsers / pageSize;
+        if (totalUsers % pageSize != 0) {
+            totalPage += 1;
+        }
+        return new UserListResponse(totalPage, usersViewModels);
     }
 
     @POST
     @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<UsersViewModel> filterData(@Context UriInfo ui, UserFilterRequest request) {
+    public UserListResponse filterData(@Context UriInfo ui, UserFilterRequest request) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return userDao.getData(url, request);
+        List<UsersViewModel> usersViewModels = userDao.getData(url, request);
+        int totalUsers = userDao.countUserFilter(request);
+        int totalPage = totalUsers / request.getPageSize();
+        if (totalUsers % request.getPageSize() != 0) {
+            totalPage += 1;
+        }
+        return new UserListResponse(totalPage, usersViewModels);
     }
 
     @GET

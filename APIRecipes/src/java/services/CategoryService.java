@@ -26,7 +26,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import responses.CategoryResponse;
+import responses.CategoryListResponse;
 import viewModel.CategoryViewModel;
 
 /**
@@ -60,7 +60,7 @@ public class CategoryService {
     @GET
     @Path("getLists")
     @Produces(MediaType.APPLICATION_JSON)
-    public CategoryResponse getCategories(
+    public CategoryListResponse getCategories(
             @Context UriInfo ui,
             @QueryParam("keyword") String keyword,
             @QueryParam("isGetAll") boolean isGetAll,
@@ -77,7 +77,7 @@ public class CategoryService {
         if (totalCategory % pageSize != 0) {
             totalPage += 1;
         }
-        return new CategoryResponse(totalPage, categoryViewModels);
+        return new CategoryListResponse(totalPage, categoryViewModels);
     }
 
     @GET

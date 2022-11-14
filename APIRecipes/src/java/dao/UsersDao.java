@@ -127,12 +127,73 @@ public class UsersDao {
         return listUsersViewModels;
     }
 
-    public List<UsersViewModel> getListFollowOtherUser(String serverUrl, int userId) {
+    public int countUserFilter(UserFilterRequest request) {
+        int totalUsers = 0; 
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call CountUsers(?,?,?,?,?,?,?,?)}");
+            if (request.getKeyword().equalsIgnoreCase("_")) {
+                request.setKeyword("");
+            }
+            statement.setString(1, request.getKeyword());
+            statement.setString(2, request.getEmail());
+            statement.setString(3, request.getPhoneNumber());
+            statement.setString(4, request.getDisplayName());
+            statement.setString(5, request.getUserName());
+            statement.setInt(6, request.getSex());
+            statement.setInt(7, request.getRole());
+            statement.setInt(8, request.getStatus());
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalUsers = result.getInt("TotalUser");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalUsers;
+    }
+    
+    
+    public int countFollowOtherUser(int userId) {
+        int totalCategory = 0;
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call CountFollowOtherUser(?)}");
+            statement.setInt(1, userId);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalCategory = result.getInt("TotalUser");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalCategory;
+    }
+    
+    public int countFollowedByOthersUser(int followerId) {
+        int totalCategory = 0;
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call CountFollowedByOthersUser(?)}");
+            statement.setInt(1, followerId);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalCategory = result.getInt("TotalUser");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalCategory;
+    }
+
+    public List<UsersViewModel> getListFollowOtherUser(String serverUrl, int userId, int pageIndex, int pageSize) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetListFollowOtherUser(?)}");
+            statement = con.prepareCall("{call GetListFollowOtherUser(?,?,?)}");
             statement.setInt(1, userId);
+            statement.setInt(2, pageIndex);
+            statement.setInt(3, pageSize);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -166,12 +227,14 @@ public class UsersDao {
         return listUserViewModels;
     }
 
-    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId) {
+    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId, int pageIndex, int pageSize) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetListFollowedByOthersUser(?)}");
+            statement = con.prepareCall("{call GetListFollowedByOthersUser(?,?,?)}");
             statement.setInt(1, followerId);
+            statement.setInt(2, pageIndex);
+            statement.setInt(3, pageSize);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();

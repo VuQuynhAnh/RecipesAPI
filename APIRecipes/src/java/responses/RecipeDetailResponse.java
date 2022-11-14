@@ -14,13 +14,13 @@ import viewModel.RecipesViewModel;
  *
  * @author DELL
  */
-public class RecipeResponse {
+public class RecipeDetailResponse {
 
     private RecipesViewModel recipesViewModel;
     private List<Steps> listSteps;
     private List<Ingredient> listIngredients;
 
-    public RecipeResponse() {
+    public RecipeDetailResponse() {
     }
 
     public RecipesViewModel getRecipesViewModel() {
@@ -47,7 +47,7 @@ public class RecipeResponse {
         this.listIngredients = listIngredients;
     }
 
-    public RecipeResponse(RecipesViewModel recipesViewModel, List<Steps> listSteps, List<Ingredient> listIngredients) {
+    public RecipeDetailResponse(RecipesViewModel recipesViewModel, List<Steps> listSteps, List<Ingredient> listIngredients) {
         this.recipesViewModel = recipesViewModel;
         this.listSteps = listSteps;
         this.listIngredients = listIngredients;

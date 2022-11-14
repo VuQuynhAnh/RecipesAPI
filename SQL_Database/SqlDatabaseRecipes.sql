@@ -865,6 +865,35 @@ OFFSET ((@pageIndex - 1) * @pageSize) Rows
 Fetch NEXT @pageSize ROWS ONLY  
 go
 
+
+create proc CountUsers
+	@keyword nvarchar(250),
+	@email varchar(250),
+	@phoneNumber varchar(25),
+	@displayName nvarchar(250),
+	@userName varchar(250),
+	@sex int,
+	@role int,
+	@status int
+as
+select 
+	COUNT(u.Id) as TotalUser
+from Users as u
+where (u.UserName like N'%' + @keyword + '%'
+		or u.DisplayName like N'%' + @keyword + '%'
+		or u.Address like N'%' + @keyword + '%'
+		or u.PhoneNumber like N'%' + @keyword + '%'
+		or u.Email like N'%' + @keyword + '%'
+	  )
+	  and (@phoneNumber = '' or u.PhoneNumber like N'%' +  @phoneNumber + '%')
+	  and (@email = '' or u.Email like N'%' +  @email + '%')
+	  and (@displayName = '' or u.Email like N'%' + @displayName + '%')
+	  and (@userName = '' or u.UserName like N'%' + @userName + '%')
+	  and (@sex = - 1 or u.Sex = @sex)
+	  and (@role = - 1 or u.Role = @role)
+	  and (@status = -1 or u.Status = @status)
+go
+
 create proc GetUserById
 	@id int
 as
@@ -971,7 +1000,9 @@ go
 
 -- proc follower
 create proc GetListFollowOtherUser
-	@userId int
+	@userId int,
+	@pageIndex int,
+	@pageSize int
 as
 select 
 	followedByOther.Id,
@@ -992,20 +1023,19 @@ select
 	followedByOther.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
-	COUNT(recipe.Id) as TotalRecipe,
-	Sum(recipe.TotalViews) as TotalViews,
-	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
+	(select COUNT(*) from Recipes where Status = 0 and fo.FollowerId = AuthorId) as TotalRecipe,
+	(select Sum(TotalViews) from Recipes where Status = 0 and fo.FollowerId = AuthorId) as TotalViews,
+	(select COUNT(*) from Followers where Status = 0 and fo.FollowerId = UserId) as TotalFollowOtherUser,
+	(select COUNT(*) from Followers where Status = 0 and fo.FollowerId = FollowerId) as TotalFollowedByOthersUser
 from Followers as fo
 left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
 left join Users as createUser on followOther.CreateUser = createUser.Id
 left join Users as updateUser on followOther.UpdateUser = updateUser.Id
-left join (select * from Recipes where Status = 0) as recipe on followedByOther.Id = recipe.AuthorId
-left join (select * from Followers where Status = 0) as followOtherUser on followedByOther.Id = followOtherUser.UserId
-left join (select * from Followers where Status = 0) as followedByOthersUser on followedByOther.Id = followedByOthersUser.FollowerId
-where followOther.Status = 0 and  followOther.Id = @userId
+where followedByOther.Status = 0 and fo.UserId = @userId
 group by 
+	fo.FollowerId,
+	fo.UserId,
 	followedByOther.Id,
 	followedByOther.UserName,
 	followedByOther.DisplayName,
@@ -1023,11 +1053,17 @@ group by
 	followedByOther.UpdateDate,
 	followedByOther.UpdateUser,
 	createUser.UserName,
-	updateUser.UserName
+	updateUser.UserName,
+	fo.CreateDate
+order by fo.CreateDate desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
 go
 
 create proc GetListFollowedByOthersUser
-	@followerId int
+	@followerId int,
+	@pageIndex int,
+	@pageSize int
 as
 select 
 	followOther.Id,
@@ -1048,20 +1084,19 @@ select
 	followOther.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
-	COUNT(recipe.Id) as TotalRecipe,
-	Sum(recipe.TotalViews) as TotalViews,
-	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
+	(select COUNT(*) from Recipes where Status = 0 and fo.UserId = AuthorId) as TotalRecipe,
+	(select Sum(TotalViews) from Recipes where Status = 0 and fo.UserId = AuthorId) as TotalViews,
+	(select COUNT(*) from Followers where Status = 0 and fo.UserId = UserId) as TotalFollowOtherUser,
+	(select COUNT(*) from Followers where Status = 0 and fo.UserId = FollowerId) as TotalFollowedByOthersUser
 from Followers as fo
 left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
 left join Users as createUser on followOther.CreateUser = createUser.Id
 left join Users as updateUser on followOther.UpdateUser = updateUser.Id
-left join (select * from Recipes where Status = 0) as recipe on followOther.Id = recipe.AuthorId
-left join (select * from Followers where Status = 0) as followOtherUser on followOther.Id = followOtherUser.UserId
-left join (select * from Followers where Status = 0) as followedByOthersUser on followOther.Id = followedByOthersUser.FollowerId
-where followOther.Status = 0 and  followedByOther.Id = @followerId
+where followOther.Status = 0 and  fo.FollowerId = @followerId
 group by
+	fo.FollowerId,
+	fo.UserId,
 	followOther.Id,
 	followOther.UserName,
 	followOther.DisplayName,
@@ -1079,7 +1114,31 @@ group by
 	followOther.UpdateDate,
 	followOther.UpdateUser,
 	createUser.UserName,
-	updateUser.UserName
+	updateUser.UserName,
+	fo.CreateDate
+order by followOther.CreateDate desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
+go
+
+create proc CountFollowOtherUser
+	@userId int
+as
+select 
+	COUNT(fo.UserId) as TotalUser
+from Followers as fo
+left join Users as followOther on followOther.Id = fo.FollowerId
+where followOther.Status = 0 and  fo.UserId = @userId
+go
+
+create proc CountFollowedByOthersUser
+	@followerId int
+as
+select 
+	COUNT(fo.UserId) as TotalUser
+from Followers as fo
+left join Users as followOther on followOther.Id = fo.UserId
+where followOther.Status = 0 and  fo.FollowerId = @followerId
 go
 
 -- proc NotificationType
@@ -1205,9 +1264,6 @@ from Notifications notifi
 where 
 		notifi.Id = @id
 go
-
-
-
 
 select * from Notifications
 
