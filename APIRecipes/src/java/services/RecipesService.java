@@ -35,6 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
 import responses.RecipeDetailResponse;
+import responses.RecipeListResponse;
 import viewModel.RecipesViewModel;
 
 /**
@@ -75,16 +76,25 @@ public class RecipesService {
     @GET
     @Path("getSaveRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<RecipesViewModel> getSaveRecipe(@Context UriInfo ui, @QueryParam("userId") int userId) {
+    public RecipeListResponse getSaveRecipe(@Context UriInfo ui,
+            @QueryParam("userId") int userId,
+            @QueryParam("pageIndex") int pageIndex,
+            @QueryParam("pageSize") int pageSize) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return recipesDao.getSaveRecipe(url, userId);
+        List<RecipesViewModel> recipesViewModels = recipesDao.getSaveRecipe(url, userId, pageIndex, pageSize);
+        int totalRecipe = recipesDao.countSaveRecipe(userId);
+        int totalPage = totalRecipe / pageSize;
+        if (totalRecipe % pageSize != 0) {
+            totalPage += 1;
+        }
+        return new RecipeListResponse(totalPage, recipesViewModels);
     }
 
     @POST
     @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<RecipesViewModel> getRecipes(@Context UriInfo ui, RecipeFilterRequest request) {
+    public RecipeListResponse getRecipes(@Context UriInfo ui, RecipeFilterRequest request) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
         String listCatId = "";
         if (!request.getListCatId().isEmpty()) {
@@ -93,7 +103,13 @@ public class RecipesService {
                 listCatId += String.valueOf(catId) + ",";
             }
         }
-        return recipesDao.getData(url, request, listCatId);
+        List<RecipesViewModel> recipesViewModels = recipesDao.getData(url, request, listCatId);
+        int totalCategory = recipesDao.countRecipe(request, listCatId);
+        int totalPage = totalCategory / request.getPageSize();
+        if (totalCategory % request.getPageSize() != 0) {
+            totalPage += 1;
+        }
+        return new RecipeListResponse(totalPage, recipesViewModels);
     }
 
     @GET

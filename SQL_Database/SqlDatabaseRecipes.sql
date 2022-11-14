@@ -362,7 +362,9 @@ group by
 go
 
 create proc GetSaveRecipes
-	@userId int
+	@userId int,
+	@pageIndex int,
+	@pageSize int
 as
 select 
 	recipe.Id,
@@ -425,6 +427,19 @@ group by
 	createUser.UserName,
 	updateUser.UserName,
 	recipeSave.CreateDate
+order by recipeSave.CreateDate desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
+go
+
+create proc CountSaveRecipes
+	@userId int
+as
+select 
+	Count(recipe.Id) as TotalRecipe
+from RecipesSave as recipeSave
+left join Recipes as recipe on recipe.Id = recipeSave.RecipeId
+where recipe.Status = 0 and recipeSave.UserId = @userId
 go
 
 --exec FilterListRecipes '',',1,2,',0,'','','',0,1000,0,1000,0,1000,0,1000,0,1000,0,1000,0,1000,0,1000, '', -1, 0,0,0,0,0,0,0,0,0,0,0,1,20
@@ -589,6 +604,76 @@ OFFSET ((@pageIndex - 1) * @pageSize) Rows
 Fetch NEXT @pageSize ROWS ONLY  
 go
 
+--exec CountRecipeFilter '','',0,'','','',0,1000,0,1000,0,1000,0,1000,0,1000,0,1000,0,1000,0,1000, '', -1
+--go
+create proc CountRecipeFilter
+	@keyword nvarchar(250),
+	@catId varchar(max),
+	@authorId int,
+	@name nvarchar(250),
+	@origin nvarchar(250),
+	@ingredient nvarchar(250),
+	@minServer int,
+	@maxServer int,
+	@minTotalViews int,
+	@maxTotalViews int,
+	@minTotalRating int,
+	@maxTotalRating int,
+	@minAvgRating int,
+	@maxAvgRating int,
+	@minCalories float,
+	@maxCalories float,
+	@minFat float,
+	@maxFat float,
+	@minProtein float,
+	@maxProtein float,
+	@minCarbo float,
+	@maxCarbo float,
+	@cookTime nvarchar(250),
+	@status int
+as
+select 
+	recipe.Id
+from Recipes recipe
+left join Category as cat on recipe.CategoryId = cat.Id
+left join Ingredient ingredient on recipe.Id = ingredient.RecipeId
+left join Rating rating on recipe.Id = rating.RecipeId
+where
+	(@keyword = null or @keyword = '' or (recipe.Name like N'%' + @keyword + '%' or recipe.Origin like N'%' + @keyword + '%' or recipe.CookTime like N'%' + @keyword + '%'))
+	and (@catId = '' or @catId = ',' or @catId like '%,' + CAST(recipe.CategoryId AS VARCHAR(20)) + ',%')
+	and (@authorId = 0 or recipe.AuthorId = @authorId)
+	and (@name = null or @name = '' or recipe.Name like N'%' + @name + '%')
+	and (@origin = null or @origin = '' or recipe.Origin like N'%' + @origin + '%')
+	and (@ingredient = null or @ingredient = '' or ingredient.Name like N'%' + @ingredient + '%')
+	and recipe.Serves >= @minServer
+	and (@maxServer <= 0 or recipe.Serves <= @maxServer)
+	and recipe.TotalViews >= @minTotalViews
+	and (@maxTotalViews <= 0 or recipe.TotalViews <= @maxTotalViews)
+	and recipe.Calories >= @minCalories
+	and (@maxCalories <= 0 or recipe.Calories <= @maxCalories)
+	and recipe.Fat >= @minFat
+	and (@maxFat <= 0 or recipe.Fat <= @maxFat)
+	and recipe.Protein >= @minProtein
+	and (@maxProtein <= 0 or recipe.Protein <= @maxProtein)
+	and recipe.Carbo >= @minCarbo
+	and (@maxCarbo <= 0 or recipe.Carbo <= @maxCarbo)
+	and (@cookTime = null or @cookTime = '' or recipe.CookTime like N'%' + @cookTime + '%')
+	and (@status = -1 or recipe.Status = @status)
+group by 
+	recipe.Id
+having 
+	COUNT(rating.Id) >= @minTotalRating
+	and (@maxTotalRating <= 0 or COUNT(rating.Id) <= @maxTotalRating)
+	and (Case 
+			when AVG(rating.Rating) is null then 5
+			else AVG(rating.Rating)
+		end) >= @minAvgRating
+	and (@maxAvgRating <= 0 or 
+		(Case 
+			when AVG(rating.Rating) is null then 5
+			else AVG(rating.Rating)
+		end) <= @maxAvgRating)
+go
 
 create proc GetRecipeById
 	@id int

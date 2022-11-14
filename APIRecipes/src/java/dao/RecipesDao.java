@@ -71,12 +71,14 @@ public class RecipesDao {
         return listRecipeViewModels;
     }
 
-    public List<RecipesViewModel> getSaveRecipe(String serverUrl, int userId) {
+    public List<RecipesViewModel> getSaveRecipe(String serverUrl, int userId, int pageIndex, int pageSize) {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetSaveRecipes(?)}");
+            statement = con.prepareCall("{call GetSaveRecipes(?,?,?)}");
             statement.setInt(1, userId);
+            statement.setInt(2, pageIndex);
+            statement.setInt(3, pageSize);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 RecipesViewModel recipeViewModel = new RecipesViewModel();
@@ -110,6 +112,22 @@ public class RecipesDao {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listRecipeViewModels;
+    }
+
+    public int countSaveRecipe(int userId) {
+        int totalRecipe = 0;
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call CountSaveRecipes(?)}");
+            statement.setInt(1, userId);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalRecipe = result.getInt("TotalRecipe");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalRecipe;
     }
 
     public List<RecipesViewModel> getData(String serverUrl, RecipeFilterRequest request, String listCatId) {
@@ -188,6 +206,45 @@ public class RecipesDao {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listRecipeViewModels;
+    }
+
+    public int countRecipe(RecipeFilterRequest request, String listCatId) {
+        int totalRecipe = 0;
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call CountRecipeFilter(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            statement.setString(1, request.getKeyword());
+            statement.setString(2, listCatId);
+            statement.setInt(3, request.getAuthorId());
+            statement.setString(4, request.getName());
+            statement.setString(5, request.getOrigin());
+            statement.setString(6, request.getIngredient());
+            statement.setInt(7, request.getMinServer());
+            statement.setInt(8, request.getMaxServer());
+            statement.setInt(9, request.getMinTotalViews());
+            statement.setInt(10, request.getMaxTotalViews());
+            statement.setInt(11, request.getMinTotalRating());
+            statement.setInt(12, request.getMaxTotalRating());
+            statement.setInt(13, request.getMinAvgRating());
+            statement.setInt(14, request.getMaxAvgRating());
+            statement.setFloat(15, request.getMinCalories());
+            statement.setFloat(16, request.getMaxCalories());
+            statement.setFloat(17, request.getMinFat());
+            statement.setFloat(18, request.getMaxFat());
+            statement.setFloat(19, request.getMinProtein());
+            statement.setFloat(20, request.getMaxProtein());
+            statement.setFloat(21, request.getMinCarbo());
+            statement.setFloat(22, request.getMaxCarbo());
+            statement.setString(23, request.getCookTime());
+            statement.setInt(24, request.getStatus());
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                totalRecipe += 1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalRecipe;
     }
 
     public RecipesViewModel getDataById(String serverUrl, Integer id) {
