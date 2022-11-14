@@ -20,8 +20,8 @@ Create table Users -- Người dùng
 	Status int default 0,
 	CreateDate date not null default getdate(),
 	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	UpdateDate date default getdate(),
+	UpdateUser int default 0
 )
 go
 
@@ -31,7 +31,7 @@ Create table LoginDevice -- Thiết bị đăng nhập
 	DeviceName varchar(250) not null,
 	UserId int foreign key references Users(Id) not null,
 	Status int default 0,
-	LastLoginDate date not null,
+	LastLoginDate date not null default getdate(),
 	LastLogoutDate date,
 )
 go
@@ -44,8 +44,8 @@ Create table Category -- Danh mục
 	Status int default 0,
 	CreateDate date not null default getdate(),
 	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	UpdateDate date default getdate(),
+	UpdateUser int default 0
 )
 go
 
@@ -67,8 +67,8 @@ Create table Recipes -- Công thức
 	Status int default 0,
 	CreateDate date not null default getdate(),
 	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	UpdateDate date default getdate(),
+	UpdateUser int default 0
 )
 go
 
@@ -128,8 +128,8 @@ Create table NotificationType
 	Status int default 0,
 	CreateDate date not null default getdate(),
 	CreateUser int not null default 0,
-	UpdateDate date,
-	UpdateUser int
+	UpdateDate date  default getdate(),
+	UpdateUser int default 0
 )
 go
 
