@@ -79,6 +79,8 @@ public class UsersDao {
             if (request.getKeyword().equalsIgnoreCase("_")) {
                 request.setKeyword("");
             }
+            int pageIndex = request.getPageIndex() > 0 ? request.getPageIndex() : 1;
+            int pageSize = request.getPageSize() > 0 ? request.getPageSize() : 1;
             statement.setString(1, request.getKeyword());
             statement.setString(2, request.getEmail());
             statement.setString(3, request.getPhoneNumber());
@@ -92,8 +94,8 @@ public class UsersDao {
             statement.setBoolean(11, request.isSortByTotalFollowOtherUserDESC());
             statement.setBoolean(12, request.isSortByTotalFollowedByOthersUserDESC());
             statement.setBoolean(13, request.isSortByTotalViewsDESC());
-            statement.setInt(14, request.getPageIndex());
-            statement.setInt(15, request.getPageSize());
+            statement.setInt(14, pageIndex);
+            statement.setInt(15, pageSize);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -128,7 +130,7 @@ public class UsersDao {
     }
 
     public int countUserFilter(UserFilterRequest request) {
-        int totalUsers = 0; 
+        int totalUsers = 0;
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call CountUsers(?,?,?,?,?,?,?,?)}");
@@ -152,8 +154,7 @@ public class UsersDao {
         }
         return totalUsers;
     }
-    
-    
+
     public int countFollowOtherUser(int userId) {
         int totalCategory = 0;
         PreparedStatement statement;
@@ -169,7 +170,7 @@ public class UsersDao {
         }
         return totalCategory;
     }
-    
+
     public int countFollowedByOthersUser(int followerId) {
         int totalCategory = 0;
         PreparedStatement statement;
@@ -188,6 +189,8 @@ public class UsersDao {
 
     public List<UsersViewModel> getListFollowOtherUser(String serverUrl, int userId, int pageIndex, int pageSize) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
+        pageIndex = pageIndex > 0 ? pageIndex : 1;
+        pageSize = pageSize > 0 ? pageSize : 1;
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call GetListFollowOtherUser(?,?,?)}");
@@ -229,6 +232,8 @@ public class UsersDao {
 
     public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId, int pageIndex, int pageSize) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
+        pageIndex = pageIndex > 0 ? pageIndex : 1;
+        pageSize = pageSize > 0 ? pageSize : 1;
         PreparedStatement statement;
         try {
             statement = con.prepareCall("{call GetListFollowedByOthersUser(?,?,?)}");
