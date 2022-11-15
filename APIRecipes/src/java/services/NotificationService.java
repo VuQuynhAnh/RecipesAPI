@@ -10,6 +10,7 @@ import dao.UsersDao;
 import entity.Notifications;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.management.Notification;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -18,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import responses.NotificationListResponse;
 import viewModel.NotificationViewModel;
 
 /**
@@ -46,15 +48,36 @@ public class NotificationService {
     @GET
     @Path("getNotificationByUserId")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<NotificationViewModel> getNotificationByUserId(@QueryParam("userId") int userId, @QueryParam("status") int status) {
-        return notificationDao.getNotificationByUserId(userId, status);
+    public NotificationListResponse getNotificationByUserId(
+            @QueryParam("userId") int userId,
+            @QueryParam("status") int status,
+            @QueryParam("pageIndex") int pageIndex,
+            @QueryParam("pageSize") int pageSize
+    ) {
+        int totalNotification = notificationDao.countNotificationByUserId(userId, status);
+        int totalPage = totalNotification / pageSize;
+        if (totalNotification % pageSize != 0) {
+            totalPage += 1;
+        }
+        List<NotificationViewModel> notificationViewModels = notificationDao.getNotificationByUserId(userId, status, pageIndex, pageSize);
+        return new NotificationListResponse(totalPage, notificationViewModels);
     }
 
     @GET
     @Path("getNotificationByCreateUserId")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<NotificationViewModel> getNotificationByCreateUserId(@QueryParam("createUserId") int createUserId, @QueryParam("status") int status) {
-        return notificationDao.getNotificationByCreateUserId(createUserId, status);
+    public NotificationListResponse getNotificationByCreateUserId(
+            @QueryParam("createUserId") int createUserId,
+            @QueryParam("status") int status,
+            @QueryParam("pageIndex") int pageIndex,
+            @QueryParam("pageSize") int pageSize) {
+        int totalNotification = notificationDao.countNotificationByCreateUserId(createUserId, status);
+        int totalPage = totalNotification / pageSize;
+        if (totalNotification % pageSize != 0) {
+            totalPage += 1;
+        }
+        List<NotificationViewModel> notificationViewModels = notificationDao.getNotificationByCreateUserId(createUserId, status, pageIndex, pageSize);
+        return new NotificationListResponse(totalPage, notificationViewModels);
     }
 
     @GET

@@ -5,7 +5,6 @@
  */
 package viewModel;
 
-import entity.Notifications;
 import java.io.Serializable;
 
 /**

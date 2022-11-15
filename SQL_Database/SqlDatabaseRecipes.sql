@@ -1288,7 +1288,9 @@ go
 
 create proc FilterListNotificationByUserId
 	@userId int,
-	@status int
+	@status int,
+	@pageIndex int,
+	@pageSize int
 as
 select 
 		notifi.Id as Id,
@@ -1306,11 +1308,40 @@ from Notifications notifi
 where 
 		(notifi.UserId = @userId)and
 		(@status = -1 or notifi.Status = @status)
+order by CreateDate desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
+go
+
+create proc CountNotificationByUserId
+	@userId int,
+	@status int
+as
+select 
+		COUNT(*) as TotalNotification
+from Notifications
+where 
+		(UserId = @userId)and
+		(@status = -1 or Status = @status)
+go
+
+create proc CountNotificationByCreateUserId
+	@createUserId int,
+	@status int
+as
+select 
+		COUNT(*) as TotalNotification
+from Notifications
+where 
+		(CreateUser = @createUserId)and
+		(@status = -1 or Status = @status)
 go
 
 create proc FilterListNotificationByCreateUserId
 	@createUserId int,
-	@status int
+	@status int,
+	@pageIndex int,
+	@pageSize int
 as
 select 
 		notifi.Id as Id,
@@ -1328,6 +1359,9 @@ from Notifications notifi
 where 
 		(notifi.CreateUser = @createUserId) and
 		(@status = -1 or notifi.Status = @status)
+order by CreateDate desc
+OFFSET ((@pageIndex - 1) * @pageSize) Rows  
+Fetch NEXT @pageSize ROWS ONLY  
 go
 
 create proc GetNotificationById

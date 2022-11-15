@@ -54,13 +54,17 @@ public class NotificationDao {
         return listNotificationViewModels;
     }
 
-    public List<NotificationViewModel> getNotificationByUserId(int userId, int status) {
+    public List<NotificationViewModel> getNotificationByUserId(int userId, int status, int pageIndex, int pageSize) {
         List<NotificationViewModel> listNotificationViewModels = new ArrayList<>();
+        pageIndex = pageIndex > 0 ? pageIndex : 1;
+        pageSize = pageSize > 0 ? pageSize : 1;
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListNotificationByUserId(?,?)}");
+            statement = con.prepareCall("{call FilterListNotificationByUserId(?,?,?,?)}");
             statement.setInt(1, userId);
             statement.setInt(2, status);
+            statement.setInt(3, pageIndex);
+            statement.setInt(4, pageSize);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 NotificationViewModel notificationViewModel = new NotificationViewModel();
@@ -80,13 +84,52 @@ public class NotificationDao {
         return listNotificationViewModels;
     }
 
-    public List<NotificationViewModel> getNotificationByCreateUserId(int createUserId, int status) {
-        List<NotificationViewModel> listNotificationViewModels = new ArrayList<>();
+    public int countNotificationByUserId(int userId, int status) {
         PreparedStatement statement;
+        int totalNotification = 0;
         try {
-            statement = con.prepareCall("{call FilterListNotificationByCreateUserId(?,?)}");
+            statement = con.prepareCall("{call CountNotificationByUserId(?,?)}");
+            statement.setInt(1, userId);
+            statement.setInt(2, status);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalNotification = result.getInt("TotalNotification");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalNotification;
+    }
+
+    public int countNotificationByCreateUserId(int createUserId, int status) {
+        PreparedStatement statement;
+        int totalNotification = 0;
+        try {
+            statement = con.prepareCall("{call CountNotificationByCreateUserId(?,?)}");
             statement.setInt(1, createUserId);
             statement.setInt(2, status);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                totalNotification = result.getInt("TotalNotification");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return totalNotification;
+    }
+
+    public List<NotificationViewModel> getNotificationByCreateUserId(int createUserId, int status, int pageIndex, int pageSize) {
+        List<NotificationViewModel> listNotificationViewModels = new ArrayList<>();
+        pageIndex = pageIndex > 0 ? pageIndex : 1;
+        pageSize = pageSize > 0 ? pageSize : 1;
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("{call FilterListNotificationByCreateUserId(?,?,?,?)}");
+            statement.setInt(1, createUserId);
+            statement.setInt(2, status);
+            statement.setInt(3, pageIndex);
+            statement.setInt(4, pageSize);
+
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 NotificationViewModel notificationViewModel = new NotificationViewModel();
