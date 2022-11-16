@@ -10,7 +10,6 @@ import dao.UsersDao;
 import entity.Notifications;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.management.Notification;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -115,13 +114,10 @@ public class NotificationService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String insert(Notifications notification) {
-
         // validate
         if (notification.getDescription().trim().length() == 0) {
             return "Notification description is requied!";
-        } else if (!usersDao.checkExistUser(notification.getCreateUser())) {
-            return "Notification createUser with id = " + notification.getCreateUser() + " is not exist or deleted!";
-        } else if (notificationDao.insertData(notification)) {
+        } else if (notificationDao.insertData(notification.getUserId(), notification.getNotificationId(), notification.getDescription(), notification.getCreateUser())) {
             return "Success!";
         }
         return "Failed!";

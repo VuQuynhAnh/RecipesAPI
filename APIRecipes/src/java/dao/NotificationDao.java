@@ -5,7 +5,6 @@
  */
 package dao;
 
-import entity.Notifications;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -172,15 +171,15 @@ public class NotificationDao {
         return notificationViewModel;
     }
 
-    public boolean insertData(Notifications t) {
+    public boolean insertData(int userId, int notificationTypeId, String description, int createUserId) {
         PreparedStatement statement;
         try {
             statement = con.prepareCall("insert into Notifications(UserId, NotificationId, Description, Status, CreateUser) values (?,?,?,?,?)");
-            statement.setInt(1, t.getUserId());
-            statement.setInt(2, t.getNotificationId());
-            statement.setString(3, t.getDescription());
+            statement.setInt(1, userId);
+            statement.setInt(2, notificationTypeId);
+            statement.setString(3, description);
             statement.setInt(4, 0);
-            statement.setInt(5, t.getCreateUser());
+            statement.setInt(5, createUserId);
             if (statement.executeUpdate() > 0) {
                 return true;
             }
