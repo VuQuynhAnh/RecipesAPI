@@ -6,18 +6,27 @@
 package services;
 
 import common.FolderNameConstant;
+import common.NotificationTypeIdConstant;
 import dao.CategoryDao;
+import dao.FollowerDao;
 import dao.IngredientDao;
+import dao.NotificationDao;
+import dao.NotificationTypeDao;
 import dao.RatingDao;
+import dao.RecipeSaveDao;
 import dao.RecipesDao;
 import dao.StepsDao;
 import dao.UploadImageDao;
 import dao.UsersDao;
 import entity.Ingredient;
+import entity.NotificationType;
 import entity.Rating;
 import entity.Steps;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.servlet.ServletConfig;
@@ -34,9 +43,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import requests.RecipeFilterRequest;
 import requests.RecipeInputData;
+import responses.OutputResponse;
 import responses.RecipeDetailResponse;
 import responses.RecipeListResponse;
+import viewModel.NotificationViewModel;
 import viewModel.RecipesViewModel;
+import viewModel.UsersViewModel;
 
 /**
  *
@@ -53,7 +65,12 @@ public class RecipesService {
     IngredientDao ingredientDao = null;
     RatingDao ratingDao = null;
     UploadImageDao uploadImageDao = null;
+    NotificationTypeDao notificationTypeDao = null;
+    NotificationDao notificationDao = null;
+    RecipeSaveDao recipeSaveDao = null;
+    FollowerDao followerDao = null;
     DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     LocalDateTime dateTimeNow = LocalDateTime.now();
 
     public RecipesService() {
@@ -64,6 +81,10 @@ public class RecipesService {
         ingredientDao = new IngredientDao();
         ratingDao = new RatingDao();
         uploadImageDao = new UploadImageDao();
+        notificationTypeDao = new NotificationTypeDao();
+        notificationDao = new NotificationDao();
+        recipeSaveDao = new RecipeSaveDao();
+        followerDao = new FollowerDao();
     }
 
     @GET
@@ -137,28 +158,29 @@ public class RecipesService {
 
     @POST
     @Path("insert")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String insert(final @Context ServletConfig config, RecipeInputData input) {
+    public OutputResponse insert(final @Context ServletConfig config, RecipeInputData input) {
         String path = config.getServletContext().getRealPath("/images");
-
+        boolean saveSuccess = false;
+        String result = "Success!";
         // Validate Recipe input
         if (input.getRecipe().getName().trim().length() == 0) {
-            return "Recipe name is requied!";
+            result = "Recipe name is requied!";
         } else if (input.getRecipe().getServes() < 0) {
-            return "Serves is must more or equal 0!";
+            result = "Serves is must more or equal 0!";
         } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
-            return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
+            result = "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
-            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
+            result = "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
         } else if (!userDao.checkExistUser(input.getRecipe().getCreateUser())) {
-            return "Recipe createUser with id = " + input.getRecipe().getCreateUser() + " is not exist or deleted!";
+            result = "Recipe createUser with id = " + input.getRecipe().getCreateUser() + " is not exist or deleted!";
         }
         // Validate Steps
         int stepNumber = 1;
         for (Steps step : input.getListSteps()) {
             if (step.getDescription().trim().length() == 0) {
-                return "Step description at " + stepNumber + " is requied!";
+                result = "Step description at " + stepNumber + " is requied!";
             }
             step.setStepNumber(stepNumber);
             stepNumber += 1;
@@ -168,13 +190,13 @@ public class RecipesService {
         int index = 1;
         for (Ingredient ingredient : input.getListInfgredients()) {
             if (ingredient.getUnitOfMeasurement().length() == 0) {
-                return "Ingredient UnitOfMeasurement at index = " + index + " is requied!";
+                result = "Ingredient UnitOfMeasurement at index = " + index + " is requied!";
             } else if (ingredient.getUnitOfMeasurement().length() > 250) {
-                return "Ingredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
+                result = "Ingredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
             } else if (ingredient.getName().length() == 0) {
-                return "Ingredient Name at index = " + index + " is requied!";
+                result = "Ingredient Name at index = " + index + " is requied!";
             } else if (ingredient.getName().length() > 250) {
-                return "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
+                result = "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
             }
             index += 1;
         }
@@ -200,39 +222,45 @@ public class RecipesService {
                 ingredient.setStatus(0);
                 ingredientDao.insertData(ingredient);
             }
-            return "Success!";
+            saveSuccess = true;
         }
-        return "Failed!";
+        if (saveSuccess) {
+            List<NotificationViewModel> notificationViewModels = sendNotificationCreateRecipe(input.getRecipe().getAuthorId());
+            return new OutputResponse(result, notificationViewModels);
+        }
+        return new OutputResponse(result);
     }
 
     @PUT
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String update(final @Context ServletConfig config, RecipeInputData input) {
+    public OutputResponse update(final @Context ServletConfig config, RecipeInputData input) {
+        boolean saveSuccess = false;
+        String result = "Success!";
         String path = config.getServletContext().getRealPath("/images");
 
         // Validate recipe
         if (input.getRecipe().getName().trim().length() == 0) {
-            return "Recipe name is requied!";
+            result = "Recipe name is requied!";
         } else if (input.getRecipe().getServes() < 0) {
-            return "Serves is must more or equal 0!";
+            result = "Serves is must more or equal 0!";
         } else if (input.getRecipe().getStatus() < 0) {
-            return "Status is must more or equal 0!";
+            result = "Status is must more or equal 0!";
         } else if (!categoryDao.checkExistCategory(input.getRecipe().getCategoryId())) {
-            return "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
+            result = "Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!";
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
-            return "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
+            result = "Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!";
         } else if (recipesDao.getDataById("", input.getRecipe().getId()).getId() <= 0) {
-            return "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
+            result = "Recipes width id = " + input.getRecipe().getId() + " is not exist!";
         } else if (!userDao.checkExistUser(input.getRecipe().getUpdateUser())) {
-            return "Recipe updateUser with id = " + input.getRecipe().getUpdateUser() + " is not exist or deleted!";
+            result = "Recipe updateUser with id = " + input.getRecipe().getUpdateUser() + " is not exist or deleted!";
         }
 
         // Validate Steps
         int index = 1;
         for (Steps step : input.getListSteps()) {
             if (step.getDescription().trim().length() == 0) {
-                return "Step description at " + index + " is requied!";
+                result = "Step description at " + index + " is requied!";
             }
             step.setStepNumber(index);
             index += 1;
@@ -242,13 +270,13 @@ public class RecipesService {
         index = 1;
         for (Ingredient foodIngredient : input.getListInfgredients()) {
             if (foodIngredient.getUnitOfMeasurement().length() == 0) {
-                return "Ingredient UnitOfMeasurement at index = " + index + " is requied!";
+                result = "Ingredient UnitOfMeasurement at index = " + index + " is requied!";
             } else if (foodIngredient.getUnitOfMeasurement().length() > 250) {
-                return "Ingredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
+                result = "Ingredient UnitOfMeasurement at index = " + index + " is too long, maxlength is 250 characters!";
             } else if (foodIngredient.getName().length() == 0) {
-                return "Ingredient Name at index = " + index + " is requied!";
+                result = "Ingredient Name at index = " + index + " is requied!";
             } else if (foodIngredient.getName().length() > 250) {
-                return "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
+                result = "Ingredient Name at index = " + index + " is too long, maxlength is 250 characters!";
             }
             index += 1;
         }
@@ -323,9 +351,13 @@ public class RecipesService {
                     ingredientDao.updateData(ingredient);
                 }
             }
-            return "Success!";
+            saveSuccess = true;
         }
-        return "Failed!";
+        if (saveSuccess) {
+            List<NotificationViewModel> notificationViewModels = sendNotificationUpdateRecipe(input.getRecipe().getId(), input.getRecipe().getName());
+            return new OutputResponse(result, notificationViewModels);
+        }
+        return new OutputResponse(result);
     }
 
     @DELETE
@@ -356,5 +388,53 @@ public class RecipesService {
             return "Success!";
         }
         return "Failed!";
+    }
+
+    private List<NotificationViewModel> sendNotificationUpdateRecipe(int recipeId, String recipeName) {
+        List<NotificationViewModel> notificationViewModels = new ArrayList<>();
+        int notificationTypeId = NotificationTypeIdConstant.updateRecipe;
+        NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
+        String content = notificationType.getDescription();
+        String typeName = notificationType.getName();
+
+        if (content.indexOf("[recipeName]") > 0) {
+            content = content.replace("[recipeName]", recipeName);
+        }
+        String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
+        List<Integer> listUserId = recipeSaveDao.getListUserIdByRecipeId(recipeId);
+        for (Integer userId : listUserId) {
+            if (notificationDao.insertData(userId, notificationTypeId, content, 0)) {
+                notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, userId));
+            }
+        }
+        return notificationViewModels;
+    }
+
+    private List<NotificationViewModel> sendNotificationCreateRecipe(int authorId) {
+        List<NotificationViewModel> notificationViewModels = new ArrayList<>();
+        int notificationTypeId = NotificationTypeIdConstant.updateRecipe;
+        NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
+        String content = notificationType.getDescription();
+        String typeName = notificationType.getName();
+
+        if (content.indexOf("[userDisplay]") > 0) {
+            content = content.replace("[userDisplay]", userDao.getDataById("", authorId).getDisplayName());
+        }
+        String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
+        List<UsersViewModel> listUsers = userDao.getListFollowedByOthersUser("", authorId, 1, Integer.MAX_VALUE);
+        for (UsersViewModel model : listUsers) {
+            if (notificationDao.insertData(model.getId(), notificationTypeId, content, 0)) {
+                notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, model.getId()));
+            }
+        }
+        return notificationViewModels;
+    }
+
+    private int sendNotificationRatingRecipe(String userDisplay, String recipeName) {
+        int totalNotificationSuccess = 0;
+        int notificationTypeId = NotificationTypeIdConstant.ratingRecipe;
+        List<Integer> listUserId;
+
+        return totalNotificationSuccess;
     }
 }

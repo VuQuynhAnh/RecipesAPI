@@ -22,6 +22,17 @@ public class NotificationViewModel implements Serializable {
     private String userDisplay;
     private int userId;
 
+    public NotificationViewModel(String notificationType, String description, int status, String createDate, int userId) {
+        this.notificationType = notificationType;
+        this.description = description;
+        this.status = status;
+        this.createDate = createDate;
+        this.userId = userId;
+        this.id = 0;
+        this.createUserDisplay = "";
+        this.userDisplay = "";
+    }
+
     public int getUserId() {
         return userId;
     }

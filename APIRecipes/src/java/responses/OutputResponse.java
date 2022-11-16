@@ -5,6 +5,8 @@
  */
 package responses;
 
+import java.util.ArrayList;
+import java.util.List;
 import viewModel.NotificationViewModel;
 
 /**
@@ -14,7 +16,15 @@ import viewModel.NotificationViewModel;
 public class OutputResponse {
 
     private String message;
-    private NotificationViewModel notificationModel;
+    private List<NotificationViewModel> notificationModels;
+
+    public OutputResponse() {
+    }
+
+    public OutputResponse(String message) {
+        this.message = message;
+        this.notificationModels = new ArrayList<>();
+    }
 
     public String getMessage() {
         return message;
@@ -24,16 +34,17 @@ public class OutputResponse {
         this.message = message;
     }
 
-    public NotificationViewModel getNotificationModel() {
-        return notificationModel;
+    public List<NotificationViewModel> getNotificationModels() {
+        return notificationModels;
     }
 
-    public void setNotificationModel(NotificationViewModel notificationModel) {
-        this.notificationModel = notificationModel;
+    public void setNotificationModels(List<NotificationViewModel> notificationModels) {
+        this.notificationModels = notificationModels;
     }
 
-    public OutputResponse(String message, NotificationViewModel notificationModel) {
+    public OutputResponse(String message, List<NotificationViewModel> notificationModels) {
         this.message = message;
-        this.notificationModel = notificationModel;
+        this.notificationModels = notificationModels;
     }
+
 }

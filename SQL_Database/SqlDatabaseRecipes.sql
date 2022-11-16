@@ -122,7 +122,7 @@ go
 
 Create table NotificationType
 (
-	Id int primary key identity,
+	Id int primary key,
 	Name nvarchar(250) not null,
 	Description ntext,
 	Status int default 0,
@@ -160,6 +160,16 @@ insert into Users values (N'My.nguyen', N'Nguyễn Thanh Mỹ', 1, N'Hà Tây', 
 go
 insert into Users values (N'Long.Tran', N'Trần Quang Long', 1, N'Nam Định', '0187115522', 'htrkgjvrtjnkrvtnj', 'long.tran@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
 go
+
+select * from NotificationType
+insert into NotificationType(Id, Name, Description, Status) values 
+(1, 'Follow', '[userDisplay] has been following you!',0),
+(2, 'Update Recipe', 'The Recipe [recipeName] has been updated, please check it out with us!',0),
+(3, 'Create Recipe', '[userDisplay] posted a new recipe, please check it out with us!',0),
+(4, 'Rating Recipe', '[userDisplay] has evaluated your [recipeName] recipe!',0),
+(5, 'Other', 'Custom',0)
+go
+
 select * from Recipes
 insert into Recipes values(1,1,'Rice','Viet Nam', 3, 3.5, 2.1, 12, 12, '',1,'',0,'2022-10-25',1,null,null)
 go
@@ -1402,9 +1412,6 @@ insert into Rating values
 go
 
 insert into RecipesSave values(1,1,0,'2022-10-30')
-go
-
-insert into NotificationType values ('check notification type', 'check description type', 0, '2022-11-12',1,'',0)
 go
 
 insert into Notifications values(2,1,'check notificaton', 0, '2022-11-12',3)

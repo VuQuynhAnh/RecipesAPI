@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -109,5 +111,21 @@ public class RecipeSaveDao {
             Logger.getLogger(RecipeSaveDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return recipeSave;
+    }
+
+    public List<Integer> getListUserIdByRecipeId(int recipeId) {
+        List<Integer> listData = new ArrayList<>();
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("select * from RecipesSave where RecipeId=? and Status=0");
+            statement.setInt(1, recipeId);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                listData.add(result.getInt("UserId"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipeSaveDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listData;
     }
 }
