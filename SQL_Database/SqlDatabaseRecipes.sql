@@ -170,7 +170,6 @@ insert into NotificationType(Id, Name, Description, Status) values
 (5, 'Other', 'Custom',0)
 go
 
-select * from Recipes
 insert into Recipes values(1,1,'Rice','Viet Nam', 3, 3.5, 2.1, 12, 12, '',1,'',0,'2022-10-25',1,null,null)
 go
 insert into Recipes values(2,1,'Fist','Thai Lan', 7, 3.5, 1.1, 11, 12, '',100,'',1,'2022-10-25',1,null,null)
@@ -338,6 +337,7 @@ select
 	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
+	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay
 from Recipes recipe
@@ -367,6 +367,7 @@ group by
 	recipe.UpdateUser,
 	cat.Name,
 	author.UserName,
+	cast(author.Avatar as nvarchar(max)),
 	createUser.UserName,
 	updateUser.UserName
 go
@@ -402,6 +403,7 @@ select
 	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
+	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
 	recipeSave.CreateDate as SaveDate
@@ -434,6 +436,7 @@ group by
 	recipe.UpdateUser,
 	cat.Name,
 	author.UserName,
+	cast(author.Avatar as nvarchar(max)),
 	createUser.UserName,
 	updateUser.UserName,
 	recipeSave.CreateDate
@@ -529,6 +532,7 @@ select
 	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
+	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay
 from Recipes recipe
@@ -580,6 +584,7 @@ group by
 	recipe.UpdateUser,
 	cat.Name,
 	author.UserName,
+	cast(author.Avatar as nvarchar(max)),
 	createUser.UserName,
 	updateUser.UserName
 having 
@@ -714,6 +719,7 @@ select
 	COUNT(rating.Id) as TotalRating,
 	cat.Name as CategoryDisplay,
 	author.UserName as Author,
+	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay
 from Recipes recipe
@@ -744,6 +750,7 @@ group by
 	recipe.UpdateUser,
 	cat.Name,
 	author.UserName,
+	cast(author.Avatar as nvarchar(max)),
 	createUser.UserName,
 	updateUser.UserName
 go

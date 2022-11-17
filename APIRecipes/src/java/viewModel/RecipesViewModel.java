@@ -21,8 +21,12 @@ public class RecipesViewModel extends Recipes implements Serializable {
     private String updateUserDisplay;
     private double avgRating;
     private int totalRating;
+    private String authorAvatar;
 
-    public RecipesViewModel(int id, int categoryId, int authorId, String name, String origin, int serves, float calories, float fat, float protein, float carbo, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser,String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay, double avgRating, int totalRating) {
+    public RecipesViewModel() {
+    }
+
+    public RecipesViewModel(int id, int categoryId, int authorId, String name, String origin, int serves, float calories, float fat, float protein, float carbo, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser, String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay, double avgRating, int totalRating) {
         super(id, categoryId, authorId, name, origin, serves, calories, fat, protein, carbo, image, totalViews, cookTime, status, createDate, createUser, updateDate, updateUser);
         this.categoryDisplay = categoryDisplay;
         this.author = author;
@@ -32,9 +36,18 @@ public class RecipesViewModel extends Recipes implements Serializable {
         this.totalRating = totalRating;
     }
 
+    public String getAuthorAvatar() {
+        return authorAvatar;
+    }
+
+    public void setAuthorAvatar(String authorAvatar) {
+        this.authorAvatar = authorAvatar;
+    }
+
     public double getAvgRating() {
         return avgRating;
     }
+
     public void setAvgRating(double avgRating) {
         this.avgRating = avgRating;
     }
@@ -45,9 +58,6 @@ public class RecipesViewModel extends Recipes implements Serializable {
 
     public void setTotalRating(int totalRating) {
         this.totalRating = totalRating;
-    }
-
-    public RecipesViewModel() {
     }
 
     public String getCategoryDisplay() {

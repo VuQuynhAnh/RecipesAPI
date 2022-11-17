@@ -61,6 +61,7 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
+                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 listRecipeViewModels.add(recipeViewModel);
@@ -104,6 +105,7 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
+                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 listRecipeViewModels.add(recipeViewModel);
@@ -198,6 +200,7 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
+                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 listRecipeViewModels.add(recipeViewModel);
@@ -277,6 +280,7 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
+                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 // If have Recipe and Recipe is not delete
