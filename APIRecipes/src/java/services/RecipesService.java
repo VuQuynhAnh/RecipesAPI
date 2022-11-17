@@ -5,6 +5,7 @@
  */
 package services;
 
+import com.sun.jersey.multipart.FormDataParam;
 import common.FolderNameConstant;
 import common.NotificationTypeIdConstant;
 import dao.CategoryDao;
@@ -22,6 +23,7 @@ import entity.Ingredient;
 import entity.NotificationType;
 import entity.Rating;
 import entity.Steps;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -154,6 +156,25 @@ public class RecipesService {
                 listSteps,
                 listIngredients
         );
+    }
+
+    @POST
+    @Path("/uploadImage")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String check(
+            final @Context ServletConfig config,
+            @FormDataParam("file") InputStream uploadedInputStream) {
+        String path = config.getServletContext().getRealPath("/images");
+        String fileName = "recipe_" + "Check" + "_" + dateTimeNow.format(formatDate);
+        
+//    byte[] byteArray = IOUtils.toByteArray(uploadedInputStream);
+//    byte[] encodedBase64 = Base64.encodeBase64(byteArray);
+//    base64Content[0] = new String(encodedBase64, "UTF-8");
+//    base64Content[1] = getContentTypeString(part);
+      
+        String urlResult = uploadImageDao.uploadImage(uploadedInputStream, path, FolderNameConstant.recipe, fileName);
+        return urlResult;
     }
 
     @POST
