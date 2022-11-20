@@ -167,12 +167,7 @@ public class RecipesService {
             @FormDataParam("file") InputStream uploadedInputStream) {
         String path = config.getServletContext().getRealPath("/images");
         String fileName = "recipe_" + "Check" + "_" + dateTimeNow.format(formatDate);
-        
-//    byte[] byteArray = IOUtils.toByteArray(uploadedInputStream);
-//    byte[] encodedBase64 = Base64.encodeBase64(byteArray);
-//    base64Content[0] = new String(encodedBase64, "UTF-8");
-//    base64Content[1] = getContentTypeString(part);
-      
+
         String urlResult = uploadImageDao.uploadImage(uploadedInputStream, path, FolderNameConstant.recipe, fileName);
         return urlResult;
     }
@@ -398,17 +393,26 @@ public class RecipesService {
     @Path("rating")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String insert(Rating rating) {
+    public OutputResponse insert(Rating rating) {
+        boolean saveSuccess = false;
+        String result = "Success!";
         if (rating.getRating() < 0 || rating.getRating() > 5) {
-            return "Rating min is 0 and max is 5!";
+            result = "Rating min is 0 and max is 5!";
         } else if (!recipesDao.checkExistRecipe(rating.getRecipeId())) {
-            return "Recipe with id = " + rating.getRecipeId() + " is not exist or deleted!";
-        } else if (!userDao.checkExistUser(rating.getUserId())) {
-            return "User with id = " + rating.getUserId() + " is not exist or deleted!";
-        } else if (ratingDao.insertData(rating)) {
-            return "Success!";
+            result = "Recipe with id = " + rating.getRecipeId() + " is not exist or deleted!";
         }
-        return "Failed!";
+        UsersViewModel userModel = userDao.getDataById("", rating.getUserId());
+        if (userModel.getId() <= 0 || userModel.getStatus() == 1) {
+            result = "User with id = " + rating.getUserId() + " is not exist or deleted!";
+        } else if (ratingDao.insertData(rating)) {
+            saveSuccess = true;
+        }
+        if (saveSuccess) {
+            List<NotificationViewModel> notificationViewModels = new ArrayList<>();
+            notificationViewModels.add(sendNotificationRatingRecipe(userModel.getUserName(), rating.getUserId(), rating.getRecipeId()));
+            return new OutputResponse(result, notificationViewModels);
+        }
+        return new OutputResponse(result);
     }
 
     private List<NotificationViewModel> sendNotificationUpdateRecipe(int recipeId, String recipeName) {
@@ -451,11 +455,22 @@ public class RecipesService {
         return notificationViewModels;
     }
 
-    private int sendNotificationRatingRecipe(String userDisplay, String recipeName) {
-        int totalNotificationSuccess = 0;
-        int notificationTypeId = NotificationTypeIdConstant.ratingRecipe;
-        List<Integer> listUserId;
+    private NotificationViewModel sendNotificationRatingRecipe(String userDisplay, int userId, int recipeId) {
+        int notificationTypeId = NotificationTypeIdConstant.updateRecipe;
+        NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
+        String content = notificationType.getDescription();
+        String typeName = notificationType.getName();
 
-        return totalNotificationSuccess;
+        if (content.indexOf("[userDisplay]") > 0) {
+            content = content.replace("[userDisplay]", userDisplay);
+        }
+        if (content.indexOf("[recipeName] ") > 0) {
+            content = content.replace("[recipeName]", recipesDao.getDataById("", recipeId).getName());
+        }
+        String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
+        if (notificationDao.insertData(userId, notificationTypeId, content, 0)) {
+            return new NotificationViewModel(typeName, content, 0, createTime, userId);
+        }
+        return new NotificationViewModel();
     }
 }

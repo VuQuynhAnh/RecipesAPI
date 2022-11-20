@@ -67,21 +67,6 @@ public class UploadImageDao {
         } catch (IOException e) {
             System.err.println(e);
         }
-//        try (OutputStream out = new FileOutputStream(location)) {
-//            int read = 0;
-//            byte[] bytes = new byte[1024];
-//
-//            while ((read = uploadedInputStream.read(bytes)) != -1) {
-//                out.write(bytes, 0, read);
-//            }
-//            out.flush();
-//            out.close();
-//            return folder + "/" + imageName;
-//        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(UploadImageDao.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//            Logger.getLogger(UploadImageDao.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         return "";
     }
 }
