@@ -420,7 +420,7 @@ public class RecipesService {
             return new OutputResponse("User with id = " + rating.getUserId() + " is not exist or deleted!");
         } else if (ratingDao.insertData(rating)) {
             List<NotificationViewModel> notificationViewModels = new ArrayList<>();
-            notificationViewModels.add(sendNotificationRatingRecipe(userModel.getUserName(), rating.getUserId(), rating.getRecipeId()));
+            notificationViewModels.add(sendNotificationRatingRecipe(userModel.getCreateUserDisplay(), rating.getUserId(), rating.getRecipeId()));
             return new OutputResponse("Success!", notificationViewModels);
         }
         return new OutputResponse("Failed!");
@@ -448,7 +448,7 @@ public class RecipesService {
 
     private List<NotificationViewModel> sendNotificationCreateRecipe(int authorId) {
         List<NotificationViewModel> notificationViewModels = new ArrayList<>();
-        int notificationTypeId = NotificationTypeIdConstant.updateRecipe;
+        int notificationTypeId = NotificationTypeIdConstant.createRecipe;
         NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
         String content = notificationType.getDescription();
         String typeName = notificationType.getName();
