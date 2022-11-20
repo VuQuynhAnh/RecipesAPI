@@ -15,7 +15,7 @@ import viewModel.NotificationViewModel;
 public class NotificationListResponse {
 
     private int totalPage;
-    private List<NotificationViewModel> categoryViewModels;
+    private List<NotificationViewModel> notificationViewModels;
 
     public int getTotalPage() {
         return totalPage;
@@ -29,15 +29,15 @@ public class NotificationListResponse {
     }
 
     public List<NotificationViewModel> getCategoryViewModels() {
-        return categoryViewModels;
+        return notificationViewModels;
     }
 
     public void setCategoryViewModels(List<NotificationViewModel> categoryViewModels) {
-        this.categoryViewModels = categoryViewModels;
+        this.notificationViewModels = categoryViewModels;
     }
 
     public NotificationListResponse(int totalPage, List<NotificationViewModel> categoryViewModels) {
         this.totalPage = totalPage;
-        this.categoryViewModels = categoryViewModels;
+        this.notificationViewModels = categoryViewModels;
     }
 }
