@@ -21,23 +21,23 @@ public class NotificationListResponse {
         return totalPage;
     }
 
-    public NotificationListResponse() {
-    }
-
     public void setTotalPage(int totalPage) {
         this.totalPage = totalPage;
     }
 
-    public List<NotificationViewModel> getCategoryViewModels() {
+    public List<NotificationViewModel> getNotificationViewModels() {
         return notificationViewModels;
     }
 
-    public void setCategoryViewModels(List<NotificationViewModel> categoryViewModels) {
-        this.notificationViewModels = categoryViewModels;
+    public void setNotificationViewModels(List<NotificationViewModel> notificationViewModels) {
+        this.notificationViewModels = notificationViewModels;
     }
 
-    public NotificationListResponse(int totalPage, List<NotificationViewModel> categoryViewModels) {
+    public NotificationListResponse() {
+    }
+
+    public NotificationListResponse(int totalPage, List<NotificationViewModel> notificationViewModels) {
         this.totalPage = totalPage;
-        this.notificationViewModels = categoryViewModels;
+        this.notificationViewModels = notificationViewModels;
     }
 }
