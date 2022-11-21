@@ -395,7 +395,7 @@ public class UsersDao {
                 statement.setInt(10, t.getStatus());
                 statement.setDate(11, Date.valueOf(LocalDate.now()));
                 statement.setInt(12, t.getUpdateUser());
-                statement.setInt(1, t.getId());
+                statement.setInt(13, t.getId());
                 if (statement.executeUpdate() > 0) {
                     return true;
                 }
