@@ -216,9 +216,11 @@ public class RecipesService {
         }
 
         // Insert Recipe and return recipeId
-        if (input.getRecipe().getImage().length() > 0) {
+        if (!input.getRecipe().getImageInput().isEmpty()) {
             String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
-            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), path, FolderNameConstant.recipe, fileName));
+            String imageBase64 = "";
+            imageBase64 = input.getRecipe().getImageInput().stream().map((item) -> item).reduce(imageBase64, String::concat);
+            input.getRecipe().setImage(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.recipe, fileName));
         }
         int recipeId = recipesDao.insertRecipe(input.getRecipe());
         if (recipeId > 0) {
@@ -299,9 +301,12 @@ public class RecipesService {
         }
 
         // Check end insert image to server
-        if (input.getRecipe().getImage().length() > 0 && !input.getRecipe().getImage().contains(FolderNameConstant.recipe)) {
+        input.getRecipe().setImage("_");
+        if (!input.getRecipe().getImageInput().isEmpty()) {
             String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
-            input.getRecipe().setImage(uploadImageDao.uploadImage(input.getRecipe().getImage(), path, FolderNameConstant.recipe, fileName));
+            String imageBase64 = "";
+            imageBase64 = input.getRecipe().getImageInput().stream().map((item) -> item).reduce(imageBase64, String::concat);
+            input.getRecipe().setImage(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.recipe, fileName));
         }
         if (recipesDao.updateData(input.getRecipe())) {
             int saveSuccess = 0;

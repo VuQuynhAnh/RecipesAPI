@@ -6,7 +6,6 @@
 package requests;
 
 import entity.Ingredient;
-import entity.Recipes;
 import entity.Steps;
 import java.util.List;
 
@@ -16,11 +15,11 @@ import java.util.List;
  */
 public class RecipeInputData {
 
-    private Recipes recipe;
+    private RecipeInputItem recipe;
     private List<Steps> listSteps;
     private List<Ingredient> listInfgredients;
 
-    public RecipeInputData(Recipes recipe, List<Steps> listSteps, List<Ingredient> listInfgredients) {
+    public RecipeInputData(RecipeInputItem recipe, List<Steps> listSteps, List<Ingredient> listInfgredients) {
         this.recipe = recipe;
         this.listSteps = listSteps;
         this.listInfgredients = listInfgredients;
@@ -29,11 +28,11 @@ public class RecipeInputData {
     public RecipeInputData() {
     }
 
-    public Recipes getRecipe() {
+    public RecipeInputItem getRecipe() {
         return recipe;
     }
 
-    public void setRecipe(Recipes recipe) {
+    public void setRecipe(RecipeInputItem recipe) {
         this.recipe = recipe;
     }
 

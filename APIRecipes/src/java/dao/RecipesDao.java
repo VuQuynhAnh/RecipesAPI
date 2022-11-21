@@ -351,28 +351,53 @@ public class RecipesDao {
 
     public boolean updateData(Recipes t) {
         PreparedStatement statement;
-        try {
-            statement = con.prepareCall("update Recipes set CategoryId=?, AuthorId=?, Name=?, Origin=?, Serves=?, Calories=?, Fat=?, Protein=?, Carbo=?, Image=?, CookTime=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
-            statement.setInt(1, t.getCategoryId());
-            statement.setInt(2, t.getAuthorId());
-            statement.setString(3, t.getName());
-            statement.setString(4, t.getOrigin());
-            statement.setInt(5, t.getServes());
-            statement.setFloat(6, t.getCalories());
-            statement.setFloat(7, t.getFat());
-            statement.setFloat(8, t.getProtein());
-            statement.setFloat(9, t.getCarbo());
-            statement.setString(10, t.getImage());
-            statement.setString(11, t.getCookTime());
-            statement.setInt(12, t.getStatus());
-            statement.setDate(13, Date.valueOf(LocalDate.now()));
-            statement.setInt(14, t.getUpdateUser());
-            statement.setInt(15, t.getId());
-            if (statement.executeUpdate() > 0) {
-                return true;
+        if (t.getImage().length() > 1) {
+            try {
+                statement = con.prepareCall("update Recipes set CategoryId=?, AuthorId=?, Name=?, Origin=?, Serves=?, Calories=?, Fat=?, Protein=?, Carbo=?, Image=?, CookTime=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+                statement.setInt(1, t.getCategoryId());
+                statement.setInt(2, t.getAuthorId());
+                statement.setString(3, t.getName());
+                statement.setString(4, t.getOrigin());
+                statement.setInt(5, t.getServes());
+                statement.setFloat(6, t.getCalories());
+                statement.setFloat(7, t.getFat());
+                statement.setFloat(8, t.getProtein());
+                statement.setFloat(9, t.getCarbo());
+                statement.setString(10, t.getImage());
+                statement.setString(11, t.getCookTime());
+                statement.setInt(12, t.getStatus());
+                statement.setDate(13, Date.valueOf(LocalDate.now()));
+                statement.setInt(14, t.getUpdateUser());
+                statement.setInt(15, t.getId());
+                if (statement.executeUpdate() > 0) {
+                    return true;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            try {
+                statement = con.prepareCall("update Recipes set CategoryId=?, AuthorId=?, Name=?, Origin=?, Serves=?, Calories=?, Fat=?, Protein=?, Carbo=?, CookTime=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+                statement.setInt(1, t.getCategoryId());
+                statement.setInt(2, t.getAuthorId());
+                statement.setString(3, t.getName());
+                statement.setString(4, t.getOrigin());
+                statement.setInt(5, t.getServes());
+                statement.setFloat(6, t.getCalories());
+                statement.setFloat(7, t.getFat());
+                statement.setFloat(8, t.getProtein());
+                statement.setFloat(9, t.getCarbo());
+                statement.setString(10, t.getCookTime());
+                statement.setInt(11, t.getStatus());
+                statement.setDate(12, Date.valueOf(LocalDate.now()));
+                statement.setInt(13, t.getUpdateUser());
+                statement.setInt(14, t.getId());
+                if (statement.executeUpdate() > 0) {
+                    return true;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return false;
     }
