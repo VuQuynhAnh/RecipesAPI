@@ -13,19 +13,19 @@ import java.util.List;
  *
  * @author DELL
  */
-public class RecipeInputData {
+public class RecipeInputRequest {
 
     private RecipeInputItem recipe;
     private List<Steps> listSteps;
     private List<Ingredient> listInfgredients;
 
-    public RecipeInputData(RecipeInputItem recipe, List<Steps> listSteps, List<Ingredient> listInfgredients) {
+    public RecipeInputRequest(RecipeInputItem recipe, List<Steps> listSteps, List<Ingredient> listInfgredients) {
         this.recipe = recipe;
         this.listSteps = listSteps;
         this.listInfgredients = listInfgredients;
     }
 
-    public RecipeInputData() {
+    public RecipeInputRequest() {
     }
 
     public RecipeInputItem getRecipe() {

@@ -50,8 +50,8 @@ public class RecipesDao {
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage("");
-                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
-                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                if (result.getString("Image") != null && result.getString("Image").length() > 1) {
+                    recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -100,8 +100,8 @@ public class RecipesDao {
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage("");
-                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
-                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                if (result.getString("Image") != null && result.getString("Image").length() > 1) {
+                    recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -201,8 +201,8 @@ public class RecipesDao {
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage("");
-                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
-                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                if (result.getString("Image") != null && result.getString("Image").length() > 1) {
+                    recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
@@ -287,8 +287,8 @@ public class RecipesDao {
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
                 recipeViewModel.setImage("");
-                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
-                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                if (result.getString("Image") != null && result.getString("Image").length() > 1) {
+                    recipeViewModel.setImage(serverUrl + result.getString("Image"));
                 }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));

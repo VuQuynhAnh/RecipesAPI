@@ -44,7 +44,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import requests.RecipeFilterRequest;
-import requests.RecipeInputData;
+import requests.RecipeInputRequest;
 import responses.OutputResponse;
 import responses.RecipeDetailResponse;
 import responses.RecipeListResponse;
@@ -176,7 +176,7 @@ public class RecipesService {
     @Path("insert")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public OutputResponse insert(final @Context ServletConfig config, RecipeInputData input) {
+    public OutputResponse insert(final @Context ServletConfig config, RecipeInputRequest input) {
         String path = config.getServletContext().getRealPath("/images");
         // Validate Recipe input
         if (input.getRecipe().getName().trim().length() == 0) {
@@ -257,7 +257,7 @@ public class RecipesService {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public OutputResponse update(final @Context ServletConfig config, RecipeInputData input) {
+    public OutputResponse update(final @Context ServletConfig config, RecipeInputRequest input) {
         String path = config.getServletContext().getRealPath("/images");
         // Validate recipe
         if (input.getRecipe().getName().trim().length() == 0) {

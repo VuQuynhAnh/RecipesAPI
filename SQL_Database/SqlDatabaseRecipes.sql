@@ -815,7 +815,6 @@ from Ingredient fi
 where fi.Status = 0 and fi.RecipeId = @recipeId
 go
 
-
 create proc GetIngredientById
 	@id int
 as
