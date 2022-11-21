@@ -216,6 +216,7 @@ public class RecipesService {
         }
 
         // Insert Recipe and return recipeId
+        input.getRecipe().setImage("_");
         if (!input.getRecipe().getImageInput().isEmpty()) {
             String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
             String imageBase64 = "";

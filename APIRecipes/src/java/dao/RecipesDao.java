@@ -300,28 +300,54 @@ public class RecipesDao {
 
     public int insertRecipe(Recipes t) {
         PreparedStatement statement;
-        try {
-            statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Calories, Fat, Protein, Carbo, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            statement.setInt(1, t.getCategoryId());
-            statement.setInt(2, t.getAuthorId());
-            statement.setString(3, t.getName());
-            statement.setString(4, t.getOrigin());
-            statement.setInt(5, t.getServes());
-            statement.setFloat(6, t.getCalories());
-            statement.setFloat(7, t.getFat());
-            statement.setFloat(8, t.getProtein());
-            statement.setFloat(9, t.getCarbo());
-            statement.setString(10, t.getImage());
-            statement.setInt(11, 1);
-            statement.setString(12, t.getCookTime());
-            statement.setInt(13, 0);
-            statement.setDate(14, Date.valueOf(LocalDate.now()));
-            statement.setInt(15, t.getCreateUser());
-            if (statement.executeUpdate() > 0) {
-                return getIdRecipeAfterInsert(t);
+        if (t.getImage().length() > 1) {
+            try {
+                statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Calories, Fat, Protein, Carbo, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                statement.setInt(1, t.getCategoryId());
+                statement.setInt(2, t.getAuthorId());
+                statement.setString(3, t.getName());
+                statement.setString(4, t.getOrigin());
+                statement.setInt(5, t.getServes());
+                statement.setFloat(6, t.getCalories());
+                statement.setFloat(7, t.getFat());
+                statement.setFloat(8, t.getProtein());
+                statement.setFloat(9, t.getCarbo());
+                statement.setString(10, t.getImage());
+                statement.setInt(11, 1);
+                statement.setString(12, t.getCookTime());
+                statement.setInt(13, 0);
+                statement.setDate(14, Date.valueOf(LocalDate.now()));
+                statement.setInt(15, t.getCreateUser());
+                if (statement.executeUpdate() > 0) {
+                    return getIdRecipeAfterInsert(t);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            try {
+                statement = con.prepareCall("insert into Recipes(CategoryId, AuthorId, Name, Origin, Serves, Calories, Fat, Protein, Carbo, Image, TotalViews, CookTime, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                statement.setInt(1, t.getCategoryId());
+                statement.setInt(2, t.getAuthorId());
+                statement.setString(3, t.getName());
+                statement.setString(4, t.getOrigin());
+                statement.setInt(5, t.getServes());
+                statement.setFloat(6, t.getCalories());
+                statement.setFloat(7, t.getFat());
+                statement.setFloat(8, t.getProtein());
+                statement.setFloat(9, t.getCarbo());
+                statement.setString(10, "");
+                statement.setInt(11, 1);
+                statement.setString(12, t.getCookTime());
+                statement.setInt(13, 0);
+                statement.setDate(14, Date.valueOf(LocalDate.now()));
+                statement.setInt(15, t.getCreateUser());
+                if (statement.executeUpdate() > 0) {
+                    return getIdRecipeAfterInsert(t);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return 0;
     }
