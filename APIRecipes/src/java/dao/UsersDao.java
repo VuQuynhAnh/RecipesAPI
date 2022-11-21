@@ -50,7 +50,10 @@ public class UsersDao {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                userViewModel.setAvatar("");
+                if (result.getString("Avatar") != null && result.getString("Avatar").length() > 1) {
+                    userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                }
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -108,7 +111,10 @@ public class UsersDao {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                userViewModel.setAvatar("");
+                if (result.getString("Avatar") != null && result.getString("Avatar").length() > 1) {
+                    userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                }
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -209,7 +215,10 @@ public class UsersDao {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                userViewModel.setAvatar("");
+                if (result.getString("Avatar") != null && result.getString("Avatar").length() > 1) {
+                    userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                }
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -252,7 +261,10 @@ public class UsersDao {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                userViewModel.setAvatar("");
+                if (result.getString("Avatar") != null && result.getString("Avatar").length() > 1) {
+                    userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                }
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -290,7 +302,10 @@ public class UsersDao {
                 userViewModel.setEmail(result.getString("Email"));
                 userViewModel.setJob(result.getString("Job"));
                 userViewModel.setRole(result.getInt("Role"));
-                userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                userViewModel.setAvatar("");
+                if (result.getString("Avatar") != null && result.getString("Avatar").length() > 1) {
+                    userViewModel.setAvatar(serverUrl + result.getString("Avatar"));
+                }
                 userViewModel.setDescription(result.getString("Description"));
                 userViewModel.setStatus(result.getInt("Status"));
                 userViewModel.setCreateDate(result.getDate("CreateDate"));
@@ -312,6 +327,9 @@ public class UsersDao {
 
     public boolean insertData(Users t) {
         PreparedStatement statement;
+        if (t.getAvatar().length() == 1) {
+            t.setAvatar("");
+        }
         try {
             statement = con.prepareCall("insert into Users(UserName, DisplayName, Sex, Address, PhoneNumber, Password, Email, Job, Role, Avatar, Description, Status, CreateDate, CreateUser) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             statement.setString(1, t.getUserName());
@@ -339,28 +357,53 @@ public class UsersDao {
 
     public boolean updateData(Users t) {
         PreparedStatement statement;
-        try {
-            statement = con.prepareCall("update Users set UserName=?, DisplayName=?, Sex=?, Address=?, PhoneNumber=?, Email=?, Job=?, Role=?, Avatar=?, Description=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
-            statement.setString(1, t.getUserName());
-            statement.setString(2, t.getDisplayName());
-            statement.setInt(3, t.getSex());
-            statement.setString(4, t.getAddress());
-            statement.setString(5, t.getPhoneNumber());
-            statement.setString(6, t.getEmail());
-            statement.setString(7, t.getJob());
-            statement.setInt(8, t.getRole());
-            statement.setString(9, t.getAvatar());
-            statement.setString(10, t.getDescription());
-            statement.setInt(11, t.getStatus());
-            statement.setDate(12, Date.valueOf(LocalDate.now()));
-            statement.setInt(13, t.getUpdateUser());
-            statement.setInt(14, t.getId());
-            if (statement.executeUpdate() > 0) {
-                return true;
+        if (t.getAvatar().length() > 1) {
+            try {
+                statement = con.prepareCall("update Users set UserName=?, DisplayName=?, Sex=?, Address=?, PhoneNumber=?, Email=?, Job=?, Role=?, Avatar=?, Description=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+                statement.setString(1, t.getUserName());
+                statement.setString(2, t.getDisplayName());
+                statement.setInt(3, t.getSex());
+                statement.setString(4, t.getAddress());
+                statement.setString(5, t.getPhoneNumber());
+                statement.setString(6, t.getEmail());
+                statement.setString(7, t.getJob());
+                statement.setInt(8, t.getRole());
+                statement.setString(9, t.getAvatar());
+                statement.setString(10, t.getDescription());
+                statement.setInt(11, t.getStatus());
+                statement.setDate(12, Date.valueOf(LocalDate.now()));
+                statement.setInt(13, t.getUpdateUser());
+                statement.setInt(14, t.getId());
+                if (statement.executeUpdate() > 0) {
+                    return true;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            try {
+                statement = con.prepareCall("update Users set UserName=?, DisplayName=?, Sex=?, Address=?, PhoneNumber=?, Email=?, Job=?, Role=?, Description=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
+                statement.setString(1, t.getUserName());
+                statement.setString(2, t.getDisplayName());
+                statement.setInt(3, t.getSex());
+                statement.setString(4, t.getAddress());
+                statement.setString(5, t.getPhoneNumber());
+                statement.setString(6, t.getEmail());
+                statement.setString(7, t.getJob());
+                statement.setInt(8, t.getRole());
+                statement.setString(9, t.getDescription());
+                statement.setInt(10, t.getStatus());
+                statement.setDate(11, Date.valueOf(LocalDate.now()));
+                statement.setInt(12, t.getUpdateUser());
+                statement.setInt(1, t.getId());
+                if (statement.executeUpdate() > 0) {
+                    return true;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
         return false;
     }
 
@@ -418,7 +461,10 @@ public class UsersDao {
                         user.setPhoneNumber(result.getString("PhoneNumber"));
                         user.setEmail(result.getString("Email"));
                         user.setJob(result.getString("Job"));
-                        user.setAvatar(serverUrl + result.getString("Avatar"));
+                        user.setAvatar("");
+                        if (result.getString("Avatar") != null && result.getString("Avatar").length() > 1) {
+                            user.setAvatar(serverUrl + result.getString("Avatar"));
+                        }
                         user.setDescription(result.getString("Description"));
                         user.setCreateDate(result.getDate("CreateDate"));
                         user.setCreateUser(result.getInt("CreateUser"));

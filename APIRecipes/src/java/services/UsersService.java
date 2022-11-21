@@ -30,6 +30,7 @@ import javax.ws.rs.core.UriInfo;
 import requests.LoginRequest;
 import requests.UpdatePasswordRequest;
 import requests.UserFilterRequest;
+import requests.UserInputRequest;
 import responses.LoginResponse;
 import responses.UserListResponse;
 import viewModel.UsersViewModel;
@@ -125,7 +126,7 @@ public class UsersService {
     @Path("insert")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String insert(final @Context ServletConfig config, Users user) {
+    public String insert(final @Context ServletConfig config, UserInputRequest user) {
         String path = config.getServletContext().getRealPath("/images");
 
         if (user.getUserName().trim().length() == 0) {
@@ -149,9 +150,12 @@ public class UsersService {
         }
 
         // convert image
-        if (user.getAvatar().length() > 0) {
+        user.setAvatar("_");
+        if (!user.getImageInput().isEmpty()) {
             String fileName = "user_" + dateTimeNow.format(formatDate);
-            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), path, FolderNameConstant.user, fileName));
+            String imageBase64 = "";
+            imageBase64 = user.getImageInput().stream().map((item) -> item).reduce(imageBase64, String::concat);
+            user.setAvatar(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.user, fileName));
         }
         if (userDao.insertData(user)) {
             return "Success!";
@@ -163,7 +167,7 @@ public class UsersService {
     @Path("updateUser")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String updatefinal(@Context ServletConfig config, Users user) {
+    public String updatefinal(@Context ServletConfig config, UserInputRequest user) {
         String path = config.getServletContext().getRealPath("/images");
 
         if (user.getUserName().trim().length() == 0) {
@@ -189,9 +193,12 @@ public class UsersService {
         }
 
         // convert image
-        if (user.getAvatar().length() > 0 && !user.getAvatar().contains(FolderNameConstant.user)) {
+        user.setAvatar("_");
+        if (!user.getImageInput().isEmpty()) {
             String fileName = "user_" + dateTimeNow.format(formatDate);
-            user.setAvatar(uploadImageDao.uploadImage(user.getAvatar(), path, FolderNameConstant.user, fileName));
+            String imageBase64 = "";
+            imageBase64 = user.getImageInput().stream().map((item) -> item).reduce(imageBase64, String::concat);
+            user.setAvatar(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.user, fileName));
         }
         if (userDao.updateData(user)) {
             return "Success!";
