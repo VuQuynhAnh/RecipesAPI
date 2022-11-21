@@ -49,7 +49,10 @@ public class RecipesDao {
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(serverUrl + result.getString("Image"));
+                recipeViewModel.setImage("");
+                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -61,7 +64,10 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
-                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                recipeViewModel.setAuthorAvatar("");
+                if (result.getString("AuthorAvatar") != null || result.getString("AuthorAvatar").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 listRecipeViewModels.add(recipeViewModel);
@@ -93,7 +99,10 @@ public class RecipesDao {
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(serverUrl + result.getString("Image"));
+                recipeViewModel.setImage("");
+                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -105,7 +114,10 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
-                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                recipeViewModel.setAuthorAvatar("");
+                if (result.getString("AuthorAvatar") != null || result.getString("AuthorAvatar").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 listRecipeViewModels.add(recipeViewModel);
@@ -188,7 +200,10 @@ public class RecipesDao {
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(serverUrl + result.getString("Image"));
+                recipeViewModel.setImage("");
+                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -200,7 +215,10 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
-                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                recipeViewModel.setAuthorAvatar("");
+                if (result.getString("AuthorAvatar") != null || result.getString("AuthorAvatar").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 listRecipeViewModels.add(recipeViewModel);
@@ -268,7 +286,10 @@ public class RecipesDao {
                 recipeViewModel.setCarbo(result.getFloat("Carbo"));
                 recipeViewModel.setFat(result.getFloat("Fat"));
                 recipeViewModel.setProtein(result.getFloat("Protein"));
-                recipeViewModel.setImage(serverUrl + result.getString("Image"));
+                recipeViewModel.setImage("");
+                if (result.getString("Image") != null || result.getString("Image").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("Image"));
+                }
                 recipeViewModel.setTotalViews(result.getInt("TotalViews"));
                 recipeViewModel.setCookTime(result.getString("CookTime"));
                 recipeViewModel.setStatus(result.getInt("Status"));
@@ -280,7 +301,10 @@ public class RecipesDao {
                 recipeViewModel.setUpdateUserDisplay(result.getString("UpdateUserDisplay"));
                 recipeViewModel.setCategoryDisplay(result.getString("CategoryDisplay"));
                 recipeViewModel.setAuthor(result.getString("Author"));
-                recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                recipeViewModel.setAuthorAvatar("");
+                if (result.getString("AuthorAvatar") != null || result.getString("AuthorAvatar").length() > 0) {
+                    recipeViewModel.setAuthorAvatar(serverUrl + result.getString("AuthorAvatar"));
+                }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 // If have Recipe and Recipe is not delete
