@@ -159,20 +159,6 @@ public class RecipesService {
     }
 
     @POST
-    @Path("/uploadImage")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String check(
-            final @Context ServletConfig config,
-            @FormDataParam("file") InputStream uploadedInputStream) {
-        String path = config.getServletContext().getRealPath("/images");
-        String fileName = "recipe_" + "Check" + "_" + dateTimeNow.format(formatDate);
-
-        String urlResult = uploadImageDao.uploadImage(uploadedInputStream, path, FolderNameConstant.recipe, fileName);
-        return urlResult;
-    }
-
-    @POST
     @Path("insert")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

@@ -43,30 +43,4 @@ public class UploadImageDao {
         }
         return "";
     }
-
-    public String uploadImage(InputStream uploadedInputStream, String path, String folder, String imageName) {
-        path += "/" + folder;
-        imageName += ".png";
-        String location = path + "/" + imageName;
-        File file = new File(path);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        try {
-            OutputStream out = new FileOutputStream(new File(location));
-            int read = 0;
-            byte[] bytes = new byte[1024];
-
-            out = new FileOutputStream(new File(location));
-            while ((read = uploadedInputStream.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            out.flush();
-            out.close();
-            return folder + "/" + imageName;
-        } catch (IOException e) {
-            System.err.println(e);
-        }
-        return "";
-    }
 }
