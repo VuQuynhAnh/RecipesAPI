@@ -5,7 +5,6 @@
  */
 package services;
 
-import com.sun.jersey.multipart.FormDataParam;
 import common.FolderNameConstant;
 import common.NotificationTypeIdConstant;
 import dao.CategoryDao;
@@ -23,7 +22,6 @@ import entity.Ingredient;
 import entity.NotificationType;
 import entity.Rating;
 import entity.Steps;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -206,7 +204,9 @@ public class RecipesService {
         if (!input.getRecipe().getImageInput().isEmpty()) {
             String fileName = "recipe_" + input.getRecipe().getCreateUser() + "_" + dateTimeNow.format(formatDate);
             String imageBase64 = "";
-            imageBase64 = input.getRecipe().getImageInput().stream().map((item) -> item).reduce(imageBase64, String::concat);
+            for (String item : input.getRecipe().getImageInput()) {
+                imageBase64 += item;
+            }
             input.getRecipe().setImage(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.recipe, fileName));
         }
         int recipeId = recipesDao.insertRecipe(input.getRecipe());

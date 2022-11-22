@@ -141,6 +141,9 @@ public class CategoryDao {
 
     public boolean insertData(Category t) {
         PreparedStatement statement;
+        if (t.getImage().length() == 1) {
+            t.setImage("");
+        }
         try {
             statement = con.prepareCall("insert into Category(Name, Image, Status, CreateDate, CreateUser) values (?,?,?,?,?)");
             statement.setString(1, t.getName());
@@ -160,6 +163,9 @@ public class CategoryDao {
     public boolean updateData(Category t) {
         PreparedStatement statement;
         try {
+            if (t.getImage().length() == 1) {
+                t.setImage("");
+            }
             statement = con.prepareCall("update Category set Name=?, Image=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
             statement.setString(1, t.getName());
             statement.setString(2, t.getImage());

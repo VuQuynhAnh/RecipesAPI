@@ -104,7 +104,8 @@ public class CategoryService {
         }
 
         // convert image
-        if (category.getImage().length() > 0) {
+        category.setImage("_");
+        if (category.getImage() != null && category.getImage().length() > 1) {
             String fileName = "cat_" + category.getCreateUser() + "_" + dateTimeNow.format(formatDate);
             category.setImage(uploadImageDao.uploadImage(category.getImage(), path, FolderNameConstant.category, fileName));
         }
@@ -132,7 +133,8 @@ public class CategoryService {
         }
 
         // convert image
-        if (category.getImage().length() > 0 && !category.getImage().contains(FolderNameConstant.category)) {
+        category.setImage("_");
+        if (category.getImage() != null && category.getImage().length() > 1 && !category.getImage().contains(FolderNameConstant.category)) {
             String fileName = "cat_" + category.getCreateUser() + "_" + dateTimeNow.format(formatDate);
             category.setImage(uploadImageDao.uploadImage(category.getImage(), path, FolderNameConstant.category, fileName));
         }
