@@ -17,19 +17,29 @@ public class UsersViewModel extends Users implements Serializable {
 
     private String createUserDisplay;
     private String updateUserDisplay;
+    private boolean isFollowerUser;
     private int totalRecipe;
     private int totalViews;
     private int totalFollowOtherUser;
     private int totalFollowedByOthersUser;
 
-    public UsersViewModel(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, int totalRecipe, int totalViews, int totalFollowOtherUser, int totalFollowedByOthersUser) {
+    public UsersViewModel(int id, String userName, String displayName, int sex, String address, String phoneNumber, String password, String email, String job, int role, String avatar, String description, int status, Date createDate, int createUser, Date updateDate, int updateUser, String createUserDisplay, String updateUserDisplay, boolean isFollowerUser, int totalRecipe, int totalViews, int totalFollowOtherUser, int totalFollowedByOthersUser) {
         super(id, userName, displayName, sex, address, phoneNumber, password, email, job, role, avatar, description, status, createDate, createUser, updateDate, updateUser);
         this.createUserDisplay = createUserDisplay;
         this.updateUserDisplay = updateUserDisplay;
+        this.isFollowerUser = isFollowerUser;
         this.totalRecipe = totalRecipe;
         this.totalViews = totalViews;
         this.totalFollowOtherUser = totalFollowOtherUser;
         this.totalFollowedByOthersUser = totalFollowedByOthersUser;
+    }
+
+    public boolean isIsFollowerUser() {
+        return isFollowerUser;
+    }
+
+    public void setIsFollowerUser(boolean isFollowerUser) {
+        this.isFollowerUser = isFollowerUser;
     }
 
     public int getTotalRecipe() {

@@ -66,6 +66,7 @@ public class UsersDao {
                 userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
+                userViewModel.setIsFollowerUser(false);
                 listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -78,7 +79,7 @@ public class UsersDao {
         List<UsersViewModel> listUsersViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListUsers(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            statement = con.prepareCall("{call FilterListUsers(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             if (request.getKeyword().equalsIgnoreCase("_")) {
                 request.setKeyword("");
             }
@@ -99,6 +100,7 @@ public class UsersDao {
             statement.setBoolean(13, request.isSortByTotalViewsDESC());
             statement.setInt(14, pageIndex);
             statement.setInt(15, pageSize);
+            statement.setInt(16, request.getLoginUserId());
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -127,6 +129,7 @@ public class UsersDao {
                 userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
+                userViewModel.setIsFollowerUser(result.getInt("CheckFollow") > 0);
                 listUsersViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -231,6 +234,7 @@ public class UsersDao {
                 userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
+                userViewModel.setIsFollowerUser(true);
                 listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -239,16 +243,17 @@ public class UsersDao {
         return listUserViewModels;
     }
 
-    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId, int pageIndex, int pageSize) {
+    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId, int pageIndex, int pageSize, int loginUserId) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         pageIndex = pageIndex > 0 ? pageIndex : 1;
         pageSize = pageSize > 0 ? pageSize : 1;
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetListFollowedByOthersUser(?,?,?)}");
+            statement = con.prepareCall("{call GetListFollowedByOthersUser(?,?,?,?)}");
             statement.setInt(1, followerId);
             statement.setInt(2, pageIndex);
             statement.setInt(3, pageSize);
+            statement.setInt(4, loginUserId);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -277,6 +282,7 @@ public class UsersDao {
                 userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
+                userViewModel.setIsFollowerUser(result.getInt("CheckFollow") > 0);
                 listUserViewModels.add(userViewModel);
             }
         } catch (SQLException ex) {
@@ -285,12 +291,13 @@ public class UsersDao {
         return listUserViewModels;
     }
 
-    public UsersViewModel getDataById(String serverUrl, Integer id) {
+    public UsersViewModel getDataById(String serverUrl, Integer id, Integer loginUserId) {
         UsersViewModel userViewModel = new UsersViewModel();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetUserById(?)}");
+            statement = con.prepareCall("{call GetUserById(?,?)}");
             statement.setInt(1, id);
+            statement.setInt(2, loginUserId);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 userViewModel.setId(result.getInt("Id"));
@@ -318,6 +325,7 @@ public class UsersDao {
                 userViewModel.setTotalViews(result.getInt("TotalViews"));
                 userViewModel.setTotalFollowOtherUser(result.getInt("TotalFollowOtherUser"));
                 userViewModel.setTotalFollowedByOthersUser(result.getInt("TotalFollowedByOthersUser"));
+                userViewModel.setIsFollowerUser(result.getInt("CheckFollow") > 0);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);

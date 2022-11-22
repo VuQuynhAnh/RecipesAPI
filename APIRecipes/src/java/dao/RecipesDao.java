@@ -70,6 +70,7 @@ public class RecipesDao {
                 }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
+                recipeViewModel.setIsSaveRecipe(false);
                 listRecipeViewModels.add(recipeViewModel);
             }
         } catch (SQLException ex) {
@@ -120,6 +121,7 @@ public class RecipesDao {
                 }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
+                recipeViewModel.setIsSaveRecipe(true);
                 listRecipeViewModels.add(recipeViewModel);
             }
         } catch (SQLException ex) {
@@ -148,7 +150,7 @@ public class RecipesDao {
         List<RecipesViewModel> listRecipeViewModels = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call FilterListRecipes(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            statement = con.prepareCall("{call FilterListRecipes(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             statement.setString(1, request.getKeyword());
             statement.setString(2, listCatId);
             statement.setInt(3, request.getAuthorId());
@@ -186,6 +188,7 @@ public class RecipesDao {
             statement.setBoolean(35, request.isSortByCarbo());
             statement.setInt(36, request.getPageIndex());
             statement.setInt(37, request.getPageSize());
+            statement.setInt(38, request.getLoginUserId());
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -221,6 +224,7 @@ public class RecipesDao {
                 }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
+                recipeViewModel.setIsSaveRecipe(result.getInt("CheckSave") > 0);
                 listRecipeViewModels.add(recipeViewModel);
             }
         } catch (SQLException ex) {
@@ -268,12 +272,13 @@ public class RecipesDao {
         return totalRecipe;
     }
 
-    public RecipesViewModel getDataById(String serverUrl, Integer id) {
+    public RecipesViewModel getDataById(String serverUrl, Integer id, Integer loginUserId) {
         RecipesViewModel recipeViewModel = new RecipesViewModel();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetRecipeById(?)}");
+            statement = con.prepareCall("{call GetRecipeById(?,?)}");
             statement.setInt(1, id);
+            statement.setInt(2, loginUserId);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 recipeViewModel.setId(result.getInt("Id"));
@@ -307,6 +312,7 @@ public class RecipesDao {
                 }
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
+                recipeViewModel.setIsSaveRecipe(result.getInt("CheckSave") > 0);
                 // If have Recipe and Recipe is not delete
                 if (result.getInt("Id") > 0 && result.getInt("status") == 0) {
                     statement = con.prepareCall("update Recipes set TotalViews=? where Id=?");

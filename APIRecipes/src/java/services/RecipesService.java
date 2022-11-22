@@ -136,17 +136,17 @@ public class RecipesService {
     @GET
     @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipesViewModel getRecipesById(@Context UriInfo ui, @QueryParam("id") int id) {
+    public RecipesViewModel getRecipesById(@Context UriInfo ui, @QueryParam("id") int id, @QueryParam("loginUserId") int loginUserId) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return recipesDao.getDataById(url, id);
+        return recipesDao.getDataById(url, id, loginUserId);
     }
 
     @GET
     @Path("getRecipe")
     @Produces(MediaType.APPLICATION_JSON)
-    public RecipeDetailResponse getRecipesOutput(@Context UriInfo ui, @QueryParam("id") int id) {
+    public RecipeDetailResponse getRecipesOutput(@Context UriInfo ui, @QueryParam("id") int id, @QueryParam("loginUserId") int loginUserId) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        RecipesViewModel recipe = recipesDao.getDataById(url, id);
+        RecipesViewModel recipe = recipesDao.getDataById(url, id, loginUserId);
         List<Steps> listSteps = stepDao.getData(id);
         List<Ingredient> listIngredients = ingredientDao.getData(id);
         return new RecipeDetailResponse(
@@ -256,7 +256,7 @@ public class RecipesService {
             return new OutputResponse("Category with id = " + input.getRecipe().getCategoryId() + " is not exist or deleted!");
         } else if (!userDao.checkExistUser(input.getRecipe().getAuthorId())) {
             return new OutputResponse("Author with id = " + input.getRecipe().getAuthorId() + " is not exist or blocked!");
-        } else if (recipesDao.getDataById("", input.getRecipe().getId()).getId() <= 0) {
+        } else if (recipesDao.getDataById("", input.getRecipe().getId(), 0).getId() <= 0) {
             return new OutputResponse("Recipes width id = " + input.getRecipe().getId() + " is not exist!");
         } else if (!userDao.checkExistUser(input.getRecipe().getUpdateUser())) {
             return new OutputResponse("Recipe updateUser with id = " + input.getRecipe().getUpdateUser() + " is not exist or deleted!");
@@ -407,7 +407,7 @@ public class RecipesService {
         } else if (!recipesDao.checkExistRecipe(rating.getRecipeId())) {
             return new OutputResponse("Recipe with id = " + rating.getRecipeId() + " is not exist or deleted!");
         }
-        UsersViewModel userModel = userDao.getDataById("", rating.getUserId());
+        UsersViewModel userModel = userDao.getDataById("", rating.getUserId(), 0);
         if (userModel.getId() <= 0 || userModel.getStatus() == 1) {
             return new OutputResponse("User with id = " + rating.getUserId() + " is not exist or deleted!");
         } else if (ratingDao.insertData(rating)) {
@@ -446,10 +446,10 @@ public class RecipesService {
         String typeName = notificationType.getName();
 
         if (content.contains("[userDisplay]")) {
-            content = content.replace("[userDisplay]", userDao.getDataById("", authorId).getDisplayName());
+            content = content.replace("[userDisplay]", userDao.getDataById("", authorId, 0).getDisplayName());
         }
         String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
-        List<UsersViewModel> listUsers = userDao.getListFollowedByOthersUser("", authorId, 1, Integer.MAX_VALUE);
+        List<UsersViewModel> listUsers = userDao.getListFollowedByOthersUser("", authorId, 1, Integer.MAX_VALUE, 0);
         for (UsersViewModel model : listUsers) {
             if (notificationDao.insertData(model.getId(), notificationTypeId, content, 0)) {
                 notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, model.getId()));
@@ -468,7 +468,7 @@ public class RecipesService {
             content = content.replace("[userDisplay]", userDisplay);
         }
         if (content.contains("[recipeName]")) {
-            content = content.replace("[recipeName]", recipesDao.getDataById("", recipeId).getName());
+            content = content.replace("[recipeName]", recipesDao.getDataById("", recipeId, 0).getName());
         }
         String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
         if (notificationDao.insertData(userId, notificationTypeId, content, 0)) {

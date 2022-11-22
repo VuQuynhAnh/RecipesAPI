@@ -51,8 +51,17 @@ public class RecipeFilterRequest implements Serializable {
     private boolean sortByCarbo;
     private int pageIndex;
     private int pageSize;
+    private int loginUserId;
 
     public RecipeFilterRequest() {
+    }
+
+    public int getLoginUserId() {
+        return loginUserId;
+    }
+
+    public void setLoginUserId(int loginUserId) {
+        this.loginUserId = loginUserId;
     }
 
     public List<Integer> getListCatId() {

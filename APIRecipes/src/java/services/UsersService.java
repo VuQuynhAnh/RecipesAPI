@@ -88,9 +88,10 @@ public class UsersService {
             @Context UriInfo ui,
             @QueryParam("followerId") int followerId,
             @QueryParam("pageIndex") int pageIndex,
-            @QueryParam("pageSize") int pageSize) {
+            @QueryParam("pageSize") int pageSize,
+            @QueryParam("loginUserId") int loginUserId) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        List<UsersViewModel> usersViewModels = userDao.getListFollowedByOthersUser(url, followerId, pageIndex, pageSize);
+        List<UsersViewModel> usersViewModels = userDao.getListFollowedByOthersUser(url, followerId, pageIndex, pageSize, loginUserId);
         int totalUsers = userDao.countFollowedByOthersUser(followerId);
         int totalPage = totalUsers / pageSize;
         if (totalUsers % pageSize != 0) {
@@ -117,9 +118,9 @@ public class UsersService {
     @GET
     @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
-    public UsersViewModel getUsersById(@Context UriInfo ui, @QueryParam("id") int id) {
+    public UsersViewModel getUsersById(@Context UriInfo ui, @QueryParam("id") int id, @QueryParam("loginUserId") int loginUserId) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        return userDao.getDataById(url, id);
+        return userDao.getDataById(url, id, loginUserId);
     }
 
     @POST
@@ -188,7 +189,7 @@ public class UsersService {
             return "User phoneNumber is exist in DB, choose another phoneNumber!";
         } else if (user.getEmail().trim().length() > 0 && userDao.checkExistEmail(user.getEmail(), user.getId())) {
             return "User email is exist in DB, choose another email!";
-        } else if (userDao.getDataById("", user.getId()).getId() <= 0) {
+        } else if (userDao.getDataById("", user.getId(), 0).getId() <= 0) {
             return "User width id = " + user.getId() + " is not exist!";
         }
 
@@ -233,7 +234,7 @@ public class UsersService {
         } else if (request.getUpdateId() <= 0) {
             return "User updateId is requied!";
         }
-        Users user = userDao.getDataById("", request.getId());
+        Users user = userDao.getDataById("", request.getId(), 0);
 
         if (user.getId() <= 0) {
             return "User width id = " + request.getId() + " is not exist!";

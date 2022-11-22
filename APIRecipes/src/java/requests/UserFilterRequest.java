@@ -26,6 +26,15 @@ public class UserFilterRequest {
     private boolean sortByTotalViewsDESC;
     private int pageIndex;
     private int pageSize;
+    private int loginUserId;
+
+    public int getLoginUserId() {
+        return loginUserId;
+    }
+
+    public void setLoginUserId(int loginUserId) {
+        this.loginUserId = loginUserId;
+    }
 
     public String getKeyword() {
         return keyword;

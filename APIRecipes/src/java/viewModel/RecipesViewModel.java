@@ -22,18 +22,17 @@ public class RecipesViewModel extends Recipes implements Serializable {
     private double avgRating;
     private int totalRating;
     private String authorAvatar;
+    private boolean isSaveRecipe;
 
     public RecipesViewModel() {
     }
 
-    public RecipesViewModel(int id, int categoryId, int authorId, String name, String origin, int serves, float calories, float fat, float protein, float carbo, String image, int totalViews, String cookTime, int status, Date createDate, int createUser, Date updateDate, int updateUser, String categoryDisplay, String author, String createUserDisplay, String updateUserDisplay, double avgRating, int totalRating) {
-        super(id, categoryId, authorId, name, origin, serves, calories, fat, protein, carbo, image, totalViews, cookTime, status, createDate, createUser, updateDate, updateUser);
-        this.categoryDisplay = categoryDisplay;
-        this.author = author;
-        this.createUserDisplay = createUserDisplay;
-        this.updateUserDisplay = updateUserDisplay;
-        this.avgRating = avgRating;
-        this.totalRating = totalRating;
+    public boolean isIsSaveRecipe() {
+        return isSaveRecipe;
+    }
+
+    public void setIsSaveRecipe(boolean isSaveRecipe) {
+        this.isSaveRecipe = isSaveRecipe;
     }
 
     public String getAuthorAvatar() {

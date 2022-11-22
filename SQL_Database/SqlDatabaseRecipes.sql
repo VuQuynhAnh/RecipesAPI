@@ -504,7 +504,8 @@ create proc FilterListRecipes
 	@sortByProteinDESC bit,
 	@sortByCarbo bit,
 	@pageIndex int,
-	@pageSize int
+	@pageSize int,
+	@userLogin int
 as
 select 
 	recipe.Id,
@@ -534,7 +535,8 @@ select
 	author.UserName as Author,
 	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	(select COUNT(*) from RecipesSave where Status = 0 and RecipeId = recipe.Id and UserId = @userLogin) as CheckSave
 from Recipes recipe
 left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
@@ -691,7 +693,8 @@ having
 go
 
 create proc GetRecipeById
-	@id int
+	@id int,
+	@userLogin int
 as
 select 
 	recipe.Id,
@@ -721,7 +724,8 @@ select
 	author.UserName as Author,
 	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	(select COUNT(*) from RecipesSave where Status = 0 and RecipeId = recipe.Id and UserId = @userLogin) as CheckSave
 from Recipes recipe
 left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id
@@ -893,7 +897,8 @@ create proc FilterListUsers
 	@sortByTotalFollowedByOthersUserDESC bit,
 	@sortByTotalViewsDESC bit,
 	@pageIndex int,
-	@pageSize int
+	@pageSize int,
+	@userLogin int
 as
 select 
 	u.Id,
@@ -917,7 +922,8 @@ select
 	COUNT(recipe.Id) as TotalRecipe,
 	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser,
+	(select COUNT(*) from Followers where Status = 0 and UserId = @userLogin and FollowerId = u.Id) as CheckFollow
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
@@ -996,7 +1002,8 @@ where (u.UserName like N'%' + @keyword + '%'
 go
 
 create proc GetUserById
-	@id int
+	@id int,
+	@userLogin int
 as
 select 
 	u.Id,
@@ -1020,7 +1027,8 @@ select
 	COUNT(recipe.Id) as TotalRecipe,
 	Sum(recipe.TotalViews) as TotalViews,
 	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser,
+	(select COUNT(*) from Followers where Status = 0 and UserId = @userLogin and FollowerId = u.Id) as CheckFollow
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
@@ -1164,7 +1172,8 @@ go
 create proc GetListFollowedByOthersUser
 	@followerId int,
 	@pageIndex int,
-	@pageSize int
+	@pageSize int,
+	@userLogin int
 as
 select 
 	followOther.Id,
@@ -1188,7 +1197,8 @@ select
 	(select COUNT(*) from Recipes where Status = 0 and fo.UserId = AuthorId) as TotalRecipe,
 	(select Sum(TotalViews) from Recipes where Status = 0 and fo.UserId = AuthorId) as TotalViews,
 	(select COUNT(*) from Followers where Status = 0 and fo.UserId = UserId) as TotalFollowOtherUser,
-	(select COUNT(*) from Followers where Status = 0 and fo.UserId = FollowerId) as TotalFollowedByOthersUser
+	(select COUNT(*) from Followers where Status = 0 and fo.UserId = FollowerId) as TotalFollowedByOthersUser,
+	(select COUNT(*) from Followers where Status = 0 and UserId = @userLogin and FollowerId = followOther.Id) as CheckFollow
 from Followers as fo
 left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
