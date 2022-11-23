@@ -1142,7 +1142,6 @@ group by recipe.Id
 go
 
 -- proc follower
-exec GetListFollowOtherUser 1, 0, 1, 100
 create proc GetListFollowOtherUser
 	@userId int,
 	@status int,
