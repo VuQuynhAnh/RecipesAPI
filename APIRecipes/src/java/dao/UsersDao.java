@@ -26,13 +26,13 @@ import viewModel.UsersViewModel;
  * @author DELL
  */
 public class UsersDao {
-    
+
     Connection con = null;
-    
+
     public UsersDao() {
         con = GetConnection.getConnect();
     }
-    
+
     public List<UsersViewModel> getData(String serverUrl) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         PreparedStatement statement;
@@ -74,7 +74,7 @@ public class UsersDao {
         }
         return listUserViewModels;
     }
-    
+
     public List<UsersViewModel> getData(String serverUrl, UserFilterRequest request) {
         List<UsersViewModel> listUsersViewModels = new ArrayList<>();
         PreparedStatement statement;
@@ -137,7 +137,7 @@ public class UsersDao {
         }
         return listUsersViewModels;
     }
-    
+
     public int countUserFilter(UserFilterRequest request) {
         int totalUsers = 0;
         PreparedStatement statement;
@@ -163,7 +163,7 @@ public class UsersDao {
         }
         return totalUsers;
     }
-    
+
     public int countFollowOtherUser(int userId) {
         int totalCategory = 0;
         PreparedStatement statement;
@@ -179,7 +179,7 @@ public class UsersDao {
         }
         return totalCategory;
     }
-    
+
     public int countFollowedByOthersUser(int followerId) {
         int totalCategory = 0;
         PreparedStatement statement;
@@ -195,17 +195,19 @@ public class UsersDao {
         }
         return totalCategory;
     }
-    
-    public List<UsersViewModel> getListFollowOtherUser(String serverUrl, int userId, int pageIndex, int pageSize) {
+
+    public List<UsersViewModel> getListFollowOtherUser(String serverUrl, int userId, boolean isFollowing, int pageIndex, int pageSize) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         pageIndex = pageIndex > 0 ? pageIndex : 1;
         pageSize = pageSize > 0 ? pageSize : 1;
+        int status = isFollowing ? 0 : 1;
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetListFollowOtherUser(?,?,?)}");
+            statement = con.prepareCall("{call GetListFollowOtherUser(?,?,?,?)}");
             statement.setInt(1, userId);
-            statement.setInt(2, pageIndex);
-            statement.setInt(3, pageSize);
+            statement.setInt(2, status);
+            statement.setInt(3, pageIndex);
+            statement.setInt(4, pageSize);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -242,18 +244,20 @@ public class UsersDao {
         }
         return listUserViewModels;
     }
-    
-    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId, int pageIndex, int pageSize, int loginUserId) {
+
+    public List<UsersViewModel> getListFollowedByOthersUser(String serverUrl, int followerId, boolean isFollowing, int pageIndex, int pageSize, int loginUserId) {
         List<UsersViewModel> listUserViewModels = new ArrayList<>();
         pageIndex = pageIndex > 0 ? pageIndex : 1;
         pageSize = pageSize > 0 ? pageSize : 1;
+        int status = isFollowing ? 0 : 1;
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetListFollowedByOthersUser(?,?,?,?)}");
+            statement = con.prepareCall("{call GetListFollowedByOthersUser(?,?,?,?,?)}");
             statement.setInt(1, followerId);
-            statement.setInt(2, pageIndex);
-            statement.setInt(3, pageSize);
-            statement.setInt(4, loginUserId);
+            statement.setInt(2, status);
+            statement.setInt(3, pageIndex);
+            statement.setInt(4, pageSize);
+            statement.setInt(5, loginUserId);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UsersViewModel userViewModel = new UsersViewModel();
@@ -290,7 +294,7 @@ public class UsersDao {
         }
         return listUserViewModels;
     }
-    
+
     public UsersViewModel getDataById(String serverUrl, Integer id, Integer loginUserId) {
         UsersViewModel userViewModel = new UsersViewModel();
         PreparedStatement statement;
@@ -332,7 +336,7 @@ public class UsersDao {
         }
         return userViewModel;
     }
-    
+
     public boolean insertData(Users t) {
         PreparedStatement statement;
         if (t.getAvatar().length() == 1) {
@@ -362,7 +366,7 @@ public class UsersDao {
         }
         return false;
     }
-    
+
     public boolean updateData(Users t) {
         PreparedStatement statement;
         if (t.getAvatar().length() > 1) {
@@ -411,10 +415,10 @@ public class UsersDao {
                 Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return false;
     }
-    
+
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {
@@ -430,7 +434,7 @@ public class UsersDao {
         }
         return false;
     }
-    
+
     public boolean updatePassword(int id, String newPassword, int updateId) {
         PreparedStatement statement;
         try {
@@ -447,7 +451,7 @@ public class UsersDao {
         }
         return false;
     }
-    
+
     public UsersViewModel loginUser(String serverUrl, String loginUser, String password, boolean isLoginAdmin) {
         UsersViewModel user = new UsersViewModel();
         PreparedStatement statement;
@@ -492,7 +496,7 @@ public class UsersDao {
         }
         return user;
     }
-    
+
     public boolean checkExistUser(int id) {
         if (id <= 0) {
             return false;
@@ -507,7 +511,7 @@ public class UsersDao {
             return false;
         }
     }
-    
+
     public boolean isUserAdmin(int id) {
         if (id <= 0) {
             return false;
@@ -527,7 +531,7 @@ public class UsersDao {
             return false;
         }
     }
-    
+
     public boolean checkExistUserName(String userName, int id) {
         if (userName.length() <= 0) {
             return false;
@@ -548,7 +552,7 @@ public class UsersDao {
             return false;
         }
     }
-    
+
     public boolean checkExistPhoneNumber(String phoneNumber, int id) {
         if (phoneNumber.length() <= 0) {
             return false;
@@ -569,7 +573,7 @@ public class UsersDao {
             return false;
         }
     }
-    
+
     public boolean checkExistEmail(String email, int id) {
         if (email.length() <= 0) {
             return false;
@@ -590,7 +594,7 @@ public class UsersDao {
             return false;
         }
     }
-    
+
     public String getOldPassword(Integer id) {
         PreparedStatement statement;
         try {
@@ -605,7 +609,7 @@ public class UsersDao {
         }
         return "";
     }
-    
+
     public String encryptPassword(String password) {
         String encryptedpassword = null;
         try {

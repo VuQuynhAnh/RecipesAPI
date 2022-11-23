@@ -69,10 +69,11 @@ public class UsersService {
     public UserListResponse getListFollowOtherUser(
             @Context UriInfo ui,
             @QueryParam("userId") int userId,
+            @QueryParam("isFollowing") boolean isFollowing,
             @QueryParam("pageIndex") int pageIndex,
             @QueryParam("pageSize") int pageSize) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        List<UsersViewModel> usersViewModels = userDao.getListFollowOtherUser(url, userId, pageIndex, pageSize);
+        List<UsersViewModel> usersViewModels = userDao.getListFollowOtherUser(url, userId, isFollowing, pageIndex, pageSize);
         int totalUsers = userDao.countFollowOtherUser(userId);
         int totalPage = totalUsers / pageSize;
         if (totalUsers % pageSize != 0) {
@@ -89,9 +90,10 @@ public class UsersService {
             @QueryParam("followerId") int followerId,
             @QueryParam("pageIndex") int pageIndex,
             @QueryParam("pageSize") int pageSize,
+            @QueryParam("isFollowing") boolean isFollowing,
             @QueryParam("loginUserId") int loginUserId) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
-        List<UsersViewModel> usersViewModels = userDao.getListFollowedByOthersUser(url, followerId, pageIndex, pageSize, loginUserId);
+        List<UsersViewModel> usersViewModels = userDao.getListFollowedByOthersUser(url, followerId, isFollowing, pageIndex, pageSize, loginUserId);
         int totalUsers = userDao.countFollowedByOthersUser(followerId);
         int totalPage = totalUsers / pageSize;
         if (totalUsers % pageSize != 0) {

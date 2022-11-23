@@ -1142,8 +1142,10 @@ group by recipe.Id
 go
 
 -- proc follower
+exec GetListFollowOtherUser 1, 0, 1, 100
 create proc GetListFollowOtherUser
 	@userId int,
+	@status int,
 	@pageIndex int,
 	@pageSize int
 as
@@ -1175,7 +1177,7 @@ left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
 left join Users as createUser on followOther.CreateUser = createUser.Id
 left join Users as updateUser on followOther.UpdateUser = updateUser.Id
-where followedByOther.Status = 0 and fo.UserId = @userId
+where followedByOther.Status = 0 and fo.Status = @status and fo.UserId = @userId
 group by 
 	fo.FollowerId,
 	fo.UserId,
@@ -1205,6 +1207,7 @@ go
 
 create proc GetListFollowedByOthersUser
 	@followerId int,
+	@status int,
 	@pageIndex int,
 	@pageSize int,
 	@userLogin int
@@ -1238,7 +1241,7 @@ left join Users as followOther on followOther.Id = fo.UserId
 left join Users as followedByOther on followedByOther.Id = fo.FollowerId
 left join Users as createUser on followOther.CreateUser = createUser.Id
 left join Users as updateUser on followOther.UpdateUser = updateUser.Id
-where followOther.Status = 0 and  fo.FollowerId = @followerId
+where followOther.Status = 0 and fo.Status = @status and  fo.FollowerId = @followerId
 group by
 	fo.FollowerId,
 	fo.UserId,

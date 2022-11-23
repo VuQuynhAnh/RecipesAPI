@@ -449,7 +449,7 @@ public class RecipesService {
             content = content.replace("[userDisplay]", userDao.getDataById("", authorId, 0).getDisplayName());
         }
         String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
-        List<UsersViewModel> listUsers = userDao.getListFollowedByOthersUser("", authorId, 1, Integer.MAX_VALUE, 0);
+        List<UsersViewModel> listUsers = userDao.getListFollowedByOthersUser("", authorId, true, 1, Integer.MAX_VALUE, 0);
         for (UsersViewModel model : listUsers) {
             if (notificationDao.insertData(model.getId(), notificationTypeId, content, 0)) {
                 notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, model.getId()));
