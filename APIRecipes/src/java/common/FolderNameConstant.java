@@ -11,8 +11,8 @@ package common;
  */
 public class FolderNameConstant {
 
-    public static String category = "Category";
-    public static String user = "User";
-    public static String recipe = "Recipe";
+    public static String category = "category";
+    public static String user = "user";
+    public static String recipe = "recipe";
 
 }

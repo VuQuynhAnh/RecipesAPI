@@ -152,16 +152,15 @@ insert into Category values
 (N'Đồ Trung Quốc','', 1, '2022-10-23', 1, null, null)
 go
 
-insert into Users values (N'Anh.vu3', N'Vũ Quỳnh Anh', 1, N'Yên Bái', '0787424822', 'jjadaskjdasfafkengewgwgwgsagsg', 'anh.vu3@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/24', 0, '', 0)
+insert into Users values (N'Anh.vu3', N'Vũ Quỳnh Anh', 1, N'Yên Bái', '0787424822', 'e10adc3949ba59abbe56e057f20f883e', 'anh.vu3@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/24', 0, '', 0)
 go
-insert into Users values (N'Duyen.pham', N'Phạm Thị Duyên', 0, N'Thái Bình', '0787114822', 'sdgsadgsdg', 'duyen.pham@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/28', 0, '', 0)
+insert into Users values (N'Duyen.pham', N'Phạm Thị Duyên', 0, N'Thái Bình', '0787114822', 'e10adc3949ba59abbe56e057f20f883e', 'duyen.pham@sotatek.com', 'DEV C#', 1, 'image', N'Người phát triển API', 0, '2022/10/28', 0, '', 0)
 go
-insert into Users values (N'My.nguyen', N'Nguyễn Thanh Mỹ', 1, N'Hà Tây', '0787115522', 'asdg', 'my.nguyen@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
+insert into Users values (N'My.nguyen', N'Nguyễn Thanh Mỹ', 1, N'Hà Tây', '0787115522', 'e10adc3949ba59abbe56e057f20f883e', 'my.nguyen@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
 go
-insert into Users values (N'Long.Tran', N'Trần Quang Long', 1, N'Nam Định', '0187115522', 'htrkgjvrtjnkrvtnj', 'long.tran@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
+insert into Users values (N'Long.Tran', N'Trần Quang Long', 1, N'Nam Định', '0187115522', 'e10adc3949ba59abbe56e057f20f883e', 'long.tran@sotatek.com', 'DEV C#', 0, 'image', N'Người phát triển API', 0, '2022/10/28', 1, '', 0)
 go
 
-select * from NotificationType
 insert into NotificationType(Id, Name, Description, Status) values 
 (1, 'Follow', '[userDisplay] has been following you!',0),
 (2, 'Update Recipe', 'The Recipe [recipeName] has been updated, please check it out with us!',0),
@@ -1078,14 +1077,12 @@ select
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
 	Sum(recipe.TotalViews) as TotalViews,
-	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
+	(select COUNT(*) from Followers where Status = 0 and u.Id = UserId) as TotalFollowOtherUser,
+	(select COUNT(*) from Followers where Status = 0 and u.Id = FollowerId) as TotalFollowedByOthersUser
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
 left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
-left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
-left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
 where (
 		u.PhoneNumber = @userName
 		or u.Email = @userName
