@@ -852,14 +852,12 @@ select
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
 	Sum(recipe.TotalViews) as TotalViews,
-	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
+	(select COUNT(*) from Followers where Status = 0 and u.Id = UserId) as TotalFollowOtherUser,
+	(select COUNT(*) from Followers where Status = 0 and u.Id = FollowerId) as TotalFollowedByOthersUser
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
 left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
-left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
-left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
 group by 
 	u.Id,
 	u.UserName,
@@ -921,15 +919,13 @@ select
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
 	Sum(recipe.TotalViews) as TotalViews,
-	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser,
+	(select COUNT(*) from Followers where Status = 0 and u.Id = UserId) as TotalFollowOtherUser,
+	(select COUNT(*) from Followers where Status = 0 and u.Id = FollowerId) as TotalFollowedByOthersUser,
 	(select COUNT(*) from Followers where Status = 0 and UserId = @userLogin and FollowerId = u.Id) as CheckFollow
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
 left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
-left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
-left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
 where (u.UserName like N'%' + @keyword + '%'
 		or u.DisplayName like N'%' + @keyword + '%'
 		or u.Address like N'%' + @keyword + '%'
@@ -964,9 +960,9 @@ group by
 	updateUser.UserName
 order by 
 	case @sortByTotalRecipeDESC when 1 then COUNT(recipe.Id) end desc,
-	case @sortByTotalFollowOtherUserDESC when 1 then COUNT(followOtherUser.UserId) end desc,
+	case @sortByTotalFollowOtherUserDESC when 1 then (select COUNT(*) from Followers where Status = 0 and u.Id = UserId) end desc,
 	case @sortByTotalViewsDESC when 1 then Sum(recipe.TotalViews) end desc,
-	case @sortByTotalFollowedByOthersUserDESC when 1 then COUNT(followedByOthersUser.FollowerId) end desc,
+	case @sortByTotalFollowedByOthersUserDESC when 1 then (select COUNT(*) from Followers where Status = 0 and u.Id = FollowerId) end desc,
 	case @sortByIdDESC when 1 then u.Id end desc
 OFFSET ((@pageIndex - 1) * @pageSize) Rows  
 Fetch NEXT @pageSize ROWS ONLY  
@@ -1026,8 +1022,8 @@ select
 	updateUser.UserName as UpdateUserDisplay,
 	COUNT(recipe.Id) as TotalRecipe,
 	Sum(recipe.TotalViews) as TotalViews,
-	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
-	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser,
+	(select COUNT(*) from Followers where Status = 0 and u.Id = UserId) as TotalFollowOtherUser,
+	(select COUNT(*) from Followers where Status = 0 and u.Id = FollowerId) as TotalFollowedByOthersUser,
 	(select COUNT(*) from Followers where Status = 0 and UserId = @userLogin and FollowerId = u.Id) as CheckFollow
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
@@ -1062,17 +1058,58 @@ create proc LoginUser
 	@password varchar(250)
 as
 select 
-	u.*,
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)) as Avatar,
+	cast(u.Description as nvarchar(max)) as Description,
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
 	createUser.UserName as CreateUserDisplay,
-	updateUser.UserName as UpdateUserDisplay
+	updateUser.UserName as UpdateUserDisplay,
+	COUNT(recipe.Id) as TotalRecipe,
+	Sum(recipe.TotalViews) as TotalViews,
+	COUNT(followOtherUser.UserId) as TotalFollowOtherUser,
+	COUNT(followedByOthersUser.FollowerId) as TotalFollowedByOthersUser
 from Users as u
 left join Users as createUser on u.CreateUser = createUser.Id
 left join Users as updateUser on u.UpdateUser = updateUser.Id
+left join (select * from Recipes where Status = 0) as recipe on u.Id = recipe.AuthorId
+left join (select * from Followers where Status = 0) as followOtherUser on u.Id = followOtherUser.UserId
+left join (select * from Followers where Status = 0) as followedByOthersUser on u.Id = followedByOthersUser.FollowerId
 where (
 		u.PhoneNumber = @userName
 		or u.Email = @userName
 	  )
 	  and u.Password = @password
+group by 
+	u.Id,
+	u.UserName,
+	u.DisplayName,
+	u.Sex,
+	u.Address,
+	u.PhoneNumber,
+	u.Email,
+	u.Job,
+	u.Role,
+	cast(u.Avatar as nvarchar(max)),
+	cast(u.Description as nvarchar(max)),
+	u.Status,
+	u.CreateDate,
+	u.CreateUser,
+	u.UpdateDate,
+	u.UpdateUser,
+	createUser.UserName,
+	updateUser.UserName
 go
 
 --proc logindevice
