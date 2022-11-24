@@ -7,7 +7,6 @@ package viewModel;
 
 import entity.Recipes;
 import java.io.Serializable;
-import java.sql.Date;
 
 /**
  *
@@ -23,6 +22,7 @@ public class RecipesViewModel extends Recipes implements Serializable {
     private int totalRating;
     private String authorAvatar;
     private boolean isSaveRecipe;
+    private boolean isFollowAuthor;
 
     public RecipesViewModel() {
     }
@@ -89,6 +89,14 @@ public class RecipesViewModel extends Recipes implements Serializable {
 
     public void setUpdateUserDisplay(String updateUserDisplay) {
         this.updateUserDisplay = updateUserDisplay;
+    }
+
+    public boolean isIsFollowAuthor() {
+        return isFollowAuthor;
+    }
+
+    public void setIsFollowAuthor(boolean isFollowAuthor) {
+        this.isFollowAuthor = isFollowAuthor;
     }
 
 }

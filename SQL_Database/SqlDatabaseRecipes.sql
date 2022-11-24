@@ -724,7 +724,8 @@ select
 	cast(author.Avatar as nvarchar(max)) as AuthorAvatar,
 	createUser.UserName as CreateUserDisplay,
 	updateUser.UserName as UpdateUserDisplay,
-	(select COUNT(*) from RecipesSave where Status = 0 and RecipeId = recipe.Id and UserId = @userLogin) as CheckSave
+	(select COUNT(*) from RecipesSave where Status = 0 and RecipeId = recipe.Id and UserId = @userLogin) as CheckSave,
+	(select COUNT(*) from Followers where Status = 0 and FollowerId = recipe.AuthorId and UserId = @userLogin) as CheckFollow
 from Recipes recipe
 left join Users as createUser on recipe.CreateUser = createUser.Id
 left join Users as updateUser on recipe.UpdateUser = updateUser.Id

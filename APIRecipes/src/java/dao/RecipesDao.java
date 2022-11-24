@@ -313,6 +313,7 @@ public class RecipesDao {
                 recipeViewModel.setAvgRating(result.getDouble("AvgRating"));
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 recipeViewModel.setIsSaveRecipe(result.getInt("CheckSave") > 0);
+                recipeViewModel.setIsFollowAuthor(result.getInt("CheckFollow") > 0);
                 // If have Recipe and Recipe is not delete
                 if (result.getInt("Id") > 0 && result.getInt("status") == 0) {
                     statement = con.prepareCall("update Recipes set TotalViews=? where Id=?");
