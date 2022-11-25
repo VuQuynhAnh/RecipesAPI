@@ -15,6 +15,6 @@ public class NotificationTypeIdConstant {
     public static int updateRecipe = 2;
     public static int createRecipe = 3;
     public static int ratingRecipe = 4;
-    public static int otherr = 5;
+    public static int other = 5;
 
 }

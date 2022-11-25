@@ -5,6 +5,7 @@
  */
 package services;
 
+import common.NotificationTypeIdConstant;
 import dao.NotificationTypeDao;
 import dao.UsersDao;
 import entity.NotificationType;
@@ -74,6 +75,8 @@ public class NotificationTypeService {
             return "NotificationType createUser with id = " + type.getCreateUser() + " is not exist or deleted!";
         } else if (!usersDao.isUserAdmin(type.getCreateUser())) {
             return "NotificationType createUser with id = " + type.getCreateUser() + " is not a admin!";
+        } else if (notificationDao.getDataById(type.getId()).getId() > 0) {
+            return "NotificationType width id = " + type.getId() + " is exist in database!";
         }
         if (notificationDao.insertData(type)) {
             return "Success!";
@@ -106,7 +109,13 @@ public class NotificationTypeService {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     public String delete(@QueryParam("id") int id, @QueryParam("updateUser") int deleteId) {
-        if (!notificationDao.checkExistNotificationType(id)) {
+        if (id == NotificationTypeIdConstant.createRecipe
+                || id == NotificationTypeIdConstant.followUser
+                || id == NotificationTypeIdConstant.other
+                || id == NotificationTypeIdConstant.ratingRecipe
+                || id == NotificationTypeIdConstant.updateRecipe) {
+            return "Can not delete this notification type!";
+        } else if (!notificationDao.checkExistNotificationType(id)) {
             return "NotificationType width id = " + id + " is not exist or deleted!";
         } else if (!usersDao.checkExistUser(deleteId)) {
             return "NotificationType updateUser with id = " + deleteId + " is not exist or deleted!";

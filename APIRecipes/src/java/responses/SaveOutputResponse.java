@@ -13,15 +13,15 @@ import viewModel.NotificationViewModel;
  *
  * @author DELL
  */
-public class OutputResponse {
+public class SaveOutputResponse {
 
     private String message;
     private List<NotificationViewModel> notificationModels;
 
-    public OutputResponse() {
+    public SaveOutputResponse() {
     }
 
-    public OutputResponse(String message) {
+    public SaveOutputResponse(String message) {
         this.message = message;
         this.notificationModels = new ArrayList<>();
     }
@@ -42,7 +42,7 @@ public class OutputResponse {
         this.notificationModels = notificationModels;
     }
 
-    public OutputResponse(String message, List<NotificationViewModel> notificationModels) {
+    public SaveOutputResponse(String message, List<NotificationViewModel> notificationModels) {
         this.message = message;
         this.notificationModels = notificationModels;
     }

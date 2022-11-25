@@ -118,12 +118,13 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
     public boolean insertData(NotificationType t) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into NotificationType(Name, Description, Status, CreateDate, CreateUser) values (?,?,?,?,?)");
-            statement.setString(1, t.getName());
-            statement.setString(2, t.getDescription());
-            statement.setInt(3, 0);
-            statement.setDate(4, Date.valueOf(LocalDate.now()));
-            statement.setInt(5, t.getCreateUser());
+            statement = con.prepareCall("insert into NotificationType(Id, Name, Description, Status, CreateDate, CreateUser) values (?,?,?,?,?,?)");
+            statement.setInt(1, t.getId());
+            statement.setString(2, t.getName());
+            statement.setString(3, t.getDescription());
+            statement.setInt(4, 0);
+            statement.setDate(5, Date.valueOf(LocalDate.now()));
+            statement.setInt(6, t.getCreateUser());
             if (statement.executeUpdate() > 0) {
                 return true;
             }
@@ -138,7 +139,7 @@ public class NotificationTypeDao implements IService<NotificationType, Notificat
         PreparedStatement statement;
         try {
             statement = con.prepareCall("update NotificationType set Name=?, Description=?, Status=?, UpdateDate=?, UpdateUser=? where Id=?");
-           statement.setString(1, t.getName());
+            statement.setString(1, t.getName());
             statement.setString(2, t.getDescription());
             statement.setInt(3, t.getStatus());
             statement.setDate(4, Date.valueOf(LocalDate.now()));
