@@ -289,6 +289,19 @@ public class UsersService {
     }
 
     @PUT
+    @Path("reactive")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String reactive(@QueryParam("id") int id, @QueryParam("userId") int userId) {
+        if (userDao.getDataById("", id, 0).getId() <= 0) {
+            return "User width id = " + id + " is not exist or deleted!";
+        } else if (userDao.reActiveData(id, userId)) {
+            return "Success!";
+        }
+        return "Failed!";
+    }
+
+    @PUT
     @Path("updatePassword")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -320,11 +333,11 @@ public class UsersService {
         return "Failed!";
     }
 
-//    Status code
-//            0 - Success
-//            1 - User is blocked
-//            2 - User is not exist
-//            3 - DeviceName is not exist
+    //    Status code
+    //            0 - Success
+    //            1 - User is blocked
+    //            2 - User is not exist
+    //            3 - DeviceName is not exist
     @POST
     @Path("loginUser")
     @Produces(MediaType.APPLICATION_JSON)
@@ -361,11 +374,11 @@ public class UsersService {
         );
     }
 
-//    Status code
-//            0 - Success
-//            1 - Admin is blocked
-//            2 - Admin do not exist
-//            3 - User does not have permission to login admin
+    //    Status code
+    //            0 - Success
+    //            1 - Admin is blocked
+    //            2 - Admin do not exist
+    //            3 - User does not have permission to login admin
     @POST
     @Path("loginAdmin")
     @Produces(MediaType.APPLICATION_JSON)

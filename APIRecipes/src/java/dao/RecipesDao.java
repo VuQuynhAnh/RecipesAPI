@@ -456,6 +456,22 @@ public class RecipesDao {
         return false;
     }
 
+    public boolean reActiveData(Integer id, int userId) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("update Recipes set Status = 0, UpdateDate=?, UpdateUser=? where Id=?");
+            statement.setDate(1, Date.valueOf(LocalDate.now()));
+            statement.setInt(2, userId);
+            statement.setInt(3, id);
+            if (statement.executeUpdate() > 0) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public boolean checkExistRecipe(int id) {
         if (id <= 0) {
             return false;

@@ -494,6 +494,22 @@ public class UsersDao {
         }
         return false;
     }
+    
+     public boolean reActiveData(Integer id, int userId) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("update Users set Status = 0, UpdateDate=?, UpdateUser=? where Id=?");
+            statement.setDate(1, Date.valueOf(LocalDate.now()));
+            statement.setInt(2, userId);
+            statement.setInt(3, id);
+            if (statement.executeUpdate() > 0) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 
     public boolean updatePassword(int id, String newPassword, int updateId) {
         PreparedStatement statement;
