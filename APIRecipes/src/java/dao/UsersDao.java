@@ -419,6 +419,66 @@ public class UsersDao {
         return false;
     }
 
+    public boolean updateNameUser(Users t) {
+        PreparedStatement statement;
+        if (t.getAvatar().length() > 1) {
+            try {
+                statement = con.prepareCall("update Users set UserName=?, DisplayName=?, Avatar=?, Description=?, UpdateDate=?, UpdateUser=? where Id=?");
+                statement.setString(1, t.getUserName());
+                statement.setString(2, t.getDisplayName());
+                statement.setString(3, t.getAvatar());
+                statement.setString(4, t.getDescription());
+                statement.setDate(5, Date.valueOf(LocalDate.now()));
+                statement.setInt(6, t.getUpdateUser());
+                statement.setInt(7, t.getId());
+                if (statement.executeUpdate() > 0) {
+                    return true;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                statement = con.prepareCall("update Users set UserName=?, DisplayName=?, Description=?, UpdateDate=?, UpdateUser=? where Id=?");
+                statement.setString(1, t.getUserName());
+                statement.setString(2, t.getDisplayName());
+                statement.setString(3, t.getDescription());
+                statement.setDate(4, Date.valueOf(LocalDate.now()));
+                statement.setInt(5, t.getUpdateUser());
+                statement.setInt(6, t.getId());
+                if (statement.executeUpdate() > 0) {
+                    return true;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return false;
+    }
+
+    public boolean updateInforUser(Users t) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("update Users set Sex=?, Address=?, PhoneNumber=?, Email=?, Job=?, UpdateDate=?, UpdateUser=? where Id=?");
+            statement.setInt(1, t.getSex());
+            statement.setString(2, t.getAddress());
+            statement.setString(3, t.getPhoneNumber());
+            statement.setString(4, t.getEmail());
+            statement.setString(5, t.getJob());
+            statement.setDate(6, Date.valueOf(LocalDate.now()));
+            statement.setInt(7, t.getId());
+            statement.setInt(8, t.getId());
+            if (statement.executeUpdate() > 0) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsersDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
     public boolean deleteData(Integer id, int userId) {
         PreparedStatement statement;
         try {

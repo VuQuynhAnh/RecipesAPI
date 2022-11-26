@@ -28,6 +28,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import requests.LoginRequest;
+import requests.UpdateInforUserRequest;
+import requests.UpdateNameUserRequest;
 import requests.UpdatePasswordRequest;
 import requests.UserFilterRequest;
 import requests.UserInputRequest;
@@ -204,6 +206,70 @@ public class UsersService {
             user.setAvatar(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.user, fileName));
         }
         if (userDao.updateData(user)) {
+            return "Success!";
+        }
+        return "Failed!";
+    }
+
+    @PUT
+    @Path("updateNameUser")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String updateName(@Context ServletConfig config, UpdateNameUserRequest request) {
+        String path = config.getServletContext().getRealPath("/images");
+        if (request.getUserName().trim().length() == 0) {
+            return "User userName is requied!";
+        } else if (request.getDisplayName().trim().length() == 0) {
+            return "User displayName is requied!";
+        } else if (userDao.checkExistUserName(request.getUserName(), request.getId())) {
+            return "User userName is exist in DB, choose another userName!";
+        } else if (userDao.getDataById("", request.getId(), 0).getId() <= 0) {
+            return "User width id = " + request.getId() + " is not exist!";
+        }
+        Users user = new Users();
+        user.setId(request.getId());
+        user.setUserName(request.getUserName());
+        user.setDescription(request.getDescription());
+        user.setDisplayName(request.getDisplayName());
+
+        // convert image
+        user.setAvatar("_");
+        if (!request.getImageInput().isEmpty()) {
+            String fileName = "user_" + dateTimeNow.format(formatDate);
+            String imageBase64 = "";
+            imageBase64 = request.getImageInput().stream().map((item) -> item).reduce(imageBase64, String::concat);
+            user.setAvatar(uploadImageDao.uploadImage(imageBase64, path, FolderNameConstant.user, fileName));
+        }
+        if (userDao.updateNameUser(user)) {
+            return "Success!";
+        }
+        return "Failed!";
+    }
+
+    @PUT
+    @Path("updateInforUser")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String updateInforUser(@Context ServletConfig config, UpdateInforUserRequest request) {
+        if (request.getSex() < 0) {
+            return "User sex is must more or equal 0!";
+        } else if (request.getPhoneNumber().trim().length() == 0) {
+            return "User phoneNumber is requied!";
+        } else if (userDao.checkExistPhoneNumber(request.getPhoneNumber(), request.getId())) {
+            return "User phoneNumber is exist in DB, choose another phoneNumber!";
+        } else if (request.getEmail().trim().length() > 0 && userDao.checkExistEmail(request.getEmail(), request.getId())) {
+            return "User email is exist in DB, choose another email!";
+        } else if (userDao.getDataById("", request.getId(), 0).getId() <= 0) {
+            return "User width id = " + request.getId() + " is not exist!";
+        }
+        Users user = new Users();
+        user.setId(request.getId());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setSex(request.getSex());
+        user.setAddress(request.getAddress());
+        user.setEmail(request.getEmail());
+        user.setJob(request.getJob());
+        if (userDao.updateInforUser(user)) {
             return "Success!";
         }
         return "Failed!";
