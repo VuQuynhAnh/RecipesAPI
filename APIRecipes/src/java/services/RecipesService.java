@@ -57,7 +57,7 @@ import viewModel.UsersViewModel;
 @Stateless
 @Path("/recipes")
 public class RecipesService {
-
+    
     RecipesDao recipesDao = null;
     UsersDao userDao = null;
     CategoryDao categoryDao = null;
@@ -72,7 +72,7 @@ public class RecipesService {
     DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     LocalDateTime dateTimeNow = LocalDateTime.now();
-
+    
     public RecipesService() {
         recipesDao = new RecipesDao();
         userDao = new UsersDao();
@@ -86,14 +86,14 @@ public class RecipesService {
         recipeSaveDao = new RecipeSaveDao();
         followerDao = new FollowerDao();
     }
-
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<RecipesViewModel> getRecipes(@Context UriInfo ui) {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
         return recipesDao.getData(url);
     }
-
+    
     @GET
     @Path("getSaveRecipe")
     @Produces(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ public class RecipesService {
         }
         return new RecipeListResponse(totalPage, recipesViewModels);
     }
-
+    
     @POST
     @Path("filterData")
     @Produces(MediaType.APPLICATION_JSON)
@@ -132,7 +132,7 @@ public class RecipesService {
         }
         return new RecipeListResponse(totalPage, recipesViewModels);
     }
-
+    
     @GET
     @Path("detail")
     @Produces(MediaType.APPLICATION_JSON)
@@ -140,7 +140,7 @@ public class RecipesService {
         String url = ui.getBaseUri().toString().replace("/recipesApi/", "/images/");
         return recipesDao.getDataById(url, id, loginUserId);
     }
-
+    
     @GET
     @Path("getRecipe")
     @Produces(MediaType.APPLICATION_JSON)
@@ -149,13 +149,18 @@ public class RecipesService {
         RecipesViewModel recipe = recipesDao.getDataById(url, id, loginUserId);
         List<Steps> listSteps = stepDao.getData(id);
         List<Ingredient> listIngredients = ingredientDao.getData(id);
+
+        // If have Recipe and Recipe is not delete
+        if (recipe.getId() > 0 && recipe.getStatus() == 0) {
+            recipesDao.updateTotalView(recipe.getTotalViews() + 1, id);
+        }
         return new RecipeDetailResponse(
                 recipe,
                 listSteps,
                 listIngredients
         );
     }
-
+    
     @POST
     @Path("insert")
     @Produces(MediaType.APPLICATION_JSON)
@@ -211,7 +216,7 @@ public class RecipesService {
         }
         int recipeId = recipesDao.insertRecipe(input.getRecipe());
         if (recipeId > 0) {
-
+            
             int saveFailed = 0;
             // Insert Steps
             for (Steps step : input.getListSteps()) {
@@ -239,7 +244,7 @@ public class RecipesService {
         }
         return new SaveOutputResponse("Failed");
     }
-
+    
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -383,7 +388,7 @@ public class RecipesService {
         }
         return new SaveOutputResponse("Failed!");
     }
-
+    
     @DELETE
     @Path("delete")
     @Produces(MediaType.TEXT_PLAIN)
@@ -396,7 +401,7 @@ public class RecipesService {
         }
         return "Failed!";
     }
-
+    
     @POST
     @Path("rating")
     @Produces(MediaType.APPLICATION_JSON)
@@ -417,14 +422,14 @@ public class RecipesService {
         }
         return new SaveOutputResponse("Failed!");
     }
-
+    
     private List<NotificationViewModel> sendNotificationUpdateRecipe(int recipeId, String recipeName) {
         List<NotificationViewModel> notificationViewModels = new ArrayList<>();
         int notificationTypeId = NotificationTypeIdConstant.updateRecipe;
         NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
         String content = notificationType.getDescription();
         String typeName = notificationType.getName();
-
+        
         if (content.contains("[recipeName]")) {
             content = content.replace("[recipeName]", recipeName);
         }
@@ -437,14 +442,14 @@ public class RecipesService {
         }
         return notificationViewModels;
     }
-
+    
     private List<NotificationViewModel> sendNotificationCreateRecipe(int authorId) {
         List<NotificationViewModel> notificationViewModels = new ArrayList<>();
         int notificationTypeId = NotificationTypeIdConstant.createRecipe;
         NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
         String content = notificationType.getDescription();
         String typeName = notificationType.getName();
-
+        
         if (content.contains("[userDisplay]")) {
             content = content.replace("[userDisplay]", userDao.getDataById("", authorId, 0).getDisplayName());
         }
@@ -457,13 +462,13 @@ public class RecipesService {
         }
         return notificationViewModels;
     }
-
+    
     private NotificationViewModel sendNotificationRatingRecipe(String userDisplay, int userId, int recipeId) {
         int notificationTypeId = NotificationTypeIdConstant.ratingRecipe;
         NotificationType notificationType = notificationTypeDao.getDataById(notificationTypeId);
         String content = notificationType.getDescription();
         String typeName = notificationType.getName();
-
+        
         if (content.contains("[userDisplay]")) {
             content = content.replace("[userDisplay]", userDisplay);
         }

@@ -314,14 +314,6 @@ public class RecipesDao {
                 recipeViewModel.setTotalRating(result.getInt("TotalRating"));
                 recipeViewModel.setIsSaveRecipe(result.getInt("CheckSave") > 0);
                 recipeViewModel.setIsFollowAuthor(result.getInt("CheckFollow") > 0);
-                // If have Recipe and Recipe is not delete
-                if (result.getInt("Id") > 0 && result.getInt("status") == 0) {
-                    statement = con.prepareCall("update Recipes set TotalViews=? where Id=?");
-                    int totalView = result.getInt("TotalViews") + 1;
-                    statement.setInt(1, totalView);
-                    statement.setInt(2, result.getInt("Id"));
-                    statement.executeUpdate();
-                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -434,6 +426,18 @@ public class RecipesDao {
             }
         }
         return false;
+    }
+
+    public void updateTotalView(int totalView, int id) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("update Recipes set TotalViews=? where Id=?");
+            statement.setInt(1, totalView);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public boolean deleteData(Integer id, int userId) {
