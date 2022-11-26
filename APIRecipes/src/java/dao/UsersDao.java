@@ -658,7 +658,7 @@ public class UsersDao {
     public String getOldPassword(Integer id) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("{call GetUserById(?)}");
+            statement = con.prepareCall("select Password from Users where Id = ?");
             statement.setInt(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
