@@ -67,4 +67,39 @@ public class RatingDao {
         }
         return false;
     }
+
+    public boolean update(Rating t) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("update Rating set Rating=?, CreateDate=? where UserId=? and RecipeId=?");
+            statement.setInt(1, t.getRating());
+            statement.setDate(2, Date.valueOf(LocalDate.now()));
+            statement.setInt(3, t.getUserId());
+            statement.setInt(4, t.getRecipeId());
+            if (statement.executeUpdate() > 0) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RatingDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public boolean checkExistRating(int userId, int recipeId) {
+        if (userId <= 0) {
+            return false;
+        } else if (recipeId <= 0) {
+            return false;
+        }
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("select * from Rating where UserId=? and RecipeId=?");
+            statement.setInt(1, userId);
+            statement.setInt(2, recipeId);
+            ResultSet result = statement.executeQuery();
+            return result.next();
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
 }

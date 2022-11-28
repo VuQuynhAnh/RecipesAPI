@@ -428,6 +428,13 @@ public class RecipesService {
         UsersViewModel userModel = userDao.getDataById("", rating.getUserId(), 0);
         if (userModel.getId() <= 0 || userModel.getStatus() == 1) {
             return new SaveOutputResponse("User with id = " + rating.getUserId() + " is not exist or deleted!");
+        }
+        if (ratingDao.checkExistRating(rating.getUserId(), rating.getRecipeId())) {
+            if (ratingDao.update(rating)) {
+                List<NotificationViewModel> notificationViewModels = new ArrayList<>();
+                notificationViewModels.add(sendNotificationRatingRecipe(userModel.getDisplayName(), rating.getUserId(), rating.getRecipeId()));
+                return new SaveOutputResponse("Success!", notificationViewModels);
+            }
         } else if (ratingDao.insertData(rating)) {
             List<NotificationViewModel> notificationViewModels = new ArrayList<>();
             notificationViewModels.add(sendNotificationRatingRecipe(userModel.getDisplayName(), rating.getUserId(), rating.getRecipeId()));
