@@ -364,7 +364,7 @@ public class UsersService {
             if (device.getId() > 0) {
                 loginDeviceDao.reLogin(request.getDeviceName(), userLogin.getId());
             } else {
-                loginDeviceDao.fristLogin(request.getDeviceName(), userLogin.getId());
+                loginDeviceDao.fristLogin(request.getDeviceName(), userLogin.getId(), request.getTokenDevice());
             }
         }
         return new LoginResponse(

@@ -14,18 +14,21 @@ public class LoginRequest {
     private String loginUser;
     private String password;
     private String deviceName;
+    private String tokenDevice;
 
     public String getDeviceName() {
         return deviceName;
     }
 
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public String getTokenDevice() {
+        return tokenDevice;
     }
 
-    public LoginRequest(String loginUser, String password, String deviceName) {
-        this.loginUser = loginUser;
-        this.password = password;
+    public void setTokenDevice(String tokenDevice) {
+        this.tokenDevice = tokenDevice;
+    }
+
+    public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
     }
 

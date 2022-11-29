@@ -16,18 +16,18 @@ public class LoginDevice implements Serializable {
 
     private int id;
     private String deviceName;
+    private String tokenDevice;
     private int userId;
     private int status;
     private Date lastLoginDate;
     private Date lastLogoutDate;
 
-    public LoginDevice(int id, String deviceName, int userId, int status, Date lastLoginDate, Date lastLogoutDate) {
-        this.id = id;
-        this.deviceName = deviceName;
-        this.userId = userId;
-        this.status = status;
-        this.lastLoginDate = lastLoginDate;
-        this.lastLogoutDate = lastLogoutDate;
+    public String getTokenDevice() {
+        return tokenDevice;
+    }
+
+    public void setTokenDevice(String tokenDevice) {
+        this.tokenDevice = tokenDevice;
     }
 
     public int getId() {

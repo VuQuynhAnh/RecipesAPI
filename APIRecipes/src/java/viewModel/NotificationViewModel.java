@@ -6,6 +6,7 @@
 package viewModel;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -21,16 +22,26 @@ public class NotificationViewModel implements Serializable {
     private String createUserDisplay;
     private String userDisplay;
     private int userId;
+    private List<String> listTokenDevice;
 
-    public NotificationViewModel(String notificationType, String description, int status, String createDate, int userId) {
+    public NotificationViewModel(String notificationType, String description, int status, String createDate, int userId, List<String> listTokens) {
         this.notificationType = notificationType;
         this.description = description;
         this.status = status;
         this.createDate = createDate;
         this.userId = userId;
+        this.listTokenDevice = listTokens;
         this.id = 0;
         this.createUserDisplay = "";
         this.userDisplay = "";
+    }
+
+    public List<String> getListTokenDevice() {
+        return listTokenDevice;
+    }
+
+    public void setListTokenDevice(List<String> listTokenDevice) {
+        this.listTokenDevice = listTokenDevice;
     }
 
     public int getUserId() {

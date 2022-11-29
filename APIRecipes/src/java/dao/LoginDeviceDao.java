@@ -75,15 +75,32 @@ public class LoginDeviceDao {
         return device;
     }
 
-    public boolean fristLogin(String deivceName, int userId) {
+    public List<String> getListTokenDevice(Integer userId) {
+        List<String> listData = new ArrayList<>();
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("insert into LoginDevice(DeviceName, UserId, Status, LastLoginDate, LastLogoutDate) values (?,?,?,?,?)");
+            statement = con.prepareCall("{call GetListLoginDeviceById(?)}");
+            statement.setInt(1, userId);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                listData.add(result.getString("TokenDevice"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listData;
+    }
+
+    public boolean fristLogin(String deivceName, int userId, String tokenDevice) {
+        PreparedStatement statement;
+        try {
+            statement = con.prepareCall("insert into LoginDevice(DeviceName, TokenDevice, UserId, Status, LastLoginDate, LastLogoutDate) values (?,?,?,?,?,?)");
             statement.setString(1, deivceName);
-            statement.setInt(2, userId);
-            statement.setInt(3, 0);
-            statement.setDate(4, Date.valueOf(LocalDate.now()));
-            statement.setDate(5, null);
+            statement.setString(2, tokenDevice);
+            statement.setInt(3, userId);
+            statement.setInt(4, 0);
+            statement.setDate(5, Date.valueOf(LocalDate.now()));
+            statement.setDate(6, null);
             if (statement.executeUpdate() > 0) {
                 return true;
             }

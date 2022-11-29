@@ -29,6 +29,7 @@ Create table LoginDevice -- Thiết bị đăng nhập
 (
 	Id int primary key identity,
 	DeviceName varchar(250) not null,
+	TokenDevice varchar(500),
 	UserId int foreign key references Users(Id) not null,
 	Status int default 0,
 	LastLoginDate date not null default getdate(),
@@ -1113,6 +1114,11 @@ where UserId = @userId
 	and DeviceName = @deviceName
 go
 
+create proc GetListLoginDeviceById
+	@userId int
+as
+	select TokenDevice from LoginDevice where UserId = @userId and Status = 0
+go
 
 -- proc rating
 create proc GetRatingByRecipeId

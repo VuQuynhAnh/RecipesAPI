@@ -10,6 +10,7 @@ import common.NotificationTypeIdConstant;
 import dao.CategoryDao;
 import dao.FollowerDao;
 import dao.IngredientDao;
+import dao.LoginDeviceDao;
 import dao.NotificationDao;
 import dao.NotificationTypeDao;
 import dao.RatingDao;
@@ -69,6 +70,7 @@ public class RecipesService {
     NotificationDao notificationDao = null;
     RecipeSaveDao recipeSaveDao = null;
     FollowerDao followerDao = null;
+    LoginDeviceDao loginDeviceDao = null;
     DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     LocalDateTime dateTimeNow = LocalDateTime.now();
@@ -85,6 +87,7 @@ public class RecipesService {
         notificationDao = new NotificationDao();
         recipeSaveDao = new RecipeSaveDao();
         followerDao = new FollowerDao();
+        loginDeviceDao = new LoginDeviceDao();
     }
 
     @GET
@@ -457,7 +460,8 @@ public class RecipesService {
         List<Integer> listUserId = recipeSaveDao.getListUserIdByRecipeId(recipeId);
         for (Integer userId : listUserId) {
             if (notificationDao.insertData(userId, notificationTypeId, content, 0)) {
-                notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, userId));
+                List<String> listToken = loginDeviceDao.getListTokenDevice(userId);
+                notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, userId, listToken));
             }
         }
         return notificationViewModels;
@@ -477,7 +481,8 @@ public class RecipesService {
         List<UsersViewModel> listUsers = userDao.getListFollowedByOthersUser("", authorId, true, 1, Integer.MAX_VALUE, 0);
         for (UsersViewModel model : listUsers) {
             if (notificationDao.insertData(model.getId(), notificationTypeId, content, 0)) {
-                notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, model.getId()));
+                List<String> listToken = loginDeviceDao.getListTokenDevice(model.getId());
+                notificationViewModels.add(new NotificationViewModel(typeName, content, 0, createTime, model.getId(), listToken));
             }
         }
         return notificationViewModels;
@@ -497,7 +502,8 @@ public class RecipesService {
         }
         String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
         if (notificationDao.insertData(userId, notificationTypeId, content, 0)) {
-            return new NotificationViewModel(typeName, content, 0, createTime, userId);
+            List<String> listToken = loginDeviceDao.getListTokenDevice(userId);
+            return new NotificationViewModel(typeName, content, 0, createTime, userId, listToken);
         }
         return new NotificationViewModel();
     }

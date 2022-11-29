@@ -7,6 +7,7 @@ package services;
 
 import common.NotificationTypeIdConstant;
 import dao.FollowerDao;
+import dao.LoginDeviceDao;
 import dao.NotificationDao;
 import dao.NotificationTypeDao;
 import dao.RecipesDao;
@@ -42,6 +43,7 @@ public class FollowerService {
     FollowerDao followerDao = null;
     NotificationTypeDao notificationTypeDao = null;
     NotificationDao notificationDao = null;
+    LoginDeviceDao loginDeviceDao = null;
     DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
@@ -51,6 +53,7 @@ public class FollowerService {
         followerDao = new FollowerDao();
         notificationTypeDao = new NotificationTypeDao();
         notificationDao = new NotificationDao();
+        loginDeviceDao = new LoginDeviceDao();
     }
 
     @POST
@@ -100,7 +103,8 @@ public class FollowerService {
         }
         String createTime = simpleDateFormat.format(new Timestamp(System.currentTimeMillis()));
         if (notificationDao.insertData(followId, notificationTypeId, content, 0)) {
-            return new NotificationViewModel(typeName, content, 0, createTime, userId);
+            List<String> listToken = loginDeviceDao.getListTokenDevice(followId);
+            return new NotificationViewModel(typeName, content, 0, createTime, followId, listToken);
         }
         return new NotificationViewModel();
     }
