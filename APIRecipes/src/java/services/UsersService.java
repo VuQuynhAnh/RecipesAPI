@@ -362,7 +362,7 @@ public class UsersService {
         } else {
             LoginDevice device = loginDeviceDao.getDataById(userLogin.getId(), request.getDeviceName());
             if (device.getId() > 0) {
-                loginDeviceDao.reLogin(request.getDeviceName(), userLogin.getId());
+                loginDeviceDao.reLogin(request.getDeviceName(), userLogin.getId(), request.getTokenDevice());
             } else {
                 loginDeviceDao.fristLogin(request.getDeviceName(), userLogin.getId(), request.getTokenDevice());
             }
