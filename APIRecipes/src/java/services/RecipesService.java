@@ -434,13 +434,15 @@ public class RecipesService {
         }
         if (ratingDao.checkExistRating(rating.getUserId(), rating.getRecipeId())) {
             if (ratingDao.update(rating)) {
+                int authorId = recipesDao.getDataById("", rating.getRecipeId(), 0).getAuthorId();
                 List<NotificationViewModel> notificationViewModels = new ArrayList<>();
-                notificationViewModels.add(sendNotificationRatingRecipe(userModel.getDisplayName(), rating.getUserId(), rating.getRecipeId()));
+                notificationViewModels.add(sendNotificationRatingRecipe(userModel.getDisplayName(), authorId, rating.getRecipeId()));
                 return new SaveOutputResponse("Success!", notificationViewModels);
             }
         } else if (ratingDao.insertData(rating)) {
+            int authorId = recipesDao.getDataById("", rating.getRecipeId(), 0).getAuthorId();
             List<NotificationViewModel> notificationViewModels = new ArrayList<>();
-            notificationViewModels.add(sendNotificationRatingRecipe(userModel.getDisplayName(), rating.getUserId(), rating.getRecipeId()));
+            notificationViewModels.add(sendNotificationRatingRecipe(userModel.getDisplayName(), authorId, rating.getRecipeId()));
             return new SaveOutputResponse("Success!", notificationViewModels);
         }
         return new SaveOutputResponse("Failed!");

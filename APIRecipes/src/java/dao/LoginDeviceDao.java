@@ -110,13 +110,14 @@ public class LoginDeviceDao {
         return false;
     }
 
-    public boolean reLogin(String deivceName, int userId) {
+    public boolean reLogin(String deivceName, int userId, String tokenDevice) {
         PreparedStatement statement;
         try {
-            statement = con.prepareCall("update LoginDevice set LastLoginDate=?, Status=0 where DeviceName=? and UserId=?");
+            statement = con.prepareCall("update LoginDevice set LastLoginDate=?, TokenDevice =?, Status=0 where DeviceName=? and UserId=?");
             statement.setDate(1, Date.valueOf(LocalDate.now()));
-            statement.setString(2, deivceName);
-            statement.setInt(3, userId);
+            statement.setString(2, tokenDevice);
+            statement.setString(3, deivceName);
+            statement.setInt(4, userId);
             if (statement.executeUpdate() > 0) {
                 return true;
             }
